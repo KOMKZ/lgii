@@ -1,5 +1,5 @@
 <?php
-Yii::setAlias('@lgii', dirname(__DIR__) . "/vendor/lgii/src");
+Yii::setAlias('@lgii', dirname(__DIR__) . "/lgii/src");
 $params = require __DIR__ . '/params.php';
 $db = require __DIR__ . '/db.php';
 
