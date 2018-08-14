@@ -15,6 +15,11 @@ use Yii;
  */
 class User extends \yii\db\ActiveRecord
 {
+    use \lgii\LActiveQueryTrait;
+
+
+
+
     /**
      * {@inheritdoc}
      */
