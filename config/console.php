@@ -17,6 +17,9 @@ $config = [
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],
+        'es' => \Elasticsearch\ClientBuilder::create()
+            ->setHosts(['localhost:9200'])
+            ->build(),
         'log' => [
             'targets' => [
                 [

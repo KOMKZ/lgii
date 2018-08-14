@@ -1,5 +1,5 @@
 <?php
-Yii::setAlias('@lgii', dirname(__DIR__) . "/vendor/lgii/src");
+// Yii::setAlias('@lgii', dirname(__DIR__) . "/vendor/lgii/src");
 $params = require __DIR__ . '/params.php';
 $db = require __DIR__ . '/db.php';
 
@@ -26,6 +26,7 @@ $config = [
         'errorHandler' => [
             'errorAction' => 'site/lgierror',
         ],
+
         'mailer' => [
             'class' => 'yii\swiftmailer\Mailer',
             // send all mails to a file by default. You have to set
