@@ -1,9 +1,7 @@
 <?php
-<<<<<<< HEAD
-// Yii::setAlias('@lgii', dirname(__DIR__) . "/vendor/lgii/src");
-=======
 Yii::setAlias('@lgii', dirname(__DIR__) . "/lgii/src");
->>>>>>> 03b89e9543a85d0c64b0289640fb04ed81f9182f
+Yii::setAlias('@lgoods', dirname(__DIR__) . '/lgoods/src');
+
 $params = require __DIR__ . '/params.php';
 $db = require __DIR__ . '/db.php';
 
@@ -11,6 +9,9 @@ $config = [
     'id' => 'basic',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
+    'controllerMap' => [
+        'goods' => '\lgoods\controllers\GoodsController',
+    ],
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
         '@npm'   => '@vendor/npm-asset',
