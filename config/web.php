@@ -1,6 +1,9 @@
 <?php
+use yii\base\Event;
+use lgoods\models\GoodsModel;
 Yii::setAlias('@lgii', dirname(__DIR__) . "/lgii/src");
 Yii::setAlias('@lgoods', dirname(__DIR__) . '/lgoods/src');
+Event::on("\lgoods\models\GoodsModel", GoodsModel::EVENT_GOODS_CREATE, ["\lgoods\models\GoodsModel", 'handleGoodCreate']);
 
 $params = require __DIR__ . '/params.php';
 $db = require __DIR__ . '/db.php';
@@ -29,7 +32,7 @@ $config = [
             'enableAutoLogin' => true,
         ],
         'errorHandler' => [
-            'errorAction' => 'site/lgierror',
+            'errorAction' => 'site/error',
         ],
 
         'mailer' => [
@@ -61,7 +64,7 @@ $config = [
     'params' => $params,
 ];
 
-if (YII_ENV_DEV) {
+if (1) {
     // configuration adjustments for 'dev' environment
     $config['bootstrap'][] = 'debug';
     $config['modules']['debug'] = [
