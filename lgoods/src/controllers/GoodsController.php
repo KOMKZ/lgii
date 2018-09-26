@@ -47,6 +47,51 @@ class GoodsController extends Controller{
         
     }
 
+
+    public function actionList(){
+        $t = Yii::$app->db->beginTransaction();
+
+        $courseListData = [
+            [
+                'course_title' => '安全防爆电器1',
+                'course_id' => 1,
+                'module' => 'cour',
+                'course_created_at' => time(),
+                'course_updated_at' => time(),
+                'price_items' => [
+                    ['version' => 1, 'ext_serv' => 0, 'price' => 1],
+                    ['version' => 2, 'ext_serv' => 0, 'price' => 1],
+                    ['version' => 1, 'ext_serv' => 1, 'price' => 1],
+                    ['version' => 2, 'ext_serv' => 1, 'price' => 1],
+                ]
+            ],
+            [
+                'course_title' => '安全防爆电器2',
+                'course_id' => 1,
+                'module' => 'cour',
+                'course_created_at' => time(),
+                'course_updated_at' => time(),
+                'price_items' => [
+                    ['version' => 1, 'ext_serv' => 0, 'price' => 1],
+                    ['version' => 2, 'ext_serv' => 0, 'price' => 1],
+                    ['version' => 1, 'ext_serv' => 1, 'price' => 1],
+                    ['version' => 2, 'ext_serv' => 1, 'price' => 1],
+                ]
+            ]
+        ];
+        foreach($courseListData as $courseData){
+            $course = new \app\models\Course();
+            $course->load($courseData, '');
+            GoodsModel::triggerGoodsCreate($course, [
+                'g_name' => $courseData['course_title'],
+                'g_sid' => $courseData['course_id'],
+                'g_stype' => $courseData['module'],
+                'price_items' => $courseData['price_items'],
+            ]);
+        }
+        console(1);
+    }
+
     public function actionCreate(){
         $t = Yii::$app->db->beginTransaction();
         $courseData = [
@@ -111,7 +156,7 @@ class GoodsController extends Controller{
         if(!$payOrder){
             throw new \Exception(implode(',', $transModel->getFirstErrors()));
         }
-        $t->commit();
+//        $t->commit();
         console($payOrder->toArray());
 
 
@@ -119,7 +164,4 @@ class GoodsController extends Controller{
 
 
 
-    public function actionList(){
-
-    }
 }

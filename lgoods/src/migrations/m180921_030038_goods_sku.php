@@ -17,6 +17,7 @@ class m180921_030038_goods_sku extends Migration
             `sku_id` int(10) unsigned not null auto_increment comment '主键',
             `sku_g_id` int(10) unsigned not null comment '商品id',
             `sku_index` VARCHAR(255) not null comment 'sku索引',
+            `sku_is_master` smallint(3) unsigned not null comment '是否是首选sku',
             `sku_name` VARCHAR(255) not null default '' comment 'sku名称',
             `sku_price` int(10) unsigned not null comment 'sku的价格',
             `sku_created_at` int(10) unsigned not null comment '创建时间',

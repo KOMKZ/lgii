@@ -30,6 +30,7 @@ class GoodsSku extends ActiveRecord{
                     'sku_index',
                     'sku_name',
                     'sku_price',
+                    'sku_is_master'
                 ], 'safe'
             ]
         ];

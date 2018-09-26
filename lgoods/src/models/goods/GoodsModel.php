@@ -13,6 +13,7 @@ use lgoods\models\goods\GoodsEvent;
 use yii\base\Event;
 use lgoods\models\goods\Goods;
 use lgoods\models\goods\GoodsSku;
+use yii\helpers\ArrayHelper;
 
 class GoodsModel extends Object{
 
@@ -89,8 +90,10 @@ class GoodsModel extends Object{
         }
         $goods->insert(false);
         // 创建sku
+
         if(!empty($goodsData['price_items'])){
             $skuData = [];
+            $hasMaster = 0;
             foreach ($goodsData['price_items'] as $key => $skuParams){
                 if(!isset($skuParams['price']) || !is_numeric($skuParams['price'])){
                     throw new \Exception(sprintf("%s %s price非法", $key, implode(',', $skuParams)));
@@ -103,8 +106,14 @@ class GoodsModel extends Object{
                     'sku_index' => $skuIndex,
                     'sku_name' => '',
                     'sku_price' => $skuPrice,
+                    'sku_is_master' => ArrayHelper::getValue($skuParams, 'is_master', 0),
                 ];
+                $hasMaster = ArrayHelper::getValue($skuParams, 'is_master', 0) || $hasMaster;
             }
+            if(!$hasMaster){
+                throw new \Exception("价格参数必须指定指定主价格");
+            }
+            console($hasMaster);
             $skus = static::createGoodsSkus($skuData);
             if(!$skus){
                 throw new \Exception("创建sku失败");
