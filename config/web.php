@@ -1,9 +1,5 @@
 <?php
-use yii\base\Event;
-use lgoods\models\GoodsModel;
-Yii::setAlias('@lgii', dirname(__DIR__) . "/lgii/src");
-Yii::setAlias('@lgoods', dirname(__DIR__) . '/lgoods/src');
-Event::on("\lgoods\models\GoodsModel", GoodsModel::EVENT_GOODS_CREATE, ["\lgoods\models\GoodsModel", 'handleGoodCreate']);
+require __DIR__ . '/bootstrap.php';
 
 $params = require __DIR__ . '/params.php';
 $db = require __DIR__ . '/db.php';
@@ -50,6 +46,24 @@ $config = [
                     'levels' => ['error', 'warning'],
                 ],
             ],
+        ],
+        'alipay' => [
+            'class' => '\\lgoods\models\\trans\\payment\\Alipay',
+            'gatewayUrl' => '',
+            'appId' => '',
+            'rsaPrivateKeyFilePath' => '',
+            'alipayrsaPublicKey' => '',
+            'notifyUrl' => '',
+            'returnUrl' => '',
+        ],
+        'wxpay' => [
+            'class' => '\\lgoods\models\\trans\\payment\\Wxpay',
+            'appid' => '',
+            'mchid' => '',
+            'key' => '',
+            'appsecret' => '',
+            'sslcert_path' => '',
+            'sslkey_path' => '',
         ],
         'db' => $db,
         /*

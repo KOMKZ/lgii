@@ -1,7 +1,7 @@
 <?php
 
 use yii\db\Migration;
-use lgoods\models\GoodsSku;
+use lgoods\models\goods\GoodsSku;
 /**
  * Class m180921_030038_goods_sku
  */
@@ -31,7 +31,7 @@ class m180921_030038_goods_sku extends Migration
     public function safeDown(){
         $tableName = $this->getTableName();
         $dropTableSql = "
-        drop table if exists {$tableName}
+        drop table if exists `{$tableName}`
         ";
         $this->execute($dropTableSql);
         return true;

@@ -7,11 +7,13 @@
  */
 namespace lgoods\controllers;
 
+use lgoods\models\order\OrderModel;
+use lgoods\models\trans\TransModel;
 use Yii;
-use lgoods\models\GoodsModel;
+use lgoods\models\goods\GoodsModel;
 use yii\web\Controller;
 use yii\base\Event;
-use lgoods\models\GoodsEvent;
+use lgoods\models\goods\GoodsEvent;
 
 
 
@@ -42,28 +44,53 @@ class GoodsController extends Controller{
             'g_stype' => $courseData['module'],
             'price_items' => $courseData['price_items'],
         ]);
+        $sku = GoodsModel::getSkuFromGIndex($course, ['version' => 1, 'ext_serv' => 0]);
+        $skus = GoodsModel::getSkusFromGoods($course);
+        $orderModel = new OrderModel();
+        $orderData = [
+            [
+                'og_sku_id' => $skus[0]['sku_id'],
+                'og_total_num' => 1,
+                'discount_params' => [],
+            ],
+            [
+                'og_sku_id' => $skus[1]['sku_id'],
+                'og_total_num' => 2,
+                'discount_params' => []
+            ]
+        ];
 
-        $course->getSkuFromIndex(['version' => 1, 'ext_serv' => 0]);
+
+        $order = $orderModel->createOrderFromSkus($orderData);
+        if(!$order){
+            throw new \Exception(implode(',', $orderModel->getFirstErrors()));
+        }
+
+        $transModel = new TransModel();
+        $trans = $transModel->createTransFromOrder($order, [
+            'trs_timeout' => 3600,
+            'trs_content' => ''
+        ]);
+        if(!$trans){
+            throw new \Exception(implode(',', $transModel->getFirstErrors()));
+        }
+
+        $params = [
+            'pt_pay_type' => 'alipay',
+            'pt_pre_order_type' => 'data',
+
+        ];
+        $payOrder = $transModel->createPayOrderFromTrans($trans, $params);
+        if(!$payOrder){
+            throw new \Exception(implode(',', $transModel->getFirstErrors()));
+        }
+
+
     }
 
 
 
     public function actionList(){
-        $course = new \app\models\Course();
-        $skuParams = [
-            'version' => '1', // 套装1
-            'ext_serv' => '1' // 选择额外服务
-        ];
-        $buyParams = [
-            'buy_num' => 1, // 购买数量
-            'customer_uid' => 1, // 购买用户id
-            'discount_items' => [], // 用户使用折扣情况
-        ];
-        $priceItems = GoodsModel::caculatePrice($course);
 
-        $pricePaid = $priceItems['price_paid'];
-        $discount = $priceItems['discount'];
-        $discountItems = $priceItems['discount_items'];
-        console($priceItems);
     }
 }
