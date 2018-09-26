@@ -19,9 +19,36 @@ use lgoods\models\goods\GoodsEvent;
 
 class GoodsController extends Controller{
 
+    public function actionHandle($type){
+        $t = Yii::$app->db->beginTransaction();
+        $notifyData = Yii::$app->request->getBodyParams();
+
+        $payment = TransModel::getPayment($type);
+        try {
+            $transData = $payment->handleNotify($notifyData, []);
+            if($transData['code'] > 0){
+                $payment->sayFail([]);
+                exit();
+            }
+            $payOrder = TransModel::findPayTrace()->andWhere(['pt_belong_trans_number' => $transData['trans_number']])->one();
+            $transModel = new TransModel();
+            if(!$payOrder || !$transModel->updatePayOrderPayed($payOrder, ['notification' => $notifyData])){
+                $payment->sayFail([]);
+                exit();
+            }
+            TransModel::triggerPayed($payOrder);
+            $payment->saySucc([]);
+            exit();
+        } catch (\Exception $e) {
+            Yii::error($e);
+            $payment->sayFail([]);
+            exit();
+        }
+        
+    }
 
     public function actionCreate(){
-        Yii::$app->db->beginTransaction();
+        $t = Yii::$app->db->beginTransaction();
         $courseData = [
             'course_title' => '安全防爆电器',
             'course_id' => 1,
@@ -29,10 +56,10 @@ class GoodsController extends Controller{
             'course_created_at' => time(),
             'course_updated_at' => time(),
             'price_items' => [
-                ['version' => 1, 'ext_serv' => 0, 'price' => 10000],
-                ['version' => 2, 'ext_serv' => 0, 'price' => 12000],
-                ['version' => 1, 'ext_serv' => 1, 'price' => 11000],
-                ['version' => 2, 'ext_serv' => 1, 'price' => 13000],
+                ['version' => 1, 'ext_serv' => 0, 'price' => 1],
+                ['version' => 2, 'ext_serv' => 0, 'price' => 1],
+                ['version' => 1, 'ext_serv' => 1, 'price' => 1],
+                ['version' => 2, 'ext_serv' => 1, 'price' => 1],
             ]
         ];
         $course = new \app\models\Course();
@@ -55,7 +82,7 @@ class GoodsController extends Controller{
             ],
             [
                 'og_sku_id' => $skus[1]['sku_id'],
-                'og_total_num' => 2,
+                'og_total_num' => 1,
                 'discount_params' => []
             ]
         ];
@@ -68,7 +95,7 @@ class GoodsController extends Controller{
 
         $transModel = new TransModel();
         $trans = $transModel->createTransFromOrder($order, [
-            'trs_timeout' => 3600,
+            'trs_timeout' => 500,
             'trs_content' => ''
         ]);
         if(!$trans){
@@ -77,13 +104,15 @@ class GoodsController extends Controller{
 
         $params = [
             'pt_pay_type' => 'alipay',
-            'pt_pre_order_type' => 'data',
+            'pt_pre_order_type' => 'url',
 
         ];
         $payOrder = $transModel->createPayOrderFromTrans($trans, $params);
         if(!$payOrder){
             throw new \Exception(implode(',', $transModel->getFirstErrors()));
         }
+        $t->commit();
+        console($payOrder->toArray());
 
 
     }

@@ -12,7 +12,7 @@ class Trans extends ActiveRecord{
 
     CONST TPS_PAID = 1;
 
-
+    const EVENT_AFTER_PAYED = 'trans_paid';
 
     public static function tableName(){
         return "{{%trans}}";

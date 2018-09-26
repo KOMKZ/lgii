@@ -5,8 +5,32 @@ use Yii;
 use lgoods\models\goods\GoodsModel;
 use yii\base\Model;
 use yii\helpers\ArrayHelper;
+use lgoods\models\order\AfterPayedEvent;
 
 class OrderModel extends Model{
+
+    public static function handleReceivePayedEvent($event){
+        $trans = $event->sender;
+        $payOrder = $event->payOrder;
+        $order = static::findOrder()
+                        ->andWhere(['=', 'od_id', $trans->trs_target_id])
+                        ->one();
+        ;
+        if(Order::PS_PAID == $order['od_pay_status']){
+            return true;
+        }
+        $order->od_pay_status = Order::PS_PAID;
+        $order->od_paid_at = $trans->trs_pay_at;
+        $order->od_pay_type = $trans->trs_pay_type;
+        if(false == $order->update(false)){
+            throw new \Exception("订单修改失败");
+        }
+        $order->trigger(Order::EVENT_AFTER_PAID);
+    }
+
+    public static function findOrder(){
+        return Order::find();
+    }
 
     public function createOrderFromSkus($orderData){
         $orderData = ArrayHelper::index($orderData, 'og_sku_id');

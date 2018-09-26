@@ -3,6 +3,7 @@ namespace lgoods\models\trans;
 
 use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
+use yii\helpers\ArrayHelper;
 
 class PayTrace extends ActiveRecord{
 
@@ -17,7 +18,7 @@ class PayTrace extends ActiveRecord{
     CONST TYPE_DATA = 'data';
     CONST TYPE_URL = 'url';
 
-    CONST EVENT_AFTER_PAYED = "after_payed";
+    CONST EVENT_AFTER_PAYED = "pay_order_payed";
 
 
     public static function tableName(){

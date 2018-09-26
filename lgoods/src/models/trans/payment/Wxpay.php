@@ -149,7 +149,7 @@ class Wxpay extends Model
             $result['notify_data_parse'] = $data;
 
             if(empty($data['out_trade_no'])){
-                $result['errno'] = PayModel::NOTIFY_INVALID;
+                $result['errno'] = TransModel::NOTIFY_INVALID;
                 $result['error'] = Yii::t('app', "微信通知数据out_trade_no不存在");
                 return $result;
             }
@@ -157,7 +157,7 @@ class Wxpay extends Model
             if(!$thirdOrder){
                 list($code, $error) = $this->getOneError();
                 $result['error'] = $error;
-                $result['errno'] = PayModel::NOTIFY_ORDER_INVALID;
+                $result['errno'] = TransModel::NOTIFY_ORDER_INVALID;
                 return $result;
             }
             $result['code'] = 0;
@@ -167,11 +167,17 @@ class Wxpay extends Model
             return $result;
         } catch (\WxPayException $e){
             $result['error'] = $e->errorMessage();
-            $result['errno'] = PayModel::NOTIFY_EXCEPTION;
+            $result['errno'] = TransModel::NOTIFY_EXCEPTION;
             return $result;
         }
 
         return call_user_func($callback, $result);
+    }
+
+    public function getThirdTransId($payOrder){
+        $thirdData = json_decode($payOrder->pt_third_data);
+        $data = \WxPayResults::Init($thirdData->pay_succ_notification);
+        return $data['transaction_id'];
     }
 
     public function queryRefund($data){

@@ -292,7 +292,10 @@ class Alipay extends Model
 			return false;
 		}
 	}
-
+    public function getThirdTransId($payOrder){
+        $thirdData = json_decode($payOrder->pt_third_data);
+        return $thirdData->pay_succ_notification->trade_no;
+    }
 	public function createOrderForUrl($data){
 		$preOrder = new \AlipayTradePagePayRequest();
 		if(!empty($data['trans_return_url'])){
@@ -301,9 +304,9 @@ class Alipay extends Model
 			$preOrder->setReturnUrl($this->returnUrl);
 		}
 		if(!empty($data['trans_invalid_at'])){
-			$timeoutExpress = ($data['trans_invalid_at'] - $data['trans_start_at'])/60 . 'm';
+			$timeoutExpress = round(($data['trans_invalid_at'] - $data['trans_start_at'])/60) . 'm';
 		}else{
-			$timeoutExpress = $this->$orderTimeOut;
+			$timeoutExpress = $this->orderTimeOut;
 		}
 		$preOrder->setNotifyUrl($this->notifyUrl);
 		$preOrder->setBizContent("{" .
