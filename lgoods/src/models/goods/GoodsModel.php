@@ -113,7 +113,6 @@ class GoodsModel extends Object{
             if(!$hasMaster){
                 throw new \Exception("价格参数必须指定指定主价格");
             }
-            console($hasMaster);
             $skus = static::createGoodsSkus($skuData);
             if(!$skus){
                 throw new \Exception("创建sku失败");

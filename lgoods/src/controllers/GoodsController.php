@@ -101,7 +101,7 @@ class GoodsController extends Controller{
             'course_created_at' => time(),
             'course_updated_at' => time(),
             'price_items' => [
-                ['version' => 1, 'ext_serv' => 0, 'price' => 1],
+                ['version' => 1, 'ext_serv' => 0, 'price' => 1, 'is_master' => 1],
                 ['version' => 2, 'ext_serv' => 0, 'price' => 1],
                 ['version' => 1, 'ext_serv' => 1, 'price' => 1],
                 ['version' => 2, 'ext_serv' => 1, 'price' => 1],
