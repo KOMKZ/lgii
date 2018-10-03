@@ -27,9 +27,15 @@ class OrderModel extends Model{
         }
         $order->trigger(Order::EVENT_AFTER_PAID);
     }
-
+    public static function ensureCanRefund($orderData){
+        return [true, ''];
+    }
     public static function findOrder(){
         return Order::find();
+    }
+
+    public static function findOrderFull(){
+        return Order::find()->with("order_goods_list");
     }
 
     public function createOrderFromSkus($orderData){
@@ -91,10 +97,9 @@ class OrderModel extends Model{
 
         return $order;
 
-        console($totalPrice, $allDiscountItems);
     }
 
-    protected static function buildOrderNumber(){
+    public static function buildOrderNumber(){
         list($time, $millsecond) = explode('.', microtime(true));
         $string = sprintf("OD%s%04d", date("HYisdm", $time), $millsecond);
         return $string;

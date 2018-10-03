@@ -7,7 +7,9 @@
  */
 namespace lgoods\controllers;
 
+use common\models\RefundModel;
 use lgoods\models\order\OrderModel;
+use lgoods\models\refund\RfModel;
 use lgoods\models\trans\TransModel;
 use Yii;
 use lgoods\models\goods\GoodsModel;
@@ -129,6 +131,11 @@ class GoodsController extends Controller{
                 'og_sku_id' => $skus[1]['sku_id'],
                 'og_total_num' => 1,
                 'discount_params' => []
+            ],
+            [
+                'og_sku_id' => $skus[2]['sku_id'],
+                'og_total_num' => 2,
+                'discount_params' => []
             ]
         ];
 
@@ -137,6 +144,8 @@ class GoodsController extends Controller{
         if(!$order){
             throw new \Exception(implode(',', $orderModel->getFirstErrors()));
         }
+        $orderArray = OrderModel::findOrderFull()->andWhere(['=', 'od_id', $order['od_id']])->asArray()->one();
+
 
         $transModel = new TransModel();
         $trans = $transModel->createTransFromOrder($order, [
@@ -156,7 +165,37 @@ class GoodsController extends Controller{
             throw new \Exception(implode(',', $transModel->getFirstErrors()));
         }
 //        $t->commit();
-        console($payOrder->toArray());
+        // npay是直接付款成功的
+        $rfModel = new RfModel();
+        $rfData = [
+            'od_num' => $orderArray['od_num'],
+            'og_rf_goods_list' => [
+                [
+                    'og_id' => $orderArray['order_goods_list'][0]['og_id']
+                ],
+                [
+                    'og_id' => $orderArray['order_goods_list'][1]['og_id']
+                ],
+            ]
+        ];
+        $rf = $rfModel->createRefund($rfData);
+        if(!$rf){
+            throw new \Exception(implode(',', $rfModel->getFirstErrors()));
+        }
+        $rf = $rfModel->agreeRefund($rf);
+        if(!$rf){
+            throw new \Exception(implode(',', $rfModel->getFirstErrors()));
+        }
+
+        $trans = $transModel->createTransFromRefund($rf, [
+
+        ]);
+        if(!$trans){
+            throw new \Exception(implode(',', $transModel->getFirstErrors()));
+        }
+
+
+
 
 
     }

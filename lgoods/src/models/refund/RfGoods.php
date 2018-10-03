@@ -4,13 +4,12 @@ namespace lgoods\models\refund;
 use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
 
-class RfApplication extends ActiveRecord{
+class RfGoods extends ActiveRecord{
 
-    CONST STATUS_SUBMIT = 'submit';
-    CONST STATUS_HAD_REFUND = 'hadrf';
+
 
     public static function tableName(){
-        return "{{%refund}}";
+        return "{{%refund_goods}}";
     }
 
     public function behaviors()
@@ -18,8 +17,8 @@ class RfApplication extends ActiveRecord{
         return [
             [
                 'class' => TimestampBehavior::className(),
-                'createdAtAttribute' => 'rf_created_at',
-                'updatedAtAttribute' => 'rf_updated_at'
+                'createdAtAttribute' => 'rg_created_at',
+                'updatedAtAttribute' => 'rg_updated_at'
             ]
         ];
     }

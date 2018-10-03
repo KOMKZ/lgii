@@ -91,6 +91,26 @@ class TransModel extends Model
         return $trans;
     }
 
+    public function createTransFromRefund($rf, $params = []){
+        $trans = new Trans();
+        console($rf->toArray());
+        $trans->trs_type = Trans::TRADE_ORDER;
+        $trans->trs_target_id = $rf['rf_id'];
+        $trans->trs_target_num = $rf['rf_num'];
+        $trans->trs_fee = $rf['rf_fee'];
+        $trans->trs_pay_status = Trans::TPS_NOT_PAY;
+        $trans->trs_pay_at = time();
+        $trans->trs_pay_type = $rf['rf_ori_pay_type'];
+        $trans->trs_pay_num = '';
+        $trans->trs_content = '';
+        $trans->trs_num = static::buildTradeNumber();
+        $trans->trs_timeout = 0;
+        $trans->trs_title = sprintf("购买-%s", $rf['od_title']);
+        $trans->insert(false);
+        return $trans;
+
+    }
+
     public static function findPayTrace(){
         return PayTrace::find();
     }

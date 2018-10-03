@@ -8,6 +8,10 @@ class Trans extends ActiveRecord{
 
     CONST TRADE_ORDER = 1;
 
+    CONST TRADE_TRANS = 2;
+
+    
+
     CONST TPS_NOT_PAY = 0;
 
     CONST TPS_PAID = 1;

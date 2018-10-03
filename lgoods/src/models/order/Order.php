@@ -27,4 +27,10 @@ class Order extends ActiveRecord{
         ];
     }
 
+    public function getOrder_goods_list(){
+        return $this->hasMany(OrderGoods::className(), [
+            'og_od_id' => 'od_id'
+        ]);
+    }
+
 }
