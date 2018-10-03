@@ -55,6 +55,23 @@ class GoodsModel extends Object{
         return $query;
     }
 
+    public static function findGoodsWithMSku(){
+        $skuTable = GoodsSku::tableName();
+        $gTable = Goods::tableName();
+        $select = [
+            "{$gTable}.*",
+            "{$skuTable}.sku_price",
+            "{$skuTable}.sku_id",
+            "{$skuTable}.sku_index",
+            "{$skuTable}.sku_is_master",
+        ];
+        $query = Goods::find()
+                    ->leftJoin($skuTable, "sku_g_id = g_id and sku_is_master = 1")
+            ;
+        $query->select($select);
+        return $query;
+    }
+
     public static function caculatePrice($sku, $buyParams = []){
         $priceItems = [
             'has_error' => 0,
@@ -98,7 +115,10 @@ class GoodsModel extends Object{
                 if(!isset($skuParams['price']) || !is_numeric($skuParams['price'])){
                     throw new \Exception(sprintf("%s %s price非法", $key, implode(',', $skuParams)));
                 }
+                $isMaster = ArrayHelper::getValue($skuParams, 'is_master', 0);
+                $hasMaster = $isMaster || $hasMaster;
                 $skuPrice = $skuParams['price'];
+                unset($skuParams['is_master']);
                 unset($skuParams['price']);
                 $skuIndex = static::buildSkusIndexByParams($skuParams);
                 $skuData[] = [
@@ -106,9 +126,8 @@ class GoodsModel extends Object{
                     'sku_index' => $skuIndex,
                     'sku_name' => '',
                     'sku_price' => $skuPrice,
-                    'sku_is_master' => ArrayHelper::getValue($skuParams, 'is_master', 0),
+                    'sku_is_master' => $isMaster,
                 ];
-                $hasMaster = ArrayHelper::getValue($skuParams, 'is_master', 0) || $hasMaster;
             }
             if(!$hasMaster){
                 throw new \Exception("价格参数必须指定指定主价格");

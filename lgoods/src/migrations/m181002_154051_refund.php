@@ -27,6 +27,9 @@ class m181002_154051_refund extends Migration
             `rf_succ_at` int(10) unsigned not null default 0 comment '成功退款时间',
             `rf_created_at` int(10) unsigned not null comment '创建时间',
             `rf_updated_at` int(10) unsigned not null comment '更新时间',
+            primary key (`rf_id`),
+            index(`rf_order_id`),
+            index(`rf_trans_id`)
         );
         ";
         $this->execute($createTabelSql);

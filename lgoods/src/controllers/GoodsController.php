@@ -32,7 +32,7 @@ class GoodsController extends Controller{
             }
             $payOrder = TransModel::findPayTrace()->andWhere(['pt_belong_trans_number' => $transData['trans_number']])->one();
             $transModel = new TransModel();
-            if(!$payOrder || !$transModel->updatePayOrderPayed($payOrder, ['notification' => $notifyData])){
+            if(!$payOrder || !$transModel::updatePayOrderPayed($payOrder, ['notification' => $notifyData])){
                 $payment->sayFail([]);
                 exit();
             }
@@ -148,9 +148,8 @@ class GoodsController extends Controller{
         }
 
         $params = [
-            'pt_pay_type' => 'alipay',
+            'pt_pay_type' => 'npay',
             'pt_pre_order_type' => 'url',
-
         ];
         $payOrder = $transModel->createPayOrderFromTrans($trans, $params);
         if(!$payOrder){

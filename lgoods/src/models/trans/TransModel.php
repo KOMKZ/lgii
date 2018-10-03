@@ -6,6 +6,7 @@ use yii\base\Model;
 use lgoods\models\trans\Trans;
 use lgoods\models\trans\PayTrace;
 use lgoods\models\trans\payment\Wxpay;
+use lgoods\models\trans\payment\NPay;
 use lgoods\models\trans\payment\Alipay;
 use lgoods\models\trans\AfterPayedEvent;
 
@@ -22,6 +23,10 @@ class TransModel extends Model
         Wxpay::NAME => [
             PayTrace::TYPE_DATA => Wxpay::MODE_APP,
             PayTrace::TYPE_URL => Wxpay::MODE_NATIVE
+        ],
+        NPay::NAME => [
+            PayTrace::TYPE_DATA => NPay::MODE_ALL,
+            PayTrace::TYPE_URL => NPay::MODE_ALL
         ]
     ];
 
@@ -34,7 +39,6 @@ class TransModel extends Model
         $trans = static::findTrans()
             ->andWhere(['=', 'trs_num', $payOrder->pt_belong_trans_number])
             ->one();
-
         if(Trans::TPS_PAID == $trans->trs_pay_status){
             // 该交易已经支付 记录一下日志即可 todo
             // Yii::info(["通知得到的数据但是交易已经在平台处于支付状态", $payOrder->toArray()], "trans_payed_repeated")
@@ -42,10 +46,13 @@ class TransModel extends Model
         }
         // 修改交易数据
         $trans->trs_pay_type = $payOrder->pt_pay_type;
+
         $trans->trs_pay_status = Trans::TPS_PAID;
         $trans->trs_pay_at = time();
         $payment = static::getPayment($payOrder->pt_pay_type);
+
         $trans->trs_pay_num = $payment->getThirdTransId($payOrder);
+
         if(false === $trans->update(false)){
             throw new \Exception(Yii::t('app', "更改交易失败"));
         }
@@ -55,6 +62,11 @@ class TransModel extends Model
         $event->belongUser = null;
         $event->payOrder = $payOrder;
         static::triggerTransPayed($trans, $event);
+    }
+
+    public static function ensurePayOrder($payOrder){
+        static::updatePayOrderPayed($payOrder, ['notification' => []]);
+        static::triggerPayed($payOrder);
     }
 
     public static function triggerTransPayed($trans, $event = null){
@@ -99,6 +111,8 @@ class TransModel extends Model
                 return Yii::$app->wxpay;
             case Alipay::NAME:
                 return Yii::$app->alipay;
+            case NPay::NAME:
+                return new NPay();
             default:
                 throw new InvalidArgumentException(Yii::t('app', "{$type}不支持的支付类型"));
                 break;
@@ -109,16 +123,13 @@ class TransModel extends Model
         $payOrder->trigger(PayTrace::EVENT_AFTER_PAYED);
     }
 
-    public function updatePayOrderPayed($payOrder, $data){
+    public static function updatePayOrderPayed($payOrder, $data){
         if(!empty($data['notification'])){
             $payOrder->third_data = ['pay_succ_notification' => $data['notification']];
         }
         $payOrder->pt_pay_status = PayTrace::PAY_STATUS_PAYED;
         $payOrder->pt_status = PayTrace::STATUS_PAYED;
-        if(false === $payOrder->update(false)){
-            $this->addError(Errno::DB_UPDATE_FAIL, Yii::t('app', "修改支付单支失败"));
-            return false;
-        }
+        $payOrder->update(false);
         return $payOrder;
     }
 
@@ -136,6 +147,8 @@ class TransModel extends Model
             $payOrder->pt_pay_status = PayTrace::PAY_STATUS_NOPAY;
             $payOrder->pt_status = PayTrace::STATUS_INIT;
             $payOrder->pt_third_data = '';
+            $payOrder->pt_belong_trans_id = $trans['trs_id'];
+
             if(empty($data['pt_timeout'])){
                 $payOrder->pt_timeout = $trans->trs_timeout;
             }else{
@@ -174,13 +187,12 @@ class TransModel extends Model
                 $this->addError(Errno::DB_UPDATE_FAIL, Yii::t('app', "修改支付单失败"));
                 return false;
             }
+            static::ensurePayOrder($payOrder);
             $t->commit();
             return $payOrder;
         } catch (\Exception $e) {
             $t->rollback();
-            Yii::error($e);
-            $this->addError(Errno::EXCEPTION, Yii::t('app', "创建支付单异常"));
-            return false;
+            throw new \Exception($e->getMessage());
         }
     }
 

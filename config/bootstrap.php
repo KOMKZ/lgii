@@ -11,6 +11,8 @@ Event::on("\lgoods\models\goods\GoodsModel", GoodsModel::EVENT_GOODS_CREATE, ["\
 Event::on("\lgoods\models\\trans\PayTrace", PayTrace::EVENT_AFTER_PAYED, ["\lgoods\models\\trans\TransModel", "handleReceivePayedEvent"]);
 Event::on("\lgoods\models\\trans\Trans", Trans::EVENT_AFTER_PAYED, ["\lgoods\models\order\OrderModel", "handleReceivePayedEvent"]);
 
+
+
 require(dirname(__DIR__) . '/lib/wxsdk/wxpay/lib/WxPay.Config.php');
 require(dirname(__DIR__) . '/lib/wxsdk/wxpay/lib/WxPay.Exception.php');
 require(dirname(__DIR__) . '/lib/wxsdk/wxpay/lib/WxPay.Data.php');

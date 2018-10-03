@@ -19,6 +19,8 @@ class PayTrace extends ActiveRecord{
     CONST TYPE_URL = 'url';
 
     CONST EVENT_AFTER_PAYED = "pay_order_payed";
+    
+    const EVENT_AFTER_UPDATE = 'afterUpdate';
 
 
     public static function tableName(){
@@ -40,6 +42,10 @@ class PayTrace extends ActiveRecord{
         $thirdData = ($thirdData = json_decode($this->pt_third_data, true)) ? $thirdData : [];
         $thirdData = ArrayHelper::merge($thirdData, $value);
         $this->pt_third_data = json_encode($thirdData);
+    }
+
+    public function getThird_data(){
+        return json_decode($this->pt_third_data, true);
     }
 
     public function rules(){

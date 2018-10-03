@@ -21,6 +21,7 @@ class m180923_123821_pay_order extends Migration
             `pt_pay_status` char(12) not null comment '支付状态',
             `pt_status` char(12) not null comment '状态',
             `pt_belong_trans_number` char(20) not null comment '所属交易编号',
+            `pt_belong_trans_id` int(10) unsigned not null comment '所属交易id',
             `pt_third_data` text null comment '第三方相关数据',
             `pt_timeout` int(10) unsigned not null default 0 comment '失效时间',
             `pt_created_at` int(10) unsigned not null comment '创建时间',
