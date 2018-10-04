@@ -19,7 +19,6 @@ class RfModel extends Model{
         if(!$order){
             throw new \Exception("指定的订单不存在");
         }
-
         list($canRefund, $reason) = OrderModel::ensureCanRefund($order);
         if(!$canRefund){
             $this->addError("", $reason);
@@ -42,11 +41,19 @@ class RfModel extends Model{
         $rf->insert(false);
         $rfOgList = static::buildRfOgList($rf, $data['og_rf_goods_list'], $validOgList);
         static::batchInsertRgOgList($rfOgList);
+        $rf->rf_title = static::buildRfTitleFromGoods($rfOgList);
         $rf->rf_fee = static::caculateRfFee($rf, $rfOgList, []);
         $rf->update(false);
 
         return $rf;
 
+    }
+
+    public static function buildRfTitleFromGoods($rfOgList){
+        return count($rfOgList) > 1 ?
+            sprintf("退款-%s等%s件商品", $rfOgList[0]['rg_name'], count($rfOgList))
+            :
+            sprintf("退款-%s 1件商品", $rfOgList[0]['rg_name']);
     }
 
     public static function buildRfNumber(){
@@ -115,7 +122,7 @@ class RfModel extends Model{
         }
         $rf->rf_status = RfApplication::STATUS_HAD_REFUND;
         $rf->update(false);
-        
+
         return $rf;
     }
 

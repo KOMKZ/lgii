@@ -17,6 +17,7 @@ class m181002_154051_refund extends Migration
         create table `{$tableName}`(
             `rf_id` int(10) unsigned not null auto_increment comment '主键',
             `rf_num` VARCHAR(255) not null comment '退款单号码',
+            `rf_title` VARCHAR(255) not null comment '退款单标题',
             `rf_order_id` int(10) unsigned not null comment '订单id',
             `rf_order_num` varchar(255) not null comment '订单编号',
             `rf_order_third_num` varchar(255) not null comment '订单第三方交易号',

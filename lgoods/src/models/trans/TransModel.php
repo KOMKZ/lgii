@@ -65,8 +65,11 @@ class TransModel extends Model
     }
 
     public static function ensurePayOrder($payOrder){
-        static::updatePayOrderPayed($payOrder, ['notification' => []]);
-        static::triggerPayed($payOrder);
+        if(NPay::NAME == $payOrder['pt_pay_type']){
+            static::updatePayOrderPayed($payOrder, ['notification' => []]);
+            static::triggerPayed($payOrder);
+        }
+
     }
 
     public static function triggerTransPayed($trans, $event = null){
@@ -93,22 +96,20 @@ class TransModel extends Model
 
     public function createTransFromRefund($rf, $params = []){
         $trans = new Trans();
-        console($rf->toArray());
         $trans->trs_type = Trans::TRADE_ORDER;
         $trans->trs_target_id = $rf['rf_id'];
         $trans->trs_target_num = $rf['rf_num'];
         $trans->trs_fee = $rf['rf_fee'];
-        $trans->trs_pay_status = Trans::TPS_NOT_PAY;
+        $trans->trs_pay_status = Trans::TPS_PAID;
         $trans->trs_pay_at = time();
         $trans->trs_pay_type = $rf['rf_ori_pay_type'];
         $trans->trs_pay_num = '';
         $trans->trs_content = '';
         $trans->trs_num = static::buildTradeNumber();
         $trans->trs_timeout = 0;
-        $trans->trs_title = sprintf("购买-%s", $rf['od_title']);
+        $trans->trs_title = $rf['rf_title'];
         $trans->insert(false);
         return $trans;
-
     }
 
     public static function findPayTrace(){
@@ -153,6 +154,56 @@ class TransModel extends Model
         return $payOrder;
     }
 
+    public function createRfOrderFromTrans($trans, $data){
+        $t = Yii::$app->db->beginTransaction();
+        try {
+            $payOrder = new PayTrace();
+            $payOrder->pt_pay_type = $trans['trs_pay_type'];
+            $payOrder->pt_pre_order = '';
+            $payOrder->pt_belong_trans_number = $trans['trs_num'];
+            $payOrder->pt_pre_order_type = '';
+            $payOrder->pt_pay_status = PayTrace::PAY_STATUS_PAYED;
+            $payOrder->pt_status = PayTrace::STATUS_PAYED;
+            $payOrder->pt_third_data = '';
+            $payOrder->pt_belong_trans_id = $trans['trs_id'];
+
+
+            $payOrder->insert(false);
+
+
+            $payment = static::getPayment($payOrder->pt_pay_type);
+            $rfData = [
+                'trans_number' => $payOrder->pt_belong_trans_number,
+                'trans_title' => $trans->trs_title,
+                'trans_total_fee' => $trans->trs_fee,
+                'trans_refund_fee' => $trans->trs_fee,
+                'trans_refund_number' => $trans->trs_target_num,
+            ];
+            $refund = $payment->createRefund($rfData);
+            console($refund, $payment->getFirstErrors());
+
+
+            if(!$thirdPreOrder){
+                $this->addErrors($payment->getErrors());
+                return false;
+            }
+
+            $payOrder->pt_pre_order = $thirdPreOrder['master_data'];
+            $payOrder->third_data = [
+                'pre_response' => $thirdPreOrder['response']
+            ];
+            if(false === $payOrder->update(false)){
+                $this->addError(Errno::DB_UPDATE_FAIL, Yii::t('app', "修改支付单失败"));
+                return false;
+            }
+            static::ensurePayOrder($payOrder);
+            $t->commit();
+            return $payOrder;
+        } catch (\Exception $e) {
+            $t->rollback();
+            throw new \Exception($e->getMessage());
+        }
+    }
 
     public function createPayOrderFromTrans($trans, $data){
         $t = Yii::$app->db->beginTransaction();
@@ -212,7 +263,7 @@ class TransModel extends Model
             return $payOrder;
         } catch (\Exception $e) {
             $t->rollback();
-            throw new \Exception($e->getMessage());
+            throw $e;
         }
     }
 

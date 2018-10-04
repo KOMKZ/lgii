@@ -10,6 +10,7 @@ namespace lgoods\controllers;
 use common\models\RefundModel;
 use lgoods\models\order\OrderModel;
 use lgoods\models\refund\RfModel;
+use lgoods\models\trans\Trans;
 use lgoods\models\trans\TransModel;
 use Yii;
 use lgoods\models\goods\GoodsModel;
@@ -24,7 +25,23 @@ class GoodsController extends Controller{
     public function actionHandle($type){
         $t = Yii::$app->db->beginTransaction();
         $notifyData = Yii::$app->request->getBodyParams();
-
+        $notifyData = '<xml><appid><![CDATA[wxb8e63b3b3196d6a7]]></appid>
+<bank_type><![CDATA[CFT]]></bank_type>
+<cash_fee><![CDATA[4]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[N]]></is_subscribe>
+<mch_id><![CDATA[1489031722]]></mch_id>
+<nonce_str><![CDATA[b6vidouzm1u2ej5crm37w80xpcek0l4h]]></nonce_str>
+<openid><![CDATA[o82Odw-jLdQsZ1InClRz_3glyR30]]></openid>
+<out_trade_no><![CDATA[TR152018395104108652]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[189DF19A5A6C9D577CAF98F5A172EFB5]]></sign>
+<time_end><![CDATA[20181004154050]]></time_end>
+<total_fee>4</total_fee>
+<trade_type><![CDATA[NATIVE]]></trade_type>
+<transaction_id><![CDATA[4200000172201810044565783303]]></transaction_id>
+</xml>';
         $payment = TransModel::getPayment($type);
         try {
             $transData = $payment->handleNotify($notifyData, []);
@@ -40,9 +57,11 @@ class GoodsController extends Controller{
             }
             TransModel::triggerPayed($payOrder);
             $payment->saySucc([]);
+            $t->commit();
             exit();
         } catch (\Exception $e) {
             Yii::error($e);
+            $t->rollBack();
             $payment->sayFail([]);
             exit();
         }
@@ -157,16 +176,19 @@ class GoodsController extends Controller{
         }
 
         $params = [
-            'pt_pay_type' => 'npay',
+            'pt_pay_type' => 'wxpay',
             'pt_pre_order_type' => 'url',
         ];
         $payOrder = $transModel->createPayOrderFromTrans($trans, $params);
         if(!$payOrder){
             throw new \Exception(implode(',', $transModel->getFirstErrors()));
         }
-//        $t->commit();
+        $t->commit();
+
+        console($payOrder->toArray(), $orderArray);
         // npay是直接付款成功的
         $rfModel = new RfModel();
+        /*
         $rfData = [
             'od_num' => $orderArray['od_num'],
             'og_rf_goods_list' => [
@@ -175,6 +197,30 @@ class GoodsController extends Controller{
                 ],
                 [
                     'og_id' => $orderArray['order_goods_list'][1]['og_id']
+                ],
+            ]
+        ];
+        */
+
+
+
+
+
+
+    }
+
+    public function actionRefund(){
+        $t = Yii::$app->db->beginTransaction();
+        $transModel = new TransModel();
+        $rfModel = new RfModel();
+        $rfData = [
+            'od_num' => "OD152018395104108512",
+            'og_rf_goods_list' => [
+                [
+                    'og_id' => 49
+                ],
+                [
+                    'og_id' => 50
                 ],
             ]
         ];
@@ -194,12 +240,12 @@ class GoodsController extends Controller{
             throw new \Exception(implode(',', $transModel->getFirstErrors()));
         }
 
-
-
-
-
+        $payOrder = $transModel->createRfOrderFromTrans($trans, []);
+        if(!$payOrder){
+            throw new \Exception(implode(',', $transModel->getFirstErrors()));
+        }
+        console($trans->toArray());
     }
-
 
 
 }
