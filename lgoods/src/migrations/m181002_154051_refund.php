@@ -21,6 +21,7 @@ class m181002_154051_refund extends Migration
             `rf_order_id` int(10) unsigned not null comment '订单id',
             `rf_order_num` varchar(255) not null comment '订单编号',
             `rf_order_third_num` varchar(255) not null comment '订单第三方交易号',
+            `rf_order_trs_num` varchar(255) not null comment '订单交易号',
             `rf_third_num` varchar(255) not null default '' comment '退款单第三方交易号',
             `rf_status` char(6) not null comment '退款状态',
             `rf_fee` int(10) unsigned not null comment '退款金额',

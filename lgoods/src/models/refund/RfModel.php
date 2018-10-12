@@ -34,7 +34,8 @@ class RfModel extends Model{
         $rf = new RfApplication();
         $rf->rf_order_id = $order['od_id'];
         $rf->rf_order_num = $order['od_num'];
-        $rf->rf_order_third_num = $order['od_num'];
+        $rf->rf_order_third_num = $order['trs_pay_num'];
+        $rf->rf_order_trs_num = $order['trs_num'];
         $rf->rf_status = RfApplication::STATUS_SUBMIT;
         $rf->rf_ori_pay_type = $order['od_pay_type'];
         $rf->rf_num = static::buildRfNumber();

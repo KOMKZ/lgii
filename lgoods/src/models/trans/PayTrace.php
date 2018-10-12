@@ -19,6 +19,7 @@ class PayTrace extends ActiveRecord{
     CONST TYPE_URL = 'url';
 
     CONST EVENT_AFTER_PAYED = "pay_order_payed";
+    const EVENT_AFTER_RFED = 'pay_refund';
     
     const EVENT_AFTER_UPDATE = 'afterUpdate';
 

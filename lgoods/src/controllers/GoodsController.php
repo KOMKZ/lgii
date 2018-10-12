@@ -25,22 +25,22 @@ class GoodsController extends Controller{
     public function actionHandle($type){
         $t = Yii::$app->db->beginTransaction();
         $notifyData = Yii::$app->request->getBodyParams();
-        $notifyData = '<xml><appid><![CDATA[wxb8e63b3b3196d6a7]]></appid>
+        $notifyData ='<xml><appid><![CDATA[wxb8e63b3b3196d6a7]]></appid>
 <bank_type><![CDATA[CFT]]></bank_type>
 <cash_fee><![CDATA[4]]></cash_fee>
 <fee_type><![CDATA[CNY]]></fee_type>
 <is_subscribe><![CDATA[N]]></is_subscribe>
 <mch_id><![CDATA[1489031722]]></mch_id>
-<nonce_str><![CDATA[b6vidouzm1u2ej5crm37w80xpcek0l4h]]></nonce_str>
+<nonce_str><![CDATA[716sie8echs2xydf6kxtebyq6zq80ylc]]></nonce_str>
 <openid><![CDATA[o82Odw-jLdQsZ1InClRz_3glyR30]]></openid>
-<out_trade_no><![CDATA[TR152018395104108652]]></out_trade_no>
+<out_trade_no><![CDATA[TR122018131110100294]]></out_trade_no>
 <result_code><![CDATA[SUCCESS]]></result_code>
 <return_code><![CDATA[SUCCESS]]></return_code>
-<sign><![CDATA[189DF19A5A6C9D577CAF98F5A172EFB5]]></sign>
-<time_end><![CDATA[20181004154050]]></time_end>
+<sign><![CDATA[8B1FE38F1E6AF0F333FCD913CB5DE0CD]]></sign>
+<time_end><![CDATA[20181010121537]]></time_end>
 <total_fee>4</total_fee>
 <trade_type><![CDATA[NATIVE]]></trade_type>
-<transaction_id><![CDATA[4200000172201810044565783303]]></transaction_id>
+<transaction_id><![CDATA[4200000173201810102615606296]]></transaction_id>
 </xml>';
         $payment = TransModel::getPayment($type);
         try {
@@ -214,13 +214,13 @@ class GoodsController extends Controller{
         $transModel = new TransModel();
         $rfModel = new RfModel();
         $rfData = [
-            'od_num' => "OD152018395104108512",
+            'od_num' => "OD122018131110100873",
             'og_rf_goods_list' => [
                 [
-                    'og_id' => 49
+                    'og_id' => 4
                 ],
                 [
-                    'og_id' => 50
+                    'og_id' => 5
                 ],
             ]
         ];
@@ -239,8 +239,12 @@ class GoodsController extends Controller{
         if(!$trans){
             throw new \Exception(implode(',', $transModel->getFirstErrors()));
         }
+        $order = OrderModel::findOrder()->where(['od_num' => $rf['rf_order_num']])->one();
 
-        $payOrder = $transModel->createRfOrderFromTrans($trans, []);
+        $payOrder = $transModel->createRfOrderFromTrans($trans, [
+            'rf_order_trs_num' => $rf['rf_order_trs_num'],
+            'rf_order_total_fee' => $order['od_price'],
+        ]);
         if(!$payOrder){
             throw new \Exception(implode(',', $transModel->getFirstErrors()));
         }

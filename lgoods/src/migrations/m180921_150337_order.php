@@ -18,6 +18,8 @@ class m180921_150337_order extends Migration
             `od_id` int(10) unsigned not null auto_increment comment '主键',
             `od_pid` int(10) unsigned not null default 0 comment '父订单id',
             `od_num` varchar(255) not null comment '订单编号',
+            `od_pay_num` varchar(255) not null default '' comment '第三方号码',
+            `od_trs_num` varchar(255) not null DEFAULT '' comment '平台交易号码',
             `od_title` varchar(255) not null comment '订单标题',
             `od_belong_uid` int(10) unsigned not null default 0 comment '订单所属用户uid',
             `od_price` int(10) unsigned not null default 0 comment '订单价格',

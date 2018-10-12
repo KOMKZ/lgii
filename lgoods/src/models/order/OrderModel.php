@@ -1,6 +1,7 @@
 <?php
 namespace lgoods\models\order;
 
+use lgoods\models\trans\Trans;
 use Yii;
 use lgoods\models\goods\GoodsModel;
 use yii\base\Model;
@@ -22,6 +23,8 @@ class OrderModel extends Model{
         $order->od_pay_status = Order::PS_PAID;
         $order->od_paid_at = $trans->trs_pay_at;
         $order->od_pay_type = $trans->trs_pay_type;
+        $order->od_pay_num = $trans->trs_pay_num;
+        $order->od_trs_num = $trans->trs_num;
         if(false == $order->update(false)){
             throw new \Exception("订单修改失败");
         }
@@ -35,7 +38,15 @@ class OrderModel extends Model{
     }
 
     public static function findOrderFull(){
-        return Order::find()->with("order_goods_list");
+        $query = Order::find()
+                      ->with("order_goods_list");
+        $tTable = Trans::tableName();
+        $oTable = Order::tableName();
+        $select = ["{$oTable}.*"];
+        $query->leftJoin($tTable, "$tTable.trs_type = :p1 and {$tTable}.trs_target_id = {$oTable}.od_id", [":p1" => Trans::TRADE_ORDER]);
+        $select[] = "{$tTable}.*";
+        $query->select($select);
+        return $query;
     }
 
     public function createOrderFromSkus($orderData){

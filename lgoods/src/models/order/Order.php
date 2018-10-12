@@ -13,7 +13,7 @@ class Order extends ActiveRecord{
     const EVENT_AFTER_PAID = 'order_paid';
 
     public static function tableName(){
-        return "{{%order}}";
+        return "{{%orders}}";
     }
 
     public function behaviors()

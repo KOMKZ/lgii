@@ -64,10 +64,43 @@ class TransModel extends Model
         static::triggerTransPayed($trans, $event);
     }
 
-    public static function ensurePayOrder($payOrder){
+    public static function handleReceiveRfedEvent($event){
+        $payOrder = $event->sender;
+        $trans = static::findTrans()
+            ->andWhere(['=', 'trs_num', $payOrder->pt_belong_trans_number])
+            ->one();
+        if(Trans::TPS_PAID == $trans->trs_pay_status){
+            // 该交易已经支付 记录一下日志即可 todo
+            // Yii::info(["通知得到的数据但是交易已经在平台处于支付状态", $payOrder->toArray()], "trans_payed_repeated")
+            return ;
+        }
+        // 修改交易数据
+        $trans->trs_pay_type = $payOrder->pt_pay_type;
+
+        $trans->trs_pay_status = Trans::TPS_PAID;
+        $trans->trs_pay_at = time();
+        $payment = static::getPayment($payOrder->pt_pay_type);
+
+        $trans->trs_pay_num = $payment->getThirdTransId($payOrder);
+
+        if(false === $trans->update(false)){
+            throw new \Exception(Yii::t('app', "更改交易失败"));
+        }
+
+        // 查找交易所属用户，分发给其他模块
+        $event = new AfterPayedEvent();
+        $event->belongUser = null;
+        $event->payOrder = $payOrder;
+        static::triggerTransPayed($trans, $event);
+    }
+
+    public static function ensurePayOrder($payOrder, $trans){
         if(NPay::NAME == $payOrder['pt_pay_type']){
             static::updatePayOrderPayed($payOrder, ['notification' => []]);
             static::triggerPayed($payOrder);
+        }
+        if($trans['trs_type'] == Trans::TRADE_REFUND){
+            static::triggerRfed($payOrder);
         }
 
     }
@@ -96,7 +129,7 @@ class TransModel extends Model
 
     public function createTransFromRefund($rf, $params = []){
         $trans = new Trans();
-        $trans->trs_type = Trans::TRADE_ORDER;
+        $trans->trs_type = Trans::TRADE_REFUND;
         $trans->trs_target_id = $rf['rf_id'];
         $trans->trs_target_num = $rf['rf_num'];
         $trans->trs_fee = $rf['rf_fee'];
@@ -144,6 +177,10 @@ class TransModel extends Model
         $payOrder->trigger(PayTrace::EVENT_AFTER_PAYED);
     }
 
+    public static function triggerRfed($payOrder){
+        $payOrder->trigger(PayTrace::EVENT_AFTER_RFED);
+    }
+
     public static function updatePayOrderPayed($payOrder, $data){
         if(!empty($data['notification'])){
             $payOrder->third_data = ['pay_succ_notification' => $data['notification']];
@@ -173,35 +210,54 @@ class TransModel extends Model
 
             $payment = static::getPayment($payOrder->pt_pay_type);
             $rfData = [
-                'trans_number' => $payOrder->pt_belong_trans_number,
+                'trans_number' => $data['rf_order_trs_num'],
                 'trans_title' => $trans->trs_title,
-                'trans_total_fee' => $trans->trs_fee,
+                'trans_total_fee' => $data['rf_order_total_fee'],
                 'trans_refund_fee' => $trans->trs_fee,
                 'trans_refund_number' => $trans->trs_target_num,
             ];
-            $refund = $payment->createRefund($rfData);
-            console($refund, $payment->getFirstErrors());
+//            $refundResult = $payment->createRefund($rfData);
+
+            $refundResult = [
+                'appid'               => "wxb8e63b3b3196d6a7",
+                'cash_fee'            => "4",
+                'cash_refund_fee'     => "2",
+                'coupon_refund_count' => "0",
+                'coupon_refund_fee'   => "0",
+                'mch_id'              => "1489031722",
+                'nonce_str'           => "ZN4hPvh4jXX5b6h7",
+                'out_refund_no'       => "RF122018405310103618",
+                'out_trade_no'        => "TR122018131110100294",
+                'refund_channel'      => [],
+                'refund_fee'          => "2",
+                'refund_id'           => "50000008532018101006611285685",
+                'result_code'         => "SUCCESS",
+                'return_code'         => "SUCCESS",
+                'return_msg'          => "OK",
+                'sign'                => "D24E1FBD27FB0D409ED99D0FB4A518C9",
+                'total_fee'           => "4",
+                'transaction_id'      => "4200000173201810102615606296",
+            ];
 
 
-            if(!$thirdPreOrder){
-                $this->addErrors($payment->getErrors());
+            if(!$refundResult){
+                throw new \Exception(implode(',', $payment->getFirstErrors()));
                 return false;
             }
 
-            $payOrder->pt_pre_order = $thirdPreOrder['master_data'];
-            $payOrder->third_data = [
-                'pre_response' => $thirdPreOrder['response']
-            ];
+            $payOrder->pt_pre_order = '';
+            $payOrder->third_data = $refundResult;
+
             if(false === $payOrder->update(false)){
                 $this->addError(Errno::DB_UPDATE_FAIL, Yii::t('app', "修改支付单失败"));
                 return false;
             }
-            static::ensurePayOrder($payOrder);
+            static::ensurePayOrder($payOrder, $trans);
             $t->commit();
             return $payOrder;
         } catch (\Exception $e) {
             $t->rollback();
-            throw new \Exception($e->getMessage());
+            throw $e;
         }
     }
 
@@ -258,7 +314,7 @@ class TransModel extends Model
                 $this->addError(Errno::DB_UPDATE_FAIL, Yii::t('app', "修改支付单失败"));
                 return false;
             }
-            static::ensurePayOrder($payOrder);
+            static::ensurePayOrder($payOrder, $trans);
             $t->commit();
             return $payOrder;
         } catch (\Exception $e) {

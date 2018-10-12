@@ -9,6 +9,7 @@ Yii::setAlias('@lgii', dirname(__DIR__) . "/lgii/src");
 Yii::setAlias('@lgoods', dirname(__DIR__) . '/lgoods/src');
 Event::on("\lgoods\models\goods\GoodsModel", GoodsModel::EVENT_GOODS_CREATE, ["\lgoods\models\goods\GoodsModel", 'handleGoodCreate']);
 Event::on("\lgoods\models\\trans\PayTrace", PayTrace::EVENT_AFTER_PAYED, ["\lgoods\models\\trans\TransModel", "handleReceivePayedEvent"]);
+Event::on("\lgoods\models\\trans\PayTrace", PayTrace::EVENT_AFTER_RFED, ["\lgoods\models\\trans\TransModel", "handleReceiveRfedEvent"]);
 Event::on("\lgoods\models\\trans\Trans", Trans::EVENT_AFTER_PAYED, ["\lgoods\models\order\OrderModel", "handleReceivePayedEvent"]);
 
 
