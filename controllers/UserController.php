@@ -46,7 +46,6 @@ class UserController extends Controller{
         $query = User::getFullInfo($selectFields);
         $query->andWhere(['=', 'u.u_id', '1']);
         $result = $query->all();
-        console($result);
 
 
 	}

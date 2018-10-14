@@ -38,6 +38,13 @@ $components = array_merge([
         ],
     ],
     'db' => $db,
+    'logdb' => [
+        'class' => 'yii\db\Connection',
+        'dsn' => 'mysql:host=localhost;dbname=logdb',
+        'username' => 'root',
+        'password' => '123456',
+        'charset' => 'utf8',
+    ]
 ], $pay);
 
 
@@ -61,7 +68,8 @@ if (1) {
     // configuration adjustments for 'dev' environment
     $config['bootstrap'][] = 'debug';
     $config['modules']['debug'] = [
-        'class' => 'yii\debug\Module',
+        'class' => '\ldebug\Module',
+        'db' => 'logdb'
         // uncomment the following to add your IP if you are not connecting from localhost.
         //'allowedIPs' => ['127.0.0.1', '::1'],
     ];

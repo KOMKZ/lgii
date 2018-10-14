@@ -1,5 +1,6 @@
 <?php
 Yii::setAlias('@lgii', dirname(__DIR__) . "/lgii/src");
+Yii::setAlias('@ldebug', dirname(__DIR__) . "/ldebug/src");
 Yii::setAlias('@lgoods', dirname(__DIR__) . '/lgoods/src');
 $params = require __DIR__ . '/params.php';
 $db = require __DIR__ . '/db.php';
@@ -30,6 +31,13 @@ $config = [
             ],
         ],
         'db' => $db,
+        'logdb' => [
+            'class' => 'yii\db\Connection',
+            'dsn' => 'mysql:host=localhost;dbname=logdb',
+            'username' => 'root',
+            'password' => '123456',
+            'charset' => 'utf8',
+        ]
     ],
     'params' => $params,
     /*
