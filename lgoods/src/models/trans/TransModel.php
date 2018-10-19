@@ -1,6 +1,9 @@
 <?php
 namespace lgoods\models\trans;
 
+use common\models\RefundModel;
+use lgoods\models\order\OrderModel;
+use lgoods\models\refund\RfModel;
 use Yii;
 use yii\base\Model;
 use lgoods\models\trans\Trans;
@@ -57,6 +60,7 @@ class TransModel extends Model
             throw new \Exception(Yii::t('app', "更改交易失败"));
         }
 
+
         // 查找交易所属用户，分发给其他模块
         $event = new AfterPayedEvent();
         $event->belongUser = null;
@@ -65,33 +69,38 @@ class TransModel extends Model
     }
 
     public static function handleReceiveRfedEvent($event){
+
         $payOrder = $event->sender;
         $trans = static::findTrans()
             ->andWhere(['=', 'trs_num', $payOrder->pt_belong_trans_number])
             ->one();
-        if(Trans::TPS_PAID == $trans->trs_pay_status){
-            // 该交易已经支付 记录一下日志即可 todo
-            // Yii::info(["通知得到的数据但是交易已经在平台处于支付状态", $payOrder->toArray()], "trans_payed_repeated")
-            return ;
-        }
+
         // 修改交易数据
         $trans->trs_pay_type = $payOrder->pt_pay_type;
 
         $trans->trs_pay_status = Trans::TPS_PAID;
         $trans->trs_pay_at = time();
         $payment = static::getPayment($payOrder->pt_pay_type);
-
-        $trans->trs_pay_num = $payment->getThirdTransId($payOrder);
+        $trans->trs_pay_num = $payment->getThirdTransId($payOrder, true);
 
         if(false === $trans->update(false)){
             throw new \Exception(Yii::t('app', "更改交易失败"));
         }
-
+        $refund = RfModel::find()->where(['rf_num' => $trans->trs_target_num])->one();
+        if(!$refund){
+            throw new \Exception(Yii::t('app', "退款单不存在"));
+        }
+        $order = OrderModel::findOrder()->where(['od_num' => $refund->rf_order_num])->one();
+        if(!$order){
+            throw new \Exception(Yii::t('app', "订单不存在"));
+        }
         // 查找交易所属用户，分发给其他模块
         $event = new AfterPayedEvent();
         $event->belongUser = null;
         $event->payOrder = $payOrder;
-        static::triggerTransPayed($trans, $event);
+        $event->order = $order;
+        $event->refund = $refund;
+        static::triggerTransRfed($trans, $event);
     }
 
     public static function ensurePayOrder($payOrder, $trans){
@@ -108,6 +117,11 @@ class TransModel extends Model
     public static function triggerTransPayed($trans, $event = null){
         $trans->trigger(Trans::EVENT_AFTER_PAYED, $event);
     }
+
+    public static function triggerTransRfed($trans, $event = null){
+        $trans->trigger(Trans::EVENT_AFTER_RFED, $event);
+    }
+
 
     public function createTransFromOrder($order, $params = []){
         $trans = new Trans();
@@ -217,27 +231,26 @@ class TransModel extends Model
                 'trans_refund_number' => $trans->trs_target_num,
             ];
 //            $refundResult = $payment->createRefund($rfData);
-
-            $refundResult = [
+            $refundResult = array(
                 'appid'               => "wxb8e63b3b3196d6a7",
                 'cash_fee'            => "4",
                 'cash_refund_fee'     => "2",
                 'coupon_refund_count' => "0",
                 'coupon_refund_fee'   => "0",
                 'mch_id'              => "1489031722",
-                'nonce_str'           => "ZN4hPvh4jXX5b6h7",
-                'out_refund_no'       => "RF122018405310103618",
-                'out_trade_no'        => "TR122018131110100294",
+                'nonce_str'           => "UO3ggxCpEr03CP21",
+                'out_refund_no'       => "RF122018264019108458",
+                'out_trade_no'        => "TR112018535719105716",
                 'refund_channel'      => [],
                 'refund_fee'          => "2",
-                'refund_id'           => "50000008532018101006611285685",
+                'refund_id'           => "50000208452018101906746647205",
                 'result_code'         => "SUCCESS",
                 'return_code'         => "SUCCESS",
                 'return_msg'          => "OK",
-                'sign'                => "D24E1FBD27FB0D409ED99D0FB4A518C9",
+                'sign'                => "40C331FC975E34014E322007FC11A61B",
                 'total_fee'           => "4",
-                'transaction_id'      => "4200000173201810102615606296",
-            ];
+                'transaction_id'      => "4200000169201810191219217090",
+            );
 
 
             if(!$refundResult){

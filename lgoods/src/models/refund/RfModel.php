@@ -10,7 +10,9 @@ use yii\helpers\ArrayHelper;
 use lgoods\models\order\AfterPayedEvent;
 
 class RfModel extends Model{
-
+    public static function find(){
+        return RfApplication::find();
+    }
     public function createRefund($data){
         $order = OrderModel::findOrderFull()
                             ->andWhere(['=','od_num', $data['od_num']])

@@ -174,10 +174,16 @@ class Wxpay extends Model
         return call_user_func($callback, $result);
     }
 
-    public function getThirdTransId($payOrder){
+    public function getThirdTransId($payOrder, $isRf = false){
         $thirdData = json_decode($payOrder->pt_third_data);
-        $data = \WxPayResults::Init($thirdData->pay_succ_notification);
-        return $data['transaction_id'];
+
+        if(!$isRf){
+            $data = \WxPayResults::Init($thirdData->pay_succ_notification);
+            return $data['transaction_id'];
+        }else{
+            return $thirdData->refund_id;
+        }
+
     }
 
     public function queryRefund($data){

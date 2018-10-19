@@ -1,6 +1,6 @@
 <?php
- require('/home/lartik/pro/php/composer-global-dep/vendor/digitalnature/php-ref/ref.php');
-//require('/home/master/pro/php/composer-global-dep/vendor/digitalnature/php-ref/ref.php');
+// require('/home/lartik/pro/php/composer-global-dep/vendor/digitalnature/php-ref/ref.php');
+require('/home/master/pro/php/composer-global-dep/vendor/digitalnature/php-ref/ref.php');
 
 // comment out the following two lines when deployed to production
 defined('YII_DEBUG') or define('YII_DEBUG', true);

@@ -13,4 +13,8 @@ class AfterPayedEvent extends Event
 
     public $payOrder = null;
 
+    public $refund = null;
+
+    public $order = null;
+
 }

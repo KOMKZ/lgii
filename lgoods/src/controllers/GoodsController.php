@@ -31,16 +31,16 @@ class GoodsController extends Controller{
 <fee_type><![CDATA[CNY]]></fee_type>
 <is_subscribe><![CDATA[N]]></is_subscribe>
 <mch_id><![CDATA[1489031722]]></mch_id>
-<nonce_str><![CDATA[716sie8echs2xydf6kxtebyq6zq80ylc]]></nonce_str>
+<nonce_str><![CDATA[5qogjzc9roz4thcffib2soxqsx2nkbzm]]></nonce_str>
 <openid><![CDATA[o82Odw-jLdQsZ1InClRz_3glyR30]]></openid>
-<out_trade_no><![CDATA[TR122018131110100294]]></out_trade_no>
+<out_trade_no><![CDATA[TR112018535719105716]]></out_trade_no>
 <result_code><![CDATA[SUCCESS]]></result_code>
 <return_code><![CDATA[SUCCESS]]></return_code>
-<sign><![CDATA[8B1FE38F1E6AF0F333FCD913CB5DE0CD]]></sign>
-<time_end><![CDATA[20181010121537]]></time_end>
+<sign><![CDATA[270736D96C21519427509AABE72E9952]]></sign>
+<time_end><![CDATA[20181019115642]]></time_end>
 <total_fee>4</total_fee>
 <trade_type><![CDATA[NATIVE]]></trade_type>
-<transaction_id><![CDATA[4200000173201810102615606296]]></transaction_id>
+<transaction_id><![CDATA[4200000169201810191219217090]]></transaction_id>
 </xml>';
         $payment = TransModel::getPayment($type);
         try {
@@ -214,13 +214,13 @@ class GoodsController extends Controller{
         $transModel = new TransModel();
         $rfModel = new RfModel();
         $rfData = [
-            'od_num' => "OD122018131110100873",
+            'od_num' => "OD112018535719100732",
             'og_rf_goods_list' => [
                 [
-                    'og_id' => 4
+                    'og_id' => 10
                 ],
                 [
-                    'og_id' => 5
+                    'og_id' => 11
                 ],
             ]
         ];
@@ -248,7 +248,7 @@ class GoodsController extends Controller{
         if(!$payOrder){
             throw new \Exception(implode(',', $transModel->getFirstErrors()));
         }
-        console($trans->toArray());
+        console($trans->toArray(), 1);
     }
 
 
