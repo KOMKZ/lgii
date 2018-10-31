@@ -77,49 +77,35 @@ class GoodsController extends Controller{
         return $this->succItems($provider->getModels(), $provider->totalCount);
     }
 
-
-
-    public function actionRefund(){
-        $t = Yii::$app->db->beginTransaction();
-        $transModel = new TransModel();
-        $rfModel = new RfModel();
-        $rfData = [
-            'od_num' => "OD112018535719100732",
-            'og_rf_goods_list' => [
-                [
-                    'og_id' => 10
-                ],
-                [
-                    'og_id' => 11
-                ],
-            ]
-        ];
-        $rf = $rfModel->createRefund($rfData);
-        if(!$rf){
-            throw new \Exception(implode(',', $rfModel->getFirstErrors()));
+    public function actionView($index){
+        $goodsData = GoodsModel::findWithSkus()
+                    ->andWhere(['=', 'g_id', $index])
+                    ->asArray()
+                    ->all();
+        if(!$goodsData){
+            return $this->notfound();
         }
-        $rf = $rfModel->agreeRefund($rf);
-        if(!$rf){
-            throw new \Exception(implode(',', $rfModel->getFirstErrors()));
-        }
-
-        $trans = $transModel->createTransFromRefund($rf, [
-
-        ]);
-        if(!$trans){
-            throw new \Exception(implode(',', $transModel->getFirstErrors()));
-        }
-        $order = OrderModel::findOrder()->where(['od_num' => $rf['rf_order_num']])->one();
-
-        $payOrder = $transModel->createRfOrderFromTrans($trans, [
-            'rf_order_trs_num' => $rf['rf_order_trs_num'],
-            'rf_order_total_fee' => $order['od_price'],
-        ]);
-        if(!$payOrder){
-            throw new \Exception(implode(',', $transModel->getFirstErrors()));
-        }
-        console($trans->toArray(), 1);
+        return $this->succ($goodsData);
     }
+
+    public function actionCreate(){
+        $t = $this->beginTransaction();
+        try{
+            $postData = Yii::$app->request->getBodyParams();
+            $model = new GoodsModel();
+            $goods = $model->createGoods($postData);
+            if(!$goods){
+                return $this->error(1, $model->getErrors());
+            }
+            $t->commit();
+            return $this->succ($goods->toArray());
+        }catch(\Exception $e){
+            $t->rollback();
+            throw $e;
+        }
+    }
+
+
 
 
 }

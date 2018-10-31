@@ -1,10 +1,8 @@
 <?php
-Yii::setAlias('@lbase', dirname(__DIR__) . '/lbase/src');
-Yii::setAlias('@ldebug', dirname(__DIR__) . "/ldebug/src");
-Yii::setAlias('@lgii', dirname(__DIR__) . "/lgii/src");
-Yii::setAlias('@lgoods', dirname(__DIR__) . '/lgoods/src');
-Yii::setAlias('@lfile', dirname(__DIR__) . '/lfile/src');
-Yii::setAlias('@OSS', dirname(__DIR__) . '/lib/alisdk/OSS');
+use yii\helpers\ArrayHelper;
+require __DIR__ . '/bootstrap.php';
+
+$configLocal = require __DIR__ . '/console-local.php';
 
 $params = require __DIR__ . '/params.php';
 $db = require __DIR__ . '/db.php';

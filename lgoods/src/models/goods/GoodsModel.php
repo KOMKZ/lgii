@@ -50,6 +50,12 @@ class GoodsModel extends Object{
         return $query;
     }
 
+    public static function findWithSkus(){
+        $query = Goods::find()
+                    ->with("goods_skus");
+        return $query;
+    }
+
     public static function findValidSku(){
         $query = static::findSku();
         return $query;
@@ -101,9 +107,19 @@ class GoodsModel extends Object{
     public static function handleGoodCreate($event){
         $goodsData = $event->goodsData;
         $target = $event->object;
+        $model = new static();
+        $goods = $model->createGoods($goodsData);
+        if(!$goods){
+            throw new \Exception(implode(',', $model->getFirstErrors()));
+        }
+    }
+
+
+    public  function createGoods($goodsData){
         $goods = new Goods();
         if(!$goods->load($goodsData, '') || !$goods->validate()){
-            throw new \Exception(implode(",", $goods->getFirstErrors()));
+            $this->addErrors($goods->getErrors());
+            return false;
         }
         $goods->insert(false);
         // 创建sku
@@ -137,6 +153,7 @@ class GoodsModel extends Object{
                 throw new \Exception("创建sku失败");
             }
         }
+        return $goods;
     }
 
     public static function createGoodsSkus($skuListData){

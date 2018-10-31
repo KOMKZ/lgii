@@ -8,6 +8,39 @@ use yii\helpers\ArrayHelper;
 
 class JobController extends Controller{
 
+
+
+    public function actionIndex(){
+        $sql = "
+        select * from user where u_id <= 10;
+        ";
+        $t = Yii::$app->db->beginTransaction();
+        $r = Yii::$app->db->createCommand($sql)->queryAll();
+        print_r($r);
+        sleep(4);
+        $r = Yii::$app->db->createCommand($sql)->queryAll();
+        print_r($r);
+        $t->commit();
+    }
+
+    public function actionA1($value){
+        $sql = "
+        update user set u_name = '{$value}' where u_id = 1;
+        ";
+        $t = Yii::$app->db->beginTransaction();
+        $r = Yii::$app->db->createCommand($sql)->execute();
+        $t->commit();
+    }
+
+    public function actionA2($value){
+        $sql = "
+        insert into user values (null, '{$value}');
+        ";
+        $t = Yii::$app->db->beginTransaction();
+        $r = Yii::$app->db->createCommand($sql)->execute();
+        $t->commit();
+    }
+
     static public $params = [];
     public static function getParams($name){
         if(static::$params){
