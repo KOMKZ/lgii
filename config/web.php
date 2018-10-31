@@ -60,6 +60,21 @@ $components = array_merge([
             ],
         ],
     ],
+    'filedisk' => [
+        'class' => "\\common\models\\file\\drivers\\Disk",
+        'base' => "",
+        'host' => "",
+        "urlRoute" => "",
+        'dirMode' => 0777,
+        'fileMode' => 0777,
+    ],
+    'fileoss' => [
+        'class' => '\\common\models\\file\\drivers\\Oss',
+        'access_key_id' => '',
+        'access_secret_key' => '',
+        'timeout' => 60,
+        'bucket_cans' => [],
+    ],
     'db' => $db,
     'logdb' => [
         'class' => 'yii\db\Connection',

@@ -8,6 +8,8 @@ Yii::setAlias('@lbase', dirname(__DIR__) . '/lbase/src');
 Yii::setAlias('@ldebug', dirname(__DIR__) . "/ldebug/src");
 Yii::setAlias('@lgii', dirname(__DIR__) . "/lgii/src");
 Yii::setAlias('@lgoods', dirname(__DIR__) . '/lgoods/src');
+Yii::setAlias('@lfile', dirname(__DIR__) . '/lfile/src');
+Yii::setAlias('@OSS', '@app/lib/alisdk/OSS');
 
 
 Event::on("\lgoods\models\goods\GoodsModel", GoodsModel::EVENT_GOODS_CREATE, ["\lgoods\models\goods\GoodsModel", 'handleGoodCreate']);
