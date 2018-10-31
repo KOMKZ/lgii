@@ -2,11 +2,10 @@
 namespace lfile\models\ar;
 
 use Yii;
-use common\models\Model;
-use common\helpers\FileHelper;
+use lbase\helpers\FileHelper;
 use lfile\models\FileModel;
 use lfile\models\drivers\Disk;
-use common\models\staticdata\ConstMap;
+use lbase\staticdata\ConstMap;
 use yii\helpers\ArrayHelper;
 use yii\db\ActiveRecord;
 /**

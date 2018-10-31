@@ -61,7 +61,7 @@ $components = array_merge([
         ],
     ],
     'filedisk' => [
-        'class' => "\\common\models\\file\\drivers\\Disk",
+        'class' => "\\lfile\\models\\drivers\\Disk",
         'base' => "",
         'host' => "",
         "urlRoute" => "",
@@ -69,7 +69,7 @@ $components = array_merge([
         'fileMode' => 0777,
     ],
     'fileoss' => [
-        'class' => '\\common\models\\file\\drivers\\Oss',
+        'class' => '\\lfile\\models\\drivers\\Oss',
         'access_key_id' => '',
         'access_secret_key' => '',
         'timeout' => 60,
@@ -96,6 +96,7 @@ $config = [
         'lorder' => '\lgoods\controllers\LorderController',
         'ltrans' => '\lgoods\controllers\LtransController',
         'lrefund' => '\lgoods\controllers\LrefundController',
+        'lfile' => '\lfile\controllers\LfileController',
     ],
     'aliases' => [
         '@bower' => '@vendor/bower-asset',

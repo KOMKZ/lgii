@@ -116,8 +116,8 @@ class FileModel extends Model
 
     public function getFromCategory($type){
         if(empty(static::$globalUploadParams)){
-            static::$globalUploadParams = include(Yii::getAlias("@app/common/config/nm-file-params.php"));
-            $localFile = Yii::getAlias("@app/common/config/nm-file-params-local.php");
+            static::$globalUploadParams = include(Yii::getAlias("@app/config/nm-file-params.php"));
+            $localFile = Yii::getAlias("@app/config/nm-file-params-local.php");
             if(file_exists($localFile)){
                 static::$globalUploadParams = array_merge(
                     static::$globalUploadParams,

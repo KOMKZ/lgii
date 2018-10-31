@@ -1,6 +1,31 @@
 <?php
 
 return [
+
+    'file_task_type' => [
+        \lfile\models\ar\FileTask::TASK_CHUNK_UPLOAD => \Yii::t('app', "文件分片上传任务"),
+    ],
+    'file_task_status' => [
+        \lfile\models\ar\FileTask::STATUS_INIT => \Yii::t('app', '初始化')
+    ],
+
+    'file_save_type' => [
+        \lfile\models\drivers\Disk::NAME => \Yii::t('app', '本地存储'),
+        \lfile\models\drivers\Oss::NAME => \Yii::t('app', 'Oss存储'),
+    ],
+    'file_is_private' => [
+        1 => \Yii::t('app', '私有访问'),
+        0 => \Yii::t('app', '公有访问')
+    ],
+    'file_is_tmp' => [
+        1 => \Yii::t('app', '临时文件'),
+        0 => \Yii::t('app', '永久文件')
+    ],
+    'file_category' => [
+        'test' => '测试文件',
+        'default' => '默认分类'
+    ],
+    /*
 	'u_status' => [
 		\common\models\user\ar\User::STATUS_ACTIVE => Yii::t('app', '可用'),
 		\common\models\user\ar\User::STATUS_NO_AUTH => Yii::t('app', "没有验证"),
@@ -10,28 +35,8 @@ return [
 		\common\models\user\ar\User::NOT_AUTH => Yii::t('app', '未验证'),
 		\common\models\user\ar\User::HAD_AUTH => Yii::t('app', "已验证")
 	],
-	'file_save_type' => [
-		\common\models\file\drivers\Disk::NAME => \Yii::t('app', '本地存储'),
-		\common\models\file\drivers\Oss::NAME => \Yii::t('app', 'Oss存储'),
-	],
-	'file_is_private' => [
-		1 => \Yii::t('app', '私有访问'),
-		0 => \Yii::t('app', '公有访问')
-	],
-	'file_is_tmp' => [
-		1 => \Yii::t('app', '临时文件'),
-		0 => \Yii::t('app', '永久文件')
-	],
-	'file_category' => [
-		'test' => '测试文件',
-		'default' => '默认分类'
-	],
-	'file_task_type' => [
-		\common\models\file\ar\FileTask::TASK_CHUNK_UPLOAD => \Yii::t('app', "文件分片上传任务"),
-	],
-	'file_task_status' => [
-		\common\models\file\ar\FileTask::STATUS_INIT => \Yii::t('app', '初始化')
-	],
+
+
 	'g_status' => [
 		\common\models\goods\ar\Goods::STATUS_DRAFT => \Yii::t('app', "草稿"),
 		\common\models\goods\ar\Goods::STATUS_ON_SALE => \Yii::t('app', "上架"),
@@ -171,6 +176,6 @@ return [
 	,'sms_provider' => [
 		\common\models\sms\ar\Sms::PROVIDER_ALIDY => Yii::t('app', '阿里大于')
 	]
-
+    */
 
 ];

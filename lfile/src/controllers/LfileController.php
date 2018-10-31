@@ -2,7 +2,7 @@
 namespace lfile\controllers;
 
 use Yii;
-use kshopapi\controllers\ApiController as Controller;
+use lbase\Controller;
 use lfile\models\FileModel;
 use lfile\models\query\FileQuery;
 use lfile\models\ar\FileTask;

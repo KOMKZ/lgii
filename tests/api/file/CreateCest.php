@@ -21,7 +21,7 @@ class CreateCest
 
     // tests
     public function tryToTest(ApiTester $I){
-		$I->sendPOST("/file", [
+		$I->sendPOST("/lfile", [
 			'file_category' => 'pub_img',
 		], [
 			'file' => "/home/master/tmp/1.jpg"
