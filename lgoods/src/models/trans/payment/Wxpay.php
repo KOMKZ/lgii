@@ -34,6 +34,9 @@ class Wxpay extends Model
     public $sslkey_path;
 
     public $notifyUrl;
+
+    public $id;
+
     public function init(){
         parent::init();
         WxPayConfig::$APPID = $this->appid;

@@ -26,7 +26,9 @@ class m180923_123821_pay_order extends Migration
             `pt_timeout` int(10) unsigned not null default 0 comment '失效时间',
             `pt_created_at` int(10) unsigned not null comment '创建时间',
             `pt_updated_at` int(10) unsigned not null comment '更新时间',
-            primary key (pt_id)
+            `pt_payment_id` VARCHAR(255) not null comment '支付app-id',
+            primary key (pt_id),
+            index (`pt_belong_trans_id`)
         );
         ";
         $this->execute($createTabelSql);

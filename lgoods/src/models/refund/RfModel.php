@@ -10,6 +10,14 @@ use yii\helpers\ArrayHelper;
 use lgoods\models\order\AfterPayedEvent;
 
 class RfModel extends Model{
+
+    public static function handleReceiveRfedEvent($event){
+        $trans = $event->sender;
+        $payOrder = $event->payOrder;
+        $order = $event->order;
+        $refund = $event->refund;
+    }
+
     public static function find(){
         return RfApplication::find();
     }

@@ -32,7 +32,8 @@ class m181002_154051_refund extends Migration
             `rf_updated_at` int(10) unsigned not null comment '更新时间',
             primary key (`rf_id`),
             index(`rf_order_id`),
-            index(`rf_trans_id`)
+            index(`rf_trans_id`),
+            index(`rf_num`)
         );
         ";
         $this->execute($createTabelSql);

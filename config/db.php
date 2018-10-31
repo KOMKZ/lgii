@@ -6,6 +6,7 @@ return array_merge([
     'username' => 'root',
     'password' => '123456',
     'charset' => 'utf8',
+    'enableSchemaCache' =>  true,
 
     // Schema cache options (for production environment)
     //'enableSchemaCache' => true,

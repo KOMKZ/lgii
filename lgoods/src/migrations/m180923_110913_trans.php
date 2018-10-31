@@ -30,7 +30,8 @@ class m180923_110913_trans extends Migration
             `trs_timeout` int(10) unsigned not null default 0 comment '失效时间',
             `trs_created_at` int(10) unsigned not null comment '创建时间',
             `trs_updated_at` int(10) unsigned not null comment '更新时间',
-            primary key (`trs_id`)
+            primary key (`trs_id`),
+            index (`trs_num`)
         );
         ";
         $this->execute($createTabelSql);

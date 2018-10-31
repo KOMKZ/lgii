@@ -14,10 +14,10 @@ use lgoods\models\trans\Trans;
 use lgoods\models\trans\TransModel;
 use Yii;
 use lgoods\models\goods\GoodsModel;
-use yii\web\Controller;
+use lbase\Controller;
 use yii\base\Event;
 use lgoods\models\goods\GoodsEvent;
-
+use yii\data\ActiveDataProvider;
 
 
 class GoodsController extends Controller{
@@ -70,144 +70,14 @@ class GoodsController extends Controller{
 
 
     public function actionList(){
-        $t = Yii::$app->db->beginTransaction();
-
-        $courseListData = [
-            [
-                'course_title' => '安全防爆电器1',
-                'course_id' => 1,
-                'module' => 'cour',
-                'course_created_at' => time(),
-                'course_updated_at' => time(),
-                'price_items' => [
-                    ['version' => 1, 'ext_serv' => 0, 'price' => 1, 'is_master' => 1],
-                    ['version' => 2, 'ext_serv' => 0, 'price' => 1],
-                    ['version' => 1, 'ext_serv' => 1, 'price' => 1],
-                    ['version' => 2, 'ext_serv' => 1, 'price' => 1],
-                ]
-            ],
-            [
-                'course_title' => '安全防爆电器2',
-                'course_id' => 1,
-                'module' => 'cour',
-                'course_created_at' => time(),
-                'course_updated_at' => time(),
-                'price_items' => [
-                    ['version' => 1, 'ext_serv' => 0, 'price' => 1, 'is_master' => 1],
-                    ['version' => 2, 'ext_serv' => 0, 'price' => 1],
-                    ['version' => 1, 'ext_serv' => 1, 'price' => 1],
-                    ['version' => 2, 'ext_serv' => 1, 'price' => 1],
-                ]
-            ]
-        ];
-        foreach($courseListData as $courseData){
-            $course = new \app\models\Course();
-            $course->load($courseData, '');
-            GoodsModel::triggerGoodsCreate($course, [
-                'g_name' => $courseData['course_title'],
-                'g_sid' => $courseData['course_id'],
-                'g_stype' => $courseData['module'],
-                'price_items' => $courseData['price_items'],
-            ]);
-        }
-        console(1);
+        $query = GoodsModel::findGoodsWithMSku();
+        $provider = new ActiveDataProvider([
+            'query' => $query->asArray(),
+        ]);
+        return $this->succItems($provider->getModels(), $provider->totalCount);
     }
 
-    public function actionCreate(){
-        $t = Yii::$app->db->beginTransaction();
-        $courseData = [
-            'course_title' => '安全防爆电器',
-            'course_id' => 1,
-            'module' => 'cour',
-            'course_created_at' => time(),
-            'course_updated_at' => time(),
-            'price_items' => [
-                ['version' => 1, 'ext_serv' => 0, 'price' => 1, 'is_master' => 1],
-                ['version' => 2, 'ext_serv' => 0, 'price' => 1],
-                ['version' => 1, 'ext_serv' => 1, 'price' => 1],
-                ['version' => 2, 'ext_serv' => 1, 'price' => 1],
-            ]
-        ];
-        $course = new \app\models\Course();
-        $course->load($courseData, '');
 
-        GoodsModel::triggerGoodsCreate($course, [
-            'g_name' => $courseData['course_title'],
-            'g_sid' => $courseData['course_id'],
-            'g_stype' => $courseData['module'],
-            'price_items' => $courseData['price_items'],
-        ]);
-        $sku = GoodsModel::getSkuFromGIndex($course, ['version' => 1, 'ext_serv' => 0]);
-        $skus = GoodsModel::getSkusFromGoods($course);
-        $orderModel = new OrderModel();
-        $orderData = [
-            [
-                'og_sku_id' => $skus[0]['sku_id'],
-                'og_total_num' => 1,
-                'discount_params' => [],
-            ],
-            [
-                'og_sku_id' => $skus[1]['sku_id'],
-                'og_total_num' => 1,
-                'discount_params' => []
-            ],
-            [
-                'og_sku_id' => $skus[2]['sku_id'],
-                'og_total_num' => 2,
-                'discount_params' => []
-            ]
-        ];
-
-
-        $order = $orderModel->createOrderFromSkus($orderData);
-        if(!$order){
-            throw new \Exception(implode(',', $orderModel->getFirstErrors()));
-        }
-        $orderArray = OrderModel::findOrderFull()->andWhere(['=', 'od_id', $order['od_id']])->asArray()->one();
-
-
-        $transModel = new TransModel();
-        $trans = $transModel->createTransFromOrder($order, [
-            'trs_timeout' => 500,
-            'trs_content' => ''
-        ]);
-        if(!$trans){
-            throw new \Exception(implode(',', $transModel->getFirstErrors()));
-        }
-
-        $params = [
-            'pt_pay_type' => 'wxpay',
-            'pt_pre_order_type' => 'url',
-        ];
-        $payOrder = $transModel->createPayOrderFromTrans($trans, $params);
-        if(!$payOrder){
-            throw new \Exception(implode(',', $transModel->getFirstErrors()));
-        }
-        $t->commit();
-
-        console($payOrder->toArray(), $orderArray);
-        // npay是直接付款成功的
-        $rfModel = new RfModel();
-        /*
-        $rfData = [
-            'od_num' => $orderArray['od_num'],
-            'og_rf_goods_list' => [
-                [
-                    'og_id' => $orderArray['order_goods_list'][0]['og_id']
-                ],
-                [
-                    'og_id' => $orderArray['order_goods_list'][1]['og_id']
-                ],
-            ]
-        ];
-        */
-
-
-
-
-
-
-    }
 
     public function actionRefund(){
         $t = Yii::$app->db->beginTransaction();

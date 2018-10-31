@@ -12,6 +12,7 @@ use lgoods\models\trans\payment\Wxpay;
 use lgoods\models\trans\payment\NPay;
 use lgoods\models\trans\payment\Alipay;
 use lgoods\models\trans\AfterPayedEvent;
+use yii\helpers\ArrayHelper;
 
 /**
  *
@@ -52,7 +53,7 @@ class TransModel extends Model
 
         $trans->trs_pay_status = Trans::TPS_PAID;
         $trans->trs_pay_at = time();
-        $payment = static::getPayment($payOrder->pt_pay_type);
+        $payment = static::getPayment($payOrder->pt_pay_type, $payOrder->pt_payment_id);
 
         $trans->trs_pay_num = $payment->getThirdTransId($payOrder);
 
@@ -68,6 +69,8 @@ class TransModel extends Model
         static::triggerTransPayed($trans, $event);
     }
 
+
+
     public static function handleReceiveRfedEvent($event){
 
         $payOrder = $event->sender;
@@ -80,7 +83,7 @@ class TransModel extends Model
 
         $trans->trs_pay_status = Trans::TPS_PAID;
         $trans->trs_pay_at = time();
-        $payment = static::getPayment($payOrder->pt_pay_type);
+        $payment = static::getPayment($payOrder->pt_pay_type, $payOrder->pt_payment_id);
         $trans->trs_pay_num = $payment->getThirdTransId($payOrder, true);
 
         if(false === $trans->update(false)){
@@ -167,16 +170,35 @@ class TransModel extends Model
         return Trans::find();
     }
 
+    public static function findTransWithPayedTrace(){
+        $ptTable = PayTrace::tableName();
+        $tTable = Trans::tableName();
+        return Trans::find()
+                      ->select([
+                          "{$ptTable}.*",
+                          "{$tTable}.*",
+                      ])
+                      ->leftJoin($ptTable, "{$ptTable}.pt_belong_trans_id = {$tTable}.trs_id");
+    }
+
     protected static function buildTradeNumber(){
         list($time, $millsecond) = explode('.', microtime(true));
         $string = sprintf("TR%s%04d", date("HYisdm", $time), $millsecond);
         return $string;
     }
 
-    public static function getPayment($type){
+    public static function getPayment($type, $appId = null){
         switch ($type) {
             case Wxpay::NAME:
-                return Yii::$app->wxpay;
+                if($appId == 'wxpay'){
+                    return Yii::$app->wxpay;
+                }elseif($appId == 'wxpay_app'){
+                    return Yii::$app->wxpay_app;
+                }else{
+                    throw new \Exception("appid错误");
+                }
+            case "wxpay_app":
+                return Yii::$app->wxpay_app;
             case Alipay::NAME:
                 return Yii::$app->alipay;
             case NPay::NAME:
@@ -208,6 +230,10 @@ class TransModel extends Model
     public function createRfOrderFromTrans($trans, $data){
         $t = Yii::$app->db->beginTransaction();
         try {
+            $oldTrans = static::findTransWithPayedTrace()
+                            ->andWhere(['=', 'trs_num', $data['rf_order_trs_num']])
+                            ->asArray()
+                            ->one();
             $payOrder = new PayTrace();
             $payOrder->pt_pay_type = $trans['trs_pay_type'];
             $payOrder->pt_pre_order = '';
@@ -222,7 +248,7 @@ class TransModel extends Model
             $payOrder->insert(false);
 
 
-            $payment = static::getPayment($payOrder->pt_pay_type);
+            $payment = static::getPayment($payOrder->pt_pay_type, $oldTrans['pt_payment_id']);
             $rfData = [
                 'trans_number' => $data['rf_order_trs_num'],
                 'trans_title' => $trans->trs_title,
@@ -230,7 +256,8 @@ class TransModel extends Model
                 'trans_refund_fee' => $trans->trs_fee,
                 'trans_refund_number' => $trans->trs_target_num,
             ];
-//            $refundResult = $payment->createRefund($rfData);
+            $refundResult = $payment->createRefund($rfData);
+            /*
             $refundResult = array(
                 'appid'               => "wxb8e63b3b3196d6a7",
                 'cash_fee'            => "4",
@@ -251,6 +278,7 @@ class TransModel extends Model
                 'total_fee'           => "4",
                 'transaction_id'      => "4200000169201810191219217090",
             );
+            */
 
 
             if(!$refundResult){
@@ -288,6 +316,7 @@ class TransModel extends Model
             $payOrder->pt_status = PayTrace::STATUS_INIT;
             $payOrder->pt_third_data = '';
             $payOrder->pt_belong_trans_id = $trans['trs_id'];
+            $payOrder->pt_payment_id = ArrayHelper::getValue($data, 'pt_payment_id', '');
 
             if(empty($data['pt_timeout'])){
                 $payOrder->pt_timeout = $trans->trs_timeout;
@@ -301,7 +330,7 @@ class TransModel extends Model
             $payOrder->insert(false);
 
 
-            $payment = static::getPayment($payOrder->pt_pay_type);
+            $payment = static::getPayment($payOrder->pt_pay_type, $payOrder->pt_payment_id);
             $payData = [
                 'trans_invalid_at' => $payOrder->pt_timeout + time(),
                 'trans_start_at' => time(),
@@ -313,13 +342,13 @@ class TransModel extends Model
             ];
 
             $thirdPreOrder = $payment->createOrder($payData, static::$map[$payOrder->pt_pay_type][$payOrder->pt_pre_order_type]);
-
             if(!$thirdPreOrder){
                 $this->addErrors($payment->getErrors());
                 return false;
             }
 
-            $payOrder->pt_pre_order = $thirdPreOrder['master_data'];
+            $payOrder->pt_pre_order = is_array($thirdPreOrder['master_data']) ? json_encode($thirdPreOrder['master_data']) :
+                                        $thirdPreOrder['master_data'];
             $payOrder->third_data = [
                 'pre_response' => $thirdPreOrder['response']
             ];

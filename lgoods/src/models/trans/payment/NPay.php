@@ -9,16 +9,19 @@ use yii\base\Model;
 class NPay extends Model{
     CONST NAME = 'npay';
     CONST MODE_ALL = 'all';
+    public $id = "npay";
 
     public function createOrder($data, $type){
         return [
-            'master_data' => "npay dont have master data",
-            'response' => "npay dont have reponse",
+            'master_data' => "",
+            'response' => "",
         ];
     }
-
+    public function createRefund($data){
+        return [""];
+    }
     public function getThirdTransId($payOrder){
-        return 'npay dont dont have thrid id';
+        return '';
     }
 
 }

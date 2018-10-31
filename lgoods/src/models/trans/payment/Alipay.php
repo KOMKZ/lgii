@@ -25,6 +25,8 @@ class Alipay extends Model
 	public $returnUrl = '';
 	public $orderTimeOut = '30m';
 	private $_aopClient = null;
+	public $id;
+
 	public function init(){
 		$this->_aopClient = new \AopClient();
 		$this->_aopClient->gatewayUrl = $this->gatewayUrl;

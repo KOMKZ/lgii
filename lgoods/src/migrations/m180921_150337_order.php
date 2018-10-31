@@ -28,7 +28,8 @@ class m180921_150337_order extends Migration
             `od_pay_type` char(5) not null default '' comment '支付方式',
             `od_created_at` int(10) unsigned not null comment '创建时间',
             `od_updated_at` int(10) unsigned not null comment '更新时间',
-            primary key (`od_id`)
+            primary key (`od_id`),
+            index (`od_num`)
         );
         ";
         $this->execute($createTabelSql);

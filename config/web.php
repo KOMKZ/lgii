@@ -20,7 +20,30 @@ $components = array_merge([
     'errorHandler' => [
         'errorAction' => 'site/error',
     ],
+    'urlManager' => [
+        'enablePrettyUrl' => true,
+        'showScriptName' => false,
+        'rules' => [
+            'OPTIONS <route:.*>' => "site/index",
+            'trans_notification/<type:.*?>' => 'trans/notify',
+            'file/output' => 'file/output',
 
+
+            'GET <controller:[\w\-:]+>/<index:[^\/]+>/<sub:[\w\-:]+>/<sub_index:[^\/]+>/?' => "<controller>/view-<sub>",
+            'PUT <controller:[\w\-:]+>/<index:[^\/]+>/<sub:[\w\-:]+>/<sub_index:[^\/]+>/?' => "<controller>/update-<sub>",
+            'GET <controller:[\w\-:]+>/<index:[^\/]+>/?' => "<controller>/view",
+            'GET <controller:[\w\-:]+>/?' => "<controller>/list",
+            'GET <controller:[\w\-:]+>/<index:[^\/]+>/<sub:[\w\-:]+>/?' => "<controller>/list-<sub>",
+            'POST <controller:[\w\-:]+>/<index:[^\/]+>/<sub:[\w\-:]+>/?' => '<controller>/create-<sub>',
+            'POST <controller:[\w\-:]+>/?' => "<controller>/create",
+            'PUT <controller:[\w\-:]+>/<index:[^\/]+>/?' => '<controller>/update'
+
+        ],
+    ],
+    'response' => [
+        'format' => yii\web\Response::FORMAT_JSON,
+        'charset' => 'UTF-8',
+    ],
     'mailer' => [
         'class' => 'yii\swiftmailer\Mailer',
         // send all mails to a file by default. You have to set
@@ -55,6 +78,9 @@ $config = [
     'timeZone'=>'Asia/Shanghai',
     'controllerMap' => [
         'goods' => '\lgoods\controllers\GoodsController',
+        'lorder' => '\lgoods\controllers\LorderController',
+        'ltrans' => '\lgoods\controllers\LtransController',
+        'lrefund' => '\lgoods\controllers\LrefundController',
     ],
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
@@ -68,8 +94,7 @@ if (1) {
     // configuration adjustments for 'dev' environment
     $config['bootstrap'][] = 'debug';
     $config['modules']['debug'] = [
-        'class' => '\ldebug\Module',
-        'db' => 'logdb'
+        'class' => '\yii\debug\Module',
         // uncomment the following to add your IP if you are not connecting from localhost.
         //'allowedIPs' => ['127.0.0.1', '::1'],
     ];
