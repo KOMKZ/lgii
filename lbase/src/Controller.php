@@ -16,11 +16,22 @@ class Controller extends BaseController
             'message' => null
         ];
     }
-
+    public function checkDataIsArray($data){
+        foreach($data as $key => $value){
+            if(!is_numeric($key)){
+                return false;
+            }
+        }
+        return true;
+    }
 
     public function notfound($error = null){
         return $this->error(404, $error ? $error : Yii::t('app', '数据不存在'));
     }
+    public function errorParams($error = null){
+        return $this->error(500, $error ? $error : Yii::t('app', '参数错误'));
+    }
+
     public function succItems($items, $count = null){
         $res = $this->getRes();
         $res['data'] = [

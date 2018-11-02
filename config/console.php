@@ -4,10 +4,9 @@ require __DIR__ . '/bootstrap.php';
 
 $configLocal = require __DIR__ . '/console-local.php';
 
-$params = require __DIR__ . '/params.php';
-$db = require __DIR__ . '/db.php';
+$params = [];
 
-$config = [
+$config = ArrayHelper::merge([
     'id' => 'basic-console',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
@@ -32,7 +31,18 @@ $config = [
                 ],
             ],
         ],
-        'db' => $db,
+        'db' => [
+            'class' => 'yii\db\Connection',
+            'dsn' => 'mysql:host=localhost;dbname=yii2pro',
+            'username' => 'root',
+            'password' => '123456',
+            'charset' => 'utf8',
+            'enableSchemaCache' =>  true,
+            // Schema cache options (for production environment)
+            //'enableSchemaCache' => true,
+            //'schemaCacheDuration' => 60,
+            //'schemaCache' => 'cache',
+        ],
         'logdb' => [
             'class' => 'yii\db\Connection',
             'dsn' => 'mysql:host=localhost;dbname=logdb',
@@ -49,7 +59,7 @@ $config = [
         ],
     ],
     */
-];
+], $configLocal);
 
 if (YII_ENV_DEV) {
     // configuration adjustments for 'dev' environment
