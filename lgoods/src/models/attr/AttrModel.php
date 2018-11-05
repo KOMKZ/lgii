@@ -79,7 +79,7 @@ class AttrModel extends Model{
         return $query;
     }
 
-    public function creaetAttrCollectAssign($collect, $aids){
+    public function createAttrCollectAssign($collect, $aids){
         $data = [];
         foreach($aids as $aid){
             $data[] = [$collect->ac_id, $aid];
@@ -88,6 +88,17 @@ class AttrModel extends Model{
             'ac_id',
             'a_id'
         ], $data)->execute();
+
+    }
+
+    public function createObjectCollectAssign($data){
+        $OCMap = new OCMap();
+        if(!$OCMap->load($data, '') || !$OCMap->validate()){
+            $this->addErrors($OCMap->getErrors());
+            return false;
+        }
+        $OCMap->insert(false);
+        return $OCMap;
 
     }
 

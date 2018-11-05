@@ -14,6 +14,12 @@ class OCMap extends ActiveRecord{
         return "{{%object_collect_map}}";
     }
 
-
+    public function rules(){
+        return [
+            ['ac_id', 'required']
+            ,['ocm_object_id', 'required']
+            ,['ocm_object_type', 'required']
+        ];
+    }
 
 }

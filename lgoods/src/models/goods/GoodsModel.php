@@ -7,6 +7,8 @@
  */
 namespace lgoods\models\goods;
 
+use lgoods\models\attr\AttrModel;
+use lgoods\models\attr\Option;
 use Yii;
 use yii\base\Object;
 use lgoods\models\goods\GoodsEvent;
@@ -53,6 +55,13 @@ class GoodsModel extends Object{
     public static function findWithSkus(){
         $query = Goods::find()
                     ->with("goods_skus");
+        return $query;
+    }
+
+    public static function findFull(){
+        $query = Goods::find()
+            ->with("goods_skus")
+            ->with('g_attrs');
         return $query;
     }
 
@@ -114,6 +123,33 @@ class GoodsModel extends Object{
         }
     }
 
+    public function createGoodsOptions($goods, $options){
+        $option = new Option();
+        $insertData = [];
+        foreach($options as $key => $optionData){
+            if(!$option->load($optionData, '') || !$option->validate()){
+                $this->addError("", $key . ":" . implode(',', $option->getFirstErrors()));
+                return false;
+            }
+            $insertData[] = [
+                'opt_name' => $option->opt_name,
+                'opt_attr_id' => $option->opt_attr_id,
+                'opt_object_id' => $goods->g_id,
+                'opt_object_type' => Option::OBJECT_TYPE_GOODS,
+                'opt_created_at' => time(),
+                'opt_updated_at' => time()
+            ];
+        }
+        return Yii::$app->db->createCommand()
+            ->batchInsert(Option::tableName(), [
+                'opt_name',
+                'opt_attr_id',
+                'opt_object_id',
+                'opt_object_type',
+                'opt_created_at',
+                'opt_updated_at',
+            ], $insertData)->execute();
+    }
 
     public  function createGoods($goodsData){
         $goods = new Goods();
@@ -122,8 +158,26 @@ class GoodsModel extends Object{
             return false;
         }
         $goods->insert(false);
-        // 创建sku
+        if(!empty($goodsData['g_options'])){
+            $attrs = $this->createGoodsOptions($goods, $goodsData['g_options']);
+            if(false === $attrs){
+                return false;
+            }
+        }
+        if(!empty($goodsData['ac_id'])){
+            $attrModel = new AttrModel();
+            $ocmap = $attrModel->createObjectCollectAssign([
+                'ac_id' => $goodsData['ac_id']
+                ,'ocm_object_id' => $goods->g_id
+                ,'ocm_object_type' => Option::OBJECT_TYPE_GOODS
+            ]);
+            if(!$ocmap){
+                $this->addErrors($attrModel->getErrors());
+                return false;
+            }
 
+        }
+        // 创建sku
         if(!empty($goodsData['price_items'])){
             $skuData = [];
             $hasMaster = 0;

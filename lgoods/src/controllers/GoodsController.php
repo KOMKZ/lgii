@@ -70,7 +70,7 @@ class GoodsController extends Controller{
 
 
     public function actionList(){
-        $query = GoodsModel::findGoodsWithMSku();
+        $query = GoodsModel::findFull();
         $provider = new ActiveDataProvider([
             'query' => $query->asArray(),
         ]);
@@ -78,7 +78,7 @@ class GoodsController extends Controller{
     }
 
     public function actionView($index){
-        $goodsData = GoodsModel::findWithSkus()
+        $goodsData = GoodsModel::findFull()
                     ->andWhere(['=', 'g_id', $index])
                     ->asArray()
                     ->all();

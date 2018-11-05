@@ -11,8 +11,7 @@ namespace lgoods\controllers;
 use lgoods\models\attr\AttrModel;
 use Yii;
 use lbase\Controller;
-
-
+use yii\data\ActiveDataProvider;
 
 
 class LcollectController extends Controller{
@@ -28,6 +27,13 @@ class LcollectController extends Controller{
         return $this->succ($collect);
     }
 
+    public function actionList(){
+        $query = AttrModel::findFullCollect();
+        $provider = new ActiveDataProvider([
+            'query' => $query->asArray(),
+        ]);
+        return $this->succItems($provider->getModels(), $provider->totalCount);
+    }
 
     public function actionCreate(){
         $t = $this->beginTransaction();
@@ -52,7 +58,7 @@ class LcollectController extends Controller{
                 return $this->errorParams();
             }
             // 注入属性
-            $count = $model->creaetAttrCollectAssign($collect, $aids);
+            $count = $model->createAttrCollectAssign($collect, $aids);
             if(false === $count){
                 return $this->error(1, $model->getErrors());
             }
