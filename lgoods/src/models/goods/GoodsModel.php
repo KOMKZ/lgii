@@ -7,6 +7,7 @@
  */
 namespace lgoods\models\goods;
 
+use lgoods\models\attr\Attr;
 use lgoods\models\attr\AttrModel;
 use lgoods\models\attr\Option;
 use Yii;
@@ -20,6 +21,95 @@ use yii\helpers\ArrayHelper;
 class GoodsModel extends Object{
 
     CONST EVENT_GOODS_CREATE = 'goods_create';
+    public static function getDefaultGoodsFieldParams(){
+        return [
+            'g_attr_level' => 'all'
+        ];
+    }
+    public static function formatOneGoods($data, $params = []){
+        $params = array_merge(static::getDefaultGoodsFieldParams(), $params);
+        if(!empty($params['g_attr_level'])){
+            $attrs = empty($params['attrs']) ? static::getGoodsListAttrs([$data['g_id']], $params) : $params['attrs'];
+            $data['g_attrs'] = isset($attrs[$data['g_id']]) ? $attrs[$data['g_id']] : [];
+        }else{
+            $data['g_attrs'] = [];
+        }
+        return $data;
+    }
+    public static function formatGoods($dataList, $params = []){
+        if(!empty($params['g_attr_level'])){
+            $gids = [];
+            foreach($dataList as $item){
+                $gids[] = $item['g_id'];
+            }
+            $params['attrs'] = static::getGoodsListAttrs($gids, $params);
+        }
+        foreach($dataList as $key => &$data){
+            $data = static::formatOneGoods($data, $params);
+        }
+        return $dataList;
+    }
+
+    public static function getGoodsListAttrs($gids, $params){
+        $level = ArrayHelper::getValue($params, 'g_attr_level', '');
+        $levelMap = [
+            'long' => Attr::A_TYPE_FULL_TEXT,
+            'sku' => Attr::A_TYPE_SKU,
+            'short' => Attr::A_TYPE_NORMAL,
+        ];
+
+        $aTable = Attr::tableName();
+        $optTable = Option::tableName();
+        $query = Option::find()
+            ->select([
+                "{$aTable}.a_id",
+                "{$aTable}.a_name",
+                "{$optTable}.opt_id",
+                "{$optTable}.opt_name",
+                "{$optTable}.opt_object_id"
+            ])
+            ->leftJoin($aTable, "{$aTable}.a_id = {$optTable}.opt_attr_id")
+            ->andWhere(['in', 'opt_object_id', $gids])
+            ->andWhere(['=', 'opt_object_type', Option::OBJECT_TYPE_GOODS ])
+            ->asArray()
+            ;
+        if($level != 'all' && isset($levelMap[$level])){
+            $query->andWhere(['=', 'a_type', $levelMap[$level]]);
+        }
+        $result = $query->all();
+        $attrList = [];
+        $map = [];
+        foreach($result as $item){
+            $gid = $item['opt_object_id'];
+            $aid = $item['a_id'];
+            $num = 0;
+            if(!isset($attrList[$gid])) {
+                $attrList[$gid] = [];
+                $map[$gid] = [];
+            }
+            if(!isset($map[$gid][$aid])){
+                $num = count($map[$gid]);
+                $attrList[$gid][$num] = [
+                    'values' => [],
+                    'a_name' => $item['a_name'],
+                    'a_id' => $aid,
+                ];
+                $map[$gid][$aid] = $num;
+            }
+            $index = $map[$gid][$aid];
+
+            $attrList[$gid][$index]['values'][] = [
+                'opt_id' => $item['opt_id'],
+                'opt_name' => $item['opt_name']
+            ];
+        }
+        return $attrList;
+
+    }
+
+
+
+
 
     public static function getSkuFromGIndex(GoodsInterface $target, $params){
         $query = static::findSku();
@@ -60,8 +150,7 @@ class GoodsModel extends Object{
 
     public static function findFull(){
         $query = Goods::find()
-            ->with("goods_skus")
-            ->with('g_attrs');
+            ->with("goods_skus");
         return $query;
     }
 

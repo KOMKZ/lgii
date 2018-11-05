@@ -23,9 +23,19 @@ class CreateCest
             'attrs' => [
                 [
                     'a_name' => '尺寸',
+                    'a_type' => 2,
                 ],
                 [
                     'a_name' => '颜色',
+                    'a_type' => 2
+                ],
+                [
+                    'a_name' => '产地',
+                    'a_type' => 3
+                ],
+                [
+                    'a_name' => '细节介绍',
+                    'a_type' => 1
                 ]
             ]
         ]);
@@ -61,6 +71,8 @@ class CreateCest
                 ['opt_name' => '42', 'opt_attr_id' => $attrs[0]['a_id']],
                 ['opt_name' => '黄色', 'opt_attr_id' => $attrs[1]['a_id']],
                 ['opt_name' => '黑色', 'opt_attr_id' => $attrs[1]['a_id']],
+                ['opt_name' => '法国', 'opt_attr_id' => $attrs[2]['a_id']],
+                ['opt_name' => '这里本来是一串富文本介绍的', 'opt_attr_id' => $attrs[3]['a_id']],
             ],
             'price_items' => [
                 ['version' => 1, 'ext_serv' => 0, 'price' => 1, 'is_master' => 1],
@@ -77,7 +89,9 @@ class CreateCest
         $data = $res['data'];
 
 
-        $i->sendGET("/goods/" . $data['g_id']);
+        $i->sendGET("/goods/" . $data['g_id'], [
+            'g_attr_level' => 'sku'
+        ]);
         $i->seeResponseCodeIs(200);
         $i->seeResponseContainsJson([
             'code' => 0

@@ -70,21 +70,25 @@ class GoodsController extends Controller{
 
 
     public function actionList(){
+        $getData = Yii::$app->request->get();
         $query = GoodsModel::findFull();
         $provider = new ActiveDataProvider([
             'query' => $query->asArray(),
         ]);
-        return $this->succItems($provider->getModels(), $provider->totalCount);
+        $items = GoodsModel::formatGoods($provider->getModels(), $getData);
+        return $this->succItems($items, $provider->totalCount);
     }
 
     public function actionView($index){
+        $getData = Yii::$app->request->get();
         $goodsData = GoodsModel::findFull()
                     ->andWhere(['=', 'g_id', $index])
                     ->asArray()
-                    ->all();
+                    ->one();
         if(!$goodsData){
             return $this->notfound();
         }
+        $goodsData = GoodsModel::formatOneGoods($goodsData, $getData);
         return $this->succ($goodsData);
     }
 

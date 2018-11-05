@@ -17,7 +17,10 @@ class ListCest
     // tests
     public function tryToTest(ApiTester $i)
     {
-        $i->sendGET("/goods");
+        $i->sendGET("/goods", [
+            'g_attr_level' => 'all',
+            'per-page' => 100
+        ]);
         $i->seeResponseCodeIs(200);
         $i->seeResponseContainsJson([
             'code' => 0

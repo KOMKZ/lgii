@@ -22,4 +22,20 @@ class OCMap extends ActiveRecord{
         ];
     }
 
+    public function getC_attrs(){
+        $acMap = ACMap::tableName();
+        $aMap = Attr::tableName();
+        return $this->hasMany(ACMap::class, [
+            'ac_id' => 'ac_id'
+        ])
+            ->select([
+                "{$aMap}.a_name",
+                "{$acMap}.a_id",
+                "{$acMap}.ac_id",
+                "{$aMap}.a_id",
+            ])
+            ->leftJoin($aMap, "{$aMap}.a_id = {$acMap}.a_id")
+            ;
+    }
+
 }

@@ -28,21 +28,15 @@ class Goods extends ActiveRecord{
         ];
     }
 
-    public function getG_attrs(){
-        $attrTable = Attr::tableName();
-        $optTable = Option::tableName();
-        $query = $this->hasMany(Option::class, [
-            'opt_object_id' => 'g_id'
+
+
+
+    public function getG_collect(){
+        $query = $this->hasOne(OCMap::class, [
+            'ocm_object_id' => 'g_id',
         ])
-            ->leftJoin($attrTable, "{$attrTable}.a_id = {$optTable}.opt_attr_id")
-            ->select([
-                'opt_object_id',
-                'opt_object_type',
-                'opt_attr_id',
-                "{$attrTable}.a_name"
-            ])
-            ->andWhere(['=', 'opt_object_type', Option::OBJECT_TYPE_GOODS])
-            ->groupBy('opt_attr_id')
+            ->with("c_attrs")
+        ->andWhere(['=', 'ocm_object_type', Option::OBJECT_TYPE_GOODS])
             ;
         return $query;
     }
