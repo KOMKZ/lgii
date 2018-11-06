@@ -11,6 +11,7 @@ use lgoods\models\attr\Attr;
 use lgoods\models\attr\AttrModel;
 use lgoods\models\attr\Option;
 use Yii;
+use yii\base\Model;
 use yii\base\Object;
 use lgoods\models\goods\GoodsEvent;
 use yii\base\Event;
@@ -18,7 +19,7 @@ use lgoods\models\goods\Goods;
 use lgoods\models\goods\GoodsSku;
 use yii\helpers\ArrayHelper;
 
-class GoodsModel extends Object{
+class GoodsModel extends Model{
 
     CONST EVENT_GOODS_CREATE = 'goods_create';
     public static function getDefaultGoodsFieldParams(){
@@ -49,7 +50,10 @@ class GoodsModel extends Object{
         }
         return $dataList;
     }
-
+    public static function getGoodsAttrs($gid, $params){
+        $attrs = static::getGoodsListAttrs([$gid], $params);
+        return isset($attrs[$gid]) ? $attrs[$gid] : [];
+    }
     public static function getGoodsListAttrs($gids, $params){
         $level = ArrayHelper::getValue($params, 'g_attr_level', '');
         $levelMap = [
@@ -66,6 +70,7 @@ class GoodsModel extends Object{
                 "{$aTable}.a_name",
                 "{$optTable}.opt_id",
                 "{$optTable}.opt_name",
+                "{$optTable}.opt_value",
                 "{$optTable}.opt_object_id"
             ])
             ->leftJoin($aTable, "{$aTable}.a_id = {$optTable}.opt_attr_id")
@@ -73,7 +78,7 @@ class GoodsModel extends Object{
             ->andWhere(['=', 'opt_object_type', Option::OBJECT_TYPE_GOODS ])
             ->asArray()
             ;
-        if($level != 'all' && isset($levelMap[$level])){
+        if(($level != 'all') && isset($levelMap[$level])){
             $query->andWhere(['=', 'a_type', $levelMap[$level]]);
         }
         $result = $query->all();
@@ -100,7 +105,8 @@ class GoodsModel extends Object{
 
             $attrList[$gid][$index]['values'][] = [
                 'opt_id' => $item['opt_id'],
-                'opt_name' => $item['opt_name']
+                'opt_name' => $item['opt_name'],
+                'opt_value' => $item['opt_value']
             ];
         }
         return $attrList;
@@ -211,6 +217,33 @@ class GoodsModel extends Object{
             throw new \Exception(implode(',', $model->getFirstErrors()));
         }
     }
+    public function deleteGoodsOptions($condition){
+        return Option::deleteAll([
+            'opt_object_id' => $condition['g_id'],
+            'opt_object_type' => Option::OBJECT_TYPE_GOODS,
+            'opt_id' => $condition['opt_ids']
+        ]);
+    }
+    public function updateGoodsOptions($goods, $optionsData){
+        $ids = ArrayHelper::getColumn($optionsData, 'opt_id');
+        $options = AttrModel::findOption()->andWhere(['in', 'opt_id', $ids])->indexBy('opt_id')->all();
+        $count = 0;
+        foreach($optionsData as $key => $data){
+            if(!isset($options[$data['opt_id']])){
+                $this->addError('g_attrs', sprintf("%s:%s", $key, '更新的属性值不存在'));
+                return false;
+            }
+            $option = $options[$data['opt_id']];
+            $option->scenario = 'update';
+            if(!$option->load($data, '') || !$option->validate()){
+                $this->addError('g_attrs', sprintf("%s:%s", $key, implode(',', $option->getFirstErrors())));
+                return false;
+            }
+            $option->update(false);
+            $count++;
+        }
+        return $count;
+    }
 
     public function createGoodsOptions($goods, $options){
         $option = new Option();
@@ -222,6 +255,7 @@ class GoodsModel extends Object{
             }
             $insertData[] = [
                 'opt_name' => $option->opt_name,
+                'opt_value' => $option->opt_value,
                 'opt_attr_id' => $option->opt_attr_id,
                 'opt_object_id' => $goods->g_id,
                 'opt_object_type' => Option::OBJECT_TYPE_GOODS,
@@ -232,12 +266,50 @@ class GoodsModel extends Object{
         return Yii::$app->db->createCommand()
             ->batchInsert(Option::tableName(), [
                 'opt_name',
+                'opt_value',
                 'opt_attr_id',
                 'opt_object_id',
                 'opt_object_type',
                 'opt_created_at',
                 'opt_updated_at',
             ], $insertData)->execute();
+    }
+    public function updateGoods($goods, $goodsData){
+        if(!empty($goodsData['g_options'])){
+            list($newOptions, $oldOptions) = static::fetchNewOldOptions($goodsData['g_options']);
+            if($newOptions){
+                $count = $this->createGoodsOptions($goods, $newOptions);
+                if(false === $count){
+                    return false;
+                }
+            }
+            if($oldOptions){
+                $count = $this->updateGoodsOptions($goods, $oldOptions);
+                if(false === $count){
+                    return false;
+                }
+            }
+        }
+        if(!empty($goodsData['g_del_options'])){
+            $count = static::deleteGoodsOptions([
+                'g_id' => $goods['g_id'],
+                'opt_ids' => $goodsData['g_del_options'],
+            ]);
+        }
+        return $goods;
+    }
+
+    public static function fetchNewOldOptions($options){
+        $newOptions = [];
+        $oldOptions = [];
+        foreach($options as $option){
+            if(isset($option['opt_id'])){
+                $oldOptions[] = $option;
+            }else{
+                $newOptions[] = $option;
+            }
+        }
+        return [$newOptions, $oldOptions];
     }
 
     public  function createGoods($goodsData){
@@ -270,6 +342,15 @@ class GoodsModel extends Object{
         if(!empty($goodsData['price_items'])){
             $skuData = [];
             $hasMaster = 0;
+            $attrs = static::getGoodsAttrs($goods->g_id, ['g_attr_level' => 'sku']);
+            if(!$attrs){
+                $this->addError('price_items', '当前商品还没有定义属性列表');
+                return false;
+            }
+            foreach($attrs as $key => &$attr){
+                $attr['values'] = ArrayHelper::index($attr['values'], 'opt_value');
+            }
+            $attrs = ArrayHelper::index($attrs, 'a_id');
             foreach ($goodsData['price_items'] as $key => $skuParams){
                 if(!isset($skuParams['price']) || !is_numeric($skuParams['price'])){
                     throw new \Exception(sprintf("%s %s price非法", $key, implode(',', $skuParams)));
@@ -279,11 +360,16 @@ class GoodsModel extends Object{
                 $skuPrice = $skuParams['price'];
                 unset($skuParams['is_master']);
                 unset($skuParams['price']);
+
+                foreach($skuParams as $aid => $value){
+                    $skuNameParams[$attrs[$aid]['a_name']] = $attrs[$aid]['values'][$value]['opt_name'];
+                }
+                $skuIndexName = static::buildSkusIndexByParams($skuNameParams);
                 $skuIndex = static::buildSkusIndexByParams($skuParams);
                 $skuData[] = [
                     'sku_g_id' => $goods->g_id,
                     'sku_index' => $skuIndex,
-                    'sku_name' => '',
+                    'sku_name' => $skuIndexName,
                     'sku_price' => $skuPrice,
                     'sku_is_master' => $isMaster,
                 ];
@@ -297,6 +383,26 @@ class GoodsModel extends Object{
             }
         }
         return $goods;
+    }
+    public static function ensureGoodsSkusRight($data){
+        $attrs = static::getGoodsAttrs($data['g_id'], ['g_attr_level' => 'sku']);
+        if(!$attrs){
+            return null;
+        }
+        $skuIndexs = static::buildSkuIndexFromAttrs($attrs);
+        console($skuIndexs);
+    }
+
+    public static function buildSkuIndexFromAttrs($attrs, $name = ''){
+        $attr = array_pop($attrs);
+        if(!$attr){
+            return ;
+        }
+        $values = [];
+        foreach($attr['values'] as $option){
+            $values[] = []
+        }
+
     }
 
     public static function createGoodsSkus($skuListData){

@@ -16,6 +16,7 @@ class m181102_063728_option extends Migration
         create table `{$tableName}`(
           `opt_id` int(10) unsigned not null auto_increment comment '主键',
           `opt_name` VARCHAR(30) not null comment '属性值名称',
+          `opt_value` VARCHAR(30) not null comment '属性值索引',
           `opt_attr_id` int(10) unsigned not null comment '属性id',
           `opt_object_id` int(10) unsigned not null comment '所属对象id',
           `opt_object_type` smallint(3) unsigned not null comment '所属对象类型',

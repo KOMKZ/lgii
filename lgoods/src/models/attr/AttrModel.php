@@ -11,6 +11,7 @@ use Yii;
 use yii\base\Model;
 
 class AttrModel extends Model{
+
     public function createAttr($data){
         $attr = new Attr();
         if(!$attr->load($data, '') || !$attr->validate()){
@@ -47,6 +48,10 @@ class AttrModel extends Model{
 
     public static function findAttr(){
         return Attr::find();
+    }
+
+    public static function findOption(){
+        return Option::find();
     }
 
     public function createCollect($data){

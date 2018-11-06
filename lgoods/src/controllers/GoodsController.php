@@ -8,6 +8,7 @@
 namespace lgoods\controllers;
 
 use common\models\RefundModel;
+use lgoods\models\goods\Goods;
 use lgoods\models\order\OrderModel;
 use lgoods\models\refund\RfModel;
 use lgoods\models\trans\Trans;
@@ -92,6 +93,42 @@ class GoodsController extends Controller{
         return $this->succ($goodsData);
     }
 
+    public function actionListAttrs($index){
+        $getData = Yii::$app->request->get();
+        $attrs = GoodsModel::getGoodsListAttrs([$index], $getData);
+        $data = [];
+        if(isset($attrs[$index])){
+            foreach($attrs[$index] as $attr){
+                $data[] = $attr;
+            }
+        }
+        return $this->succItems($data, count($data));
+    }
+    public function actionUpdate($index){
+        $t = $this->beginTransaction();
+        try{
+            $goods = Goods::find()->where(['g_id' => $index])->one();
+            if(!$goods){
+                return $this->notfound();
+            }
+
+            $postData = Yii::$app->request->getBodyParams();
+            $model = new GoodsModel();
+            $goods = $model->updateGoods($goods, $postData);
+            if(!$goods){
+                return $this->error(1, $model->getErrors());
+            }
+            GoodsModel::ensureGoodsSkusRight($goods);
+            $goodsFullData = GoodsModel::formatOneGoods($goods->toArray(), [
+                'goods_attr_level' => 'all'
+            ]);
+            $t->commit();
+            return $this->succ($goodsFullData);
+        }catch(\Exception $e){
+            $t->rollback();
+            throw $e;
+        }
+    }
     public function actionCreate(){
         $t = $this->beginTransaction();
         try{
@@ -102,7 +139,9 @@ class GoodsController extends Controller{
                 return $this->error(1, $model->getErrors());
             }
             $t->commit();
-            return $this->succ($goods->toArray());
+            return $this->succ(GoodsModel::formatOneGoods($goods->toArray(), [
+                'goods_attr_level' => 'all'
+            ]));
         }catch(\Exception $e){
             $t->rollback();
             throw $e;

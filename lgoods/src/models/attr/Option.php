@@ -22,7 +22,8 @@ class Option extends ActiveRecord{
     public function rules(){
         return [
             ['opt_name', 'required'],
-            ['opt_attr_id', 'required']
+            ['opt_attr_id', 'required'],
+            ['opt_value', 'safe']
         ];
     }
 
@@ -33,6 +34,20 @@ class Option extends ActiveRecord{
                 'class' => TimestampBehavior::className(),
                 'createdAtAttribute' => 'opt_created_at',
                 'updatedAtAttribute' => 'opt_updated_at'
+            ]
+        ];
+    }
+
+
+    public function scenarios(){
+        return [
+            'default' => [
+                'opt_name',
+                'opt_attr_id',
+                'opt_value',
+            ],
+            'update' => [
+                'opt_name',
             ]
         ];
     }
