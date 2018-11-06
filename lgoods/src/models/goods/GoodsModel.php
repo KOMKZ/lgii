@@ -394,15 +394,55 @@ class GoodsModel extends Model{
     }
 
     public static function buildSkuIndexFromAttrs($attrs, $name = ''){
-        $attr = array_pop($attrs);
-        if(!$attr){
-            return ;
-        }
         $values = [];
-        foreach($attr['values'] as $option){
-            $values[] = []
+        foreach ($attrs as $attr){
+            foreach($attr['values'] as $option){
+                $values[$attr['a_id']][] =  [
+                    'value' => sprintf("%s:%s", $attr['a_id'], $option['opt_value']),
+                    'name'  => sprintf("%s:%s", $attr['a_name'], $option['opt_name']),
+                ];
+            }
         }
+        ksort($values);
 
+
+        $skuIds = static::buildSkuIds($values);
+        console($skuIds);
+        return $skuIds;
+    }
+
+
+
+    protected static function buildSkuIds($skuValues){
+        if(empty($skuValues)){
+            return [];
+        }
+        $skuIds = [];
+        $first = array_shift($skuValues);
+        foreach($first as $item){
+            if($skuValues){
+                foreach($skuValues as $others){
+                    foreach($others as $otherItem){
+                        $skuIds[] = [
+                            'value' => implode('-', [$item['value'], $otherItem['value']]),
+                            'name' => implode('-', [$item['name'], $otherItem['name']]),
+                        ];
+                    }
+                    break;
+                }
+            }else{
+                $skuIds[] = [
+                    'value' => $item['value'],
+                    'name' => $item['name'],
+                ];
+            }
+        }
+        array_shift($skuValues);
+        $next = array_shift($skuValues);
+        if(!empty($next)){
+            return static::buildSkuIds(array_merge([$skuIds], [$next]));
+        }
+        return $skuIds;
     }
 
     public static function createGoodsSkus($skuListData){
