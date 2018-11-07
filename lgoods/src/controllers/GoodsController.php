@@ -80,10 +80,26 @@ class GoodsController extends Controller{
         return $this->succItems($items, $provider->totalCount);
     }
 
+    public function actionViewSku($index, $sub_index){
+        $skuIndex = GoodsModel::ensureGoodsSkuIndexRight($sub_index);
+        if(!$skuIndex){
+            return $this->error(1, "参数错误");
+        }
+        $sku = GoodsModel::findSku()
+                            ->andWhere(['=', 'sku_g_id', $index])
+                            ->andWhere(['=', 'sku_index', $skuIndex])
+                            ->asArray()
+                            ->one();
+        if(!$sku) {
+            return $this->notfound();
+        }
+        return $this->succ($sku);
+    }
+
     public function actionView($index){
         $getData = Yii::$app->request->get();
         $goodsData = GoodsModel::findFull()
-                    ->andWhere(['=', 'g_id', $index])
+                    ->andWhere(['=', 'g.g_id', $index])
                     ->asArray()
                     ->one();
         if(!$goodsData){

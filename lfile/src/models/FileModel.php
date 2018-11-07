@@ -110,7 +110,6 @@ class FileModel extends Model
         $file->file_md5_value = $isCopy ? $data['file_md5_value'] : md5_file($file->file_source_path);
         $file->file_real_name = self::buildFileRealName($file);
         $file->file_valid_time = 1 == $file->file_is_tmp ? $file->file_valid_time : 0;
-
         return $file;
     }
 

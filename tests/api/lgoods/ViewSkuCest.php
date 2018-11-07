@@ -146,10 +146,12 @@ class CreateCest
         $res = $i->grabResponse();
         Debug::debug(json_decode($res, true));
 
-        return ;
-        // 查看属性
-        $i->sendGET("/goods/" . $data['g_id'] . '/attrs', [
-            'g_attr_level' => 'sku'
+        $index = sprintf("%s:%s-%s:%s",
+            $attrs[1]['a_id'], 'black',
+            $attrs[0]['a_id'], 30
+            );
+        $i->sendGET("/goods/" . $data['g_id'] . '/sku/' . $index, [
+
         ]);
         $i->seeResponseCodeIs(200);
         $i->seeResponseContainsJson([

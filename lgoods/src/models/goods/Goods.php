@@ -29,7 +29,9 @@ class Goods extends ActiveRecord{
     }
 
 
-
+    public function getGoods_extend(){
+        return $this->hasOne(GoodsExtend::class, ['g_id' => 'g_id']);
+    }
 
     public function getG_collect(){
         $query = $this->hasOne(OCMap::class, [
