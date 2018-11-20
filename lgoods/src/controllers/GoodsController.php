@@ -70,15 +70,14 @@ class GoodsController extends Controller{
     }
 
     /**
-     *
-     * @api get,/goods,Goods,产循商品接口
+     * @api get,/goods,Goods,查询商品接口
      *
      * @return #global_res
      * - data object#goods_items_list,返回课程信息
      */
     public function actionList(){
         $getData = Yii::$app->request->get();
-        $query = GoodsModel::findFull();
+        $query = GoodsModel::findFullForList();
         $provider = new ActiveDataProvider([
             'query' => $query->asArray(),
         ]);

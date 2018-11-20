@@ -61,6 +61,15 @@ class GoodsModel extends Model{
         }
         return static::buildSkusIndexByParams($params);
     }
+    public static function getLevelFields($type, $level){
+        $map = [
+            'g_attr_level' => [
+                'all' => ['attrs'],
+                'list' => ['attrs']
+            ]
+        ];
+        return $map[$type][$level];
+    }
     public static function formatGoods($dataList, $params = []){
         if(!empty($params['g_attr_level'])){
             $gids = [];
@@ -175,6 +184,21 @@ class GoodsModel extends Model{
     public static function findWithSkus(){
         $query = Goods::find()
                     ->with("goods_skus");
+        return $query;
+    }
+
+    public static function findFullForList(){
+        $geTable = GoodsExtend::tableName();
+        $query = Goods::find()
+            ->from([
+                'g' => Goods::tableName(),
+            ])
+            ->select([
+                "g.*",
+                "ge.*"
+            ])
+            ->leftJoin(['ge' => GoodsExtend::tableName()], "ge.g_id = g.g_id")
+            ;
         return $query;
     }
 

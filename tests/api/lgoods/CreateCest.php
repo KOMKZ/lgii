@@ -23,9 +23,11 @@ class CreateCest
             'attrs' => [
                 [
                     'a_name' => '尺寸',
+                    'a_type' => 2,
                 ],
                 [
                     'a_name' => '颜色',
+                    'a_type' => 2
                 ]
             ]
         ]);
