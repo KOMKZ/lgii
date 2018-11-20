@@ -17,6 +17,19 @@ class CreateCest
     // tests
     public function tryToTest(ApiTester $i)
     {
+        $i->sendPOST("/lfile", [
+            'file_category' => 'pub_img',
+        ], [
+            'file' => codecept_data_dir() . '/1.png' ,
+        ]);
+        $i->seeResponseCodeIs(200);
+        $i->seeResponseContainsJson([
+            'code' => 0
+        ]);
+        $res = json_decode($i->grabResponse(), true);
+        $file = $res['data'];
+        Debug::debug($file);
+
 
         $i->sendPOST("/lcollect", [
             'ac_name' => '鞋子属性集',
@@ -66,6 +79,7 @@ class CreateCest
         $i->sendPOST("/goods", [
             'g_name' => "鞋子",
             'g_sid' => 0,
+            'g_m_img_id' => $file['file_query_id'],
             'g_stype' => '',
             'ac_id' => $data['ac_id'],
             'g_options' => [

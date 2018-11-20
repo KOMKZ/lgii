@@ -3,7 +3,7 @@
  * ALIPAY API: alipay.marketing.cdp.recommend.query request
  *
  * @author auto create
- * @since 1.0, 2017-04-01 15:34:47
+ * @since 1.0, 2015-12-01 13:49:03
  */
 class AlipayMarketingCdpRecommendQueryRequest
 {

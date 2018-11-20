@@ -7,6 +7,8 @@
  */
 namespace lgoods\models\goods;
 
+use lfile\models\FileModel;
+use lfile\models\query\FileQuery;
 use lgoods\models\attr\Attr;
 use lgoods\models\attr\AttrModel;
 use lgoods\models\attr\Option;
@@ -35,7 +37,29 @@ class GoodsModel extends Model{
         }else{
             $data['g_attrs'] = [];
         }
+        if(isset($data['g_m_img_id'])){
+            $fModel = new FileModel();
+            $data['g_m_img_url'] = $fModel->buildFileUrlStatic(FileModel::parseQueryId($data['g_m_img_id']));
+        }else{
+            $data['g_m_img_url'] = 'url';
+        }
+
         return $data;
+    }
+    public static function ensureGoodsSkuIndexRight($index){
+        $values = explode('-', $index);
+        if(!$values){
+            return '';
+        }
+        $params = [];
+        foreach($values as $value){
+            list($aid, $optval) = explode(':', $value);
+            if(!$aid || !$optval){
+                return '';
+            }
+            $params[$aid] = $optval;
+        }
+        return static::buildSkusIndexByParams($params);
     }
     public static function formatGoods($dataList, $params = []){
         if(!empty($params['g_attr_level'])){
@@ -155,7 +179,16 @@ class GoodsModel extends Model{
     }
 
     public static function findFull(){
+        $geTable = GoodsExtend::tableName();
         $query = Goods::find()
+            ->from([
+                'g' => Goods::tableName(),
+            ])
+            ->select([
+                "g.*",
+                "ge.*"
+            ])
+            ->leftJoin(['ge' => GoodsExtend::tableName()], "ge.g_id = g.g_id")
             ->with("goods_skus");
         return $query;
     }
@@ -275,6 +308,13 @@ class GoodsModel extends Model{
             ], $insertData)->execute();
     }
     public function updateGoods($goods, $goodsData){
+        $goodsExtend = $goods->goods_extend;
+        if(!$goodsExtend->load($goodsData, '') || !$goodsExtend->validate()){
+            $this->addErrors($goodsExtend->getErrors());
+            return false;
+        }
+        $goodsExtend->update(false);
+
         if(!empty($goodsData['g_options'])){
             list($newOptions, $oldOptions) = static::fetchNewOldOptions($goodsData['g_options']);
             if($newOptions){
@@ -319,6 +359,15 @@ class GoodsModel extends Model{
             return false;
         }
         $goods->insert(false);
+
+        $goodsExtend = new GoodsExtend();
+        if(!$goodsExtend->load($goodsData, '') || !$goodsExtend->validate()){
+            $this->addErrors($goodsExtend->getErrors());
+            return false;
+        }
+        $goodsExtend->g_id = $goods->g_id;
+        $goodsExtend->insert(false);
+
         if(!empty($goodsData['g_options'])){
             $attrs = $this->createGoodsOptions($goods, $goodsData['g_options']);
             if(false === $attrs){

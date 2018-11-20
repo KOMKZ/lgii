@@ -3,7 +3,7 @@
  * ALIPAY API: alipay.offline.provider.staff.update request
  *
  * @author auto create
- * @since 1.0, 2016-05-16 16:12:42
+ * @since 1.0, 2016-03-04 14:45:24
  */
 class AlipayOfflineProviderStaffUpdateRequest
 {

@@ -81,7 +81,7 @@ $config = ArrayHelper::merge([
                 'OPTIONS <route:.*>' => "site/index",
                 'trans_notification/<type:.*?>' => 'trans/notify',
                 'file/output' => 'file/output',
-
+                'POST update' => 'site/update',
 
                 'GET <controller:[\w\-:]+>/<index:[^\/]+>/<sub:[\w\-:]+>/<sub_index:[^\/]+>/?' => "<controller>/view-<sub>",
                 'PUT <controller:[\w\-:]+>/<index:[^\/]+>/<sub:[\w\-:]+>/<sub_index:[^\/]+>/?' => "<controller>/update-<sub>",
@@ -130,27 +130,11 @@ $config = ArrayHelper::merge([
             'bucket_cans' => [],
         ],
     ],
-    'params' => [],
+    'params' => [
+        'github_update_secret' => ''
+    ],
 ], $configLocal);
 
-if (1) {
-    // configuration adjustments for 'dev' environment
-    $config['bootstrap'][] = 'debug';
-    $config['modules']['debug'] = [
-        'class' => '\yii\debug\Module',
-        // uncomment the following to add your IP if you are not connecting from localhost.
-        //'allowedIPs' => ['127.0.0.1', '::1'],
-    ];
 
-    $config['bootstrap'][] = 'gii';
-    $config['modules']['gii'] = [
-        'class' => 'yii\gii\Module',
-        'generators' => [
-            ['class' => "\lgii\generators\model\Generator"]
-        ]
-        // uncomment the following to add your IP if you are not connecting from localhost.
-        //'allowedIPs' => ['127.0.0.1', '::1'],
-    ];
-}
 
 return $config;

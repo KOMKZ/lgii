@@ -3,7 +3,7 @@
  * ALIPAY API: alipay.user.trade.search request
  *
  * @author auto create
- * @since 1.0, 2016-07-13 16:55:41
+ * @since 1.0, 2016-03-03 17:45:29
  */
 class AlipayUserTradeSearchRequest
 {
@@ -28,12 +28,12 @@ class AlipayUserTradeSearchRequest
 	private $orderFrom;
 	
 	/** 
-	 * 订单状态，为空查询所有状态订单。例如：等待买家付款（WAIT_BUYER_PAY），等待卖家发货（WAIT_SELLER_SEND_GOODS），等待买家确认收货（WAIT_BUYER_CONFIRM_GOODS），交易完成（TRADE_FINISHED），交易关闭（TRADE_CLOSED），交易成功（TRADE_SUCCESS）
+	 * 订单状态，为空查询所有状态订单
 	 **/
 	private $orderStatus;
 	
 	/** 
-	 * 订单类型，为空查询所有类型订单。例如：交易（TRADE）,CAE代扣（CAE）,代付（PEERPAY）,转账到卡（TRANSFER）
+	 * 订单类型，为空查询所有类型订单。
 	 **/
 	private $orderType;
 	

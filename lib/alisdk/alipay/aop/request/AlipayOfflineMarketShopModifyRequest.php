@@ -3,7 +3,7 @@
  * ALIPAY API: alipay.offline.market.shop.modify request
  *
  * @author auto create
- * @since 1.0, 2017-04-15 22:37:50
+ * @since 1.0, 2016-03-23 11:18:37
  */
 class AlipayOfflineMarketShopModifyRequest
 {

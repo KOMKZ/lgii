@@ -18,6 +18,7 @@ class m181102_063728_option extends Migration
           `opt_name` VARCHAR(30) not null comment '属性值名称',
           `opt_value` VARCHAR(30) not null comment '属性值索引',
           `opt_attr_id` int(10) unsigned not null comment '属性id',
+          `opt_img_value` VARCHAR(255) not null default '' comment '选项值图像id',
           `opt_object_id` int(10) unsigned not null comment '所属对象id',
           `opt_object_type` smallint(3) unsigned not null comment '所属对象类型',
           `opt_created_at` int(10) unsigned not null comment '创建时间',

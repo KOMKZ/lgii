@@ -69,7 +69,13 @@ class GoodsController extends Controller{
         
     }
 
-
+    /**
+     *
+     * @api get,/goods,Goods,产循商品接口
+     *
+     * @return #global_res
+     * - data object#goods_items_list,返回课程信息
+     */
     public function actionList(){
         $getData = Yii::$app->request->get();
         $query = GoodsModel::findFull();
@@ -80,10 +86,26 @@ class GoodsController extends Controller{
         return $this->succItems($items, $provider->totalCount);
     }
 
+    public function actionViewSku($index, $sub_index){
+        $skuIndex = GoodsModel::ensureGoodsSkuIndexRight($sub_index);
+        if(!$skuIndex){
+            return $this->error(1, "参数错误");
+        }
+        $sku = GoodsModel::findSku()
+                            ->andWhere(['=', 'sku_g_id', $index])
+                            ->andWhere(['=', 'sku_index', $skuIndex])
+                            ->asArray()
+                            ->one();
+        if(!$sku) {
+            return $this->notfound();
+        }
+        return $this->succ($sku);
+    }
+
     public function actionView($index){
         $getData = Yii::$app->request->get();
         $goodsData = GoodsModel::findFull()
-                    ->andWhere(['=', 'g_id', $index])
+                    ->andWhere(['=', 'g.g_id', $index])
                     ->asArray()
                     ->one();
         if(!$goodsData){
@@ -147,8 +169,13 @@ class GoodsController extends Controller{
             throw $e;
         }
     }
-
-
-
-
 }
+/**
+ * @def #goods_items_list
+ * - total_count integer,总数
+ * - items array#goods_item,商品列表
+ *
+ * @def #goods_item
+ * - g_id integer,商品id
+ * 
+ */
