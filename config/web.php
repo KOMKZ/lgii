@@ -130,7 +130,9 @@ $config = ArrayHelper::merge([
             'bucket_cans' => [],
         ],
     ],
-    'params' => [],
+    'params' => [
+        'github_update_secret' => ''
+    ],
 ], $configLocal);
 
 
