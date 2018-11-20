@@ -111,7 +111,7 @@ class SwgController extends Controller
 
 
     protected function geneSwgJson($module){
-        $bin = dirname(dirname((Yii::getAlias('@app')))) . '/system/vendor/zircote/swagger-php/bin/swagger';
+        $bin = Yii::getAlias('@app') . '/vendor/zircote/swagger-php/bin/swagger';
         system(sprintf("php %s %s --output %s", $bin, $this->getPhpFilePath($module), $this->getJsonFilePath($module)));
     }
     protected function appendDocInPhpFile($content, $module){
