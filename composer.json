@@ -19,7 +19,8 @@
         "yiisoft/yii2-bootstrap": "~2.0.0",
         "yiisoft/yii2-swiftmailer": "~2.0.0",
         "elasticsearch/elasticsearch": "^5.3",
-        "guzzlehttp/guzzle": "^6.3@dev"
+        "guzzlehttp/guzzle": "^6.3@dev",
+        "zircote/swagger-php": "2.x-dev"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.0.0",

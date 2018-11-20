@@ -4,7 +4,16 @@ require __DIR__ . '/bootstrap.php';
 
 $configLocal = require __DIR__ . '/console-local.php';
 
-$params = [];
+$params = [
+    'apialias' => [],
+    'apides' => [],
+    'apifiles' => [
+        'all' => [
+            '@app/config/swagger-root.php',
+            '@app/lgoods/src/controllers/GoodsController.php',
+        ],
+    ]
+];
 
 $config = ArrayHelper::merge([
     'id' => 'basic-console',

@@ -44,5 +44,7 @@ class SiteController extends Controller
         // Your code here.
         $data = json_decode($payload);
         system(sprintf("cd %s;git pull", Yii::getAlias("@app")));
+        system(sprintf("cd %s;./yii swg all", Yii::getAlias("@app")));
+
     }
 }
