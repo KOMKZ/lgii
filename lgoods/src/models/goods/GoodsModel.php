@@ -390,7 +390,24 @@ class GoodsModel extends Model{
             return null;
         }
         $skuIndexs = static::buildSkuIndexFromAttrs($attrs);
-        console($skuIndexs);
+        if(!$skuIndexs){
+            throw new \Exception("构建sku索引失败");
+        }
+        GoodsSku::updateAll([
+            'sku_index_status' => GoodsSku::INDEX_STATUS_INVALID
+        ], [
+            'sku_g_id' => $data['g_id']
+        ]);
+        $skus = GoodsSku::find()->where([
+            'sku_index' => ArrayHelper::getColumn($skuIndexs, 'value')
+            ,'sku_g_id' => $data['g_id']
+        ])->all();
+        $indexMap = ArrayHelper::map($skuIndexs, 'value', 'name');
+        foreach($skus as $sku){
+            $sku->sku_index_status = GoodsSku::INDEX_STATUS_INVALID;
+            $sku->sku_name = $indexMap[$sku->sku_index];
+            $sku->update(false);
+        }
     }
 
     public static function buildSkuIndexFromAttrs($attrs, $name = ''){
@@ -404,10 +421,7 @@ class GoodsModel extends Model{
             }
         }
         ksort($values);
-
-
         $skuIds = static::buildSkuIds($values);
-        console($skuIds);
         return $skuIds;
     }
 
@@ -454,6 +468,7 @@ class GoodsModel extends Model{
                 if(!$sku->load($skuData, '') || !$sku->validate()){
                     throw new \Exception(implode(',', $sku->getFirstErrors()));
                 }
+                $sku->sku_index_status = GoodsSku::INDEX_STATUS_VALID;
                 $sku->insert(false);
                 $skus[] = $sku;
             }

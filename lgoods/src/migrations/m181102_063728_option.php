@@ -23,7 +23,8 @@ class m181102_063728_option extends Migration
           `opt_created_at` int(10) unsigned not null comment '创建时间',
           `opt_updated_at` int(10) unsigned not null comment '更新时间',
           primary key (`opt_id`),
-          index (`opt_attr_id`, `opt_object_id`, `opt_object_type`)
+          index (`opt_attr_id`, `opt_object_id`, `opt_object_type`),
+          unique (`opt_value`, `opt_object_id`, `opt_object_type`, `opt_attr_id`)
         );
         ";
         $this->execute($createTabelSql);

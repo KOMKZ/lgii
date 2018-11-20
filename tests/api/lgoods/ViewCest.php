@@ -101,6 +101,7 @@ class CreateCest
                     'opt_id' => $attrs[0]['values'][0]['opt_id'],
                     'opt_name' => '37码'
                 ],
+                ['opt_name' => '39码', 'opt_value' => 39,'opt_attr_id' => $attrs[0]['a_id']],
                 [
                     'opt_id' => $attrs[0]['values'][1]['opt_id'],
                     'opt_name' => '38码'
