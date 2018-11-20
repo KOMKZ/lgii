@@ -16,7 +16,7 @@ class Controller extends BaseController
                 'class' => \yii\filters\Cors::className(),
                 'cors' => [
                     // restrict access to
-                    'Origin' => ["http://47.106.36.175:8099"],
+                    'Origin' => ["http://47.106.36.175:8099", "http://47.106.36.175"],
                     'Access-Control-Request-Method' => ['POST', 'PUT', 'GET', 'DELETE', 'OPTION'],
                     // Allow only POST and PUT methods
                     'Access-Control-Request-Headers' => ['X-Wsse'],
