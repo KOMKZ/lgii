@@ -3,7 +3,7 @@
  * ALIPAY API: alipay.asset.account.unbind request
  *
  * @author auto create
- * @since 1.0, 2017-04-07 18:06:06
+ * @since 1.0, 2014-06-12 17:17:01
  */
 class AlipayAssetAccountUnbindRequest
 {

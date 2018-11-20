@@ -3,12 +3,12 @@
  * ALIPAY API: alipay.pass.template.add request
  *
  * @author auto create
- * @since 1.0, 2017-03-31 15:33:01
+ * @since 1.0, 2016-03-23 19:02:16
  */
 class AlipayPassTemplateAddRequest
 {
 	/** 
-	 * 卡券模板创建
+	 * 详见<a href="https://doc.open.alipay.com/doc2/detail.htm?spm=a219a.7629140.0.0.FUnoPS&treeId=50&articleId=103392&docType=1">文档中心文档</a>
 	 **/
 	private $bizContent;
 

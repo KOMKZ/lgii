@@ -3,12 +3,12 @@
  * ALIPAY API: alipay.ebpp.pdeduct.bill.pay.status request
  *
  * @author auto create
- * @since 1.0, 2017-04-27 10:27:08
+ * @since 1.0, 2015-01-16 22:48:35
  */
 class AlipayEbppPdeductBillPayStatusRequest
 {
 	/** 
-	 * 支付宝用户ID
+	 * 支付宝代扣协议ID
 	 **/
 	private $agreementId;
 	

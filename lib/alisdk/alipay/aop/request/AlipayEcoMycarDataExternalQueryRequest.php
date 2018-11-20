@@ -3,7 +3,7 @@
  * ALIPAY API: alipay.eco.mycar.data.external.query request
  *
  * @author auto create
- * @since 1.0, 2016-09-20 16:38:11
+ * @since 1.0, 2016-05-12 10:25:00
  */
 class AlipayEcoMycarDataExternalQueryRequest
 {

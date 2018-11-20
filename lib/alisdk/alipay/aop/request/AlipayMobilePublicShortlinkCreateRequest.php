@@ -3,7 +3,7 @@
  * ALIPAY API: alipay.mobile.public.shortlink.create request
  *
  * @author auto create
- * @since 1.0, 2016-07-29 19:58:48
+ * @since 1.0, 2016-03-31 21:05:26
  */
 class AlipayMobilePublicShortlinkCreateRequest
 {

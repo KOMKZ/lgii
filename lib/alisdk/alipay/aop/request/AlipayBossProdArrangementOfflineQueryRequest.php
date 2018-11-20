@@ -3,14 +3,10 @@
  * ALIPAY API: alipay.boss.prod.arrangement.offline.query request
  *
  * @author auto create
- * @since 1.0, 2017-04-14 21:06:47
+ * @since 1.0, 2015-10-15 20:59:49
  */
 class AlipayBossProdArrangementOfflineQueryRequest
 {
-	/** 
-	 * 签约销售方案的主站产品码，目前只支持ONLINE_TRADE_PAY（在线购买签约）和FACE_TO_FACE_PAYMENT（当面付）两个常量值，不允许传入其他值，否则报SYSTEM_ERROR异常。不传值时，默认查询FACE_TO_FACE_PAYM（当面付产品）。
-	 **/
-	private $productCode;
 
 	private $apiParas = array();
 	private $terminalType;
@@ -22,17 +18,6 @@ class AlipayBossProdArrangementOfflineQueryRequest
     private $needEncrypt=false;
 
 	
-	public function setProductCode($productCode)
-	{
-		$this->productCode = $productCode;
-		$this->apiParas["product_code"] = $productCode;
-	}
-
-	public function getProductCode()
-	{
-		return $this->productCode;
-	}
-
 	public function getApiMethodName()
 	{
 		return "alipay.boss.prod.arrangement.offline.query";

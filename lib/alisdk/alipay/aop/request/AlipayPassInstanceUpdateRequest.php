@@ -3,12 +3,12 @@
  * ALIPAY API: alipay.pass.instance.update request
  *
  * @author auto create
- * @since 1.0, 2017-03-31 15:32:32
+ * @since 1.0, 2016-03-23 19:01:57
  */
 class AlipayPassInstanceUpdateRequest
 {
 	/** 
-	 * 支付宝pass更新卡券实例接口
+	 * 详见<a href="https://doc.open.alipay.com/doc2/detail.htm?spm=a219a.7629140.0.0.H6SjPp&treeId=50&articleId=103405&docType=1">文档中心文档</a>
 	 **/
 	private $bizContent;
 
