@@ -73,7 +73,7 @@ class GoodsController extends Controller{
      * @api get,/goods,Goods,查询商品接口
      *
      * @return #global_res
-     * - data object#goods_items_list,返回课程信息
+     * - data object#goods_items_list,返回课程列表
      */
     public function actionList(){
         $getData = Yii::$app->request->get();
@@ -84,6 +84,7 @@ class GoodsController extends Controller{
         $items = GoodsModel::formatGoods($provider->getModels(), $getData);
         return $this->succItems($items, $provider->totalCount);
     }
+
 
     public function actionViewSku($index, $sub_index){
         $skuIndex = GoodsModel::ensureGoodsSkuIndexRight($sub_index);
@@ -101,6 +102,14 @@ class GoodsController extends Controller{
         return $this->succ($sku);
     }
 
+    /**
+     * @api get,/goods/{id},Goods,查看商品信信息
+     * - id required,integer,in_path,商品g_id
+     *
+     * @return #global_res
+     * - data object#goods_item,返回商品具体信息
+     * 
+     */
     public function actionView($index){
         $getData = Yii::$app->request->get();
         $goodsData = GoodsModel::findFull()
@@ -125,6 +134,7 @@ class GoodsController extends Controller{
         }
         return $this->succItems($data, count($data));
     }
+
     public function actionUpdate($index){
         $t = $this->beginTransaction();
         try{
@@ -150,6 +160,19 @@ class GoodsController extends Controller{
             throw $e;
         }
     }
+
+    /**
+     * @api post,/goods,Goods,创建一个商品
+     * - g_name required,string,in_body,商品名称
+     * - g_sid required,integer,in_body,商品关联对象id，未定义的时候传0
+     * - g_stype required,integer,in_body,商品关联对象模块类型，未定义时传空字符
+     * - g_options optional,array#option_param,in_body,商品属性值设置列表
+     * - price_items optional,array#price_param,in_body,商品价格设置列表
+     *
+     * @return #global_res
+     * - data object#goods_item,返回商品详情
+     */
+     */
     public function actionCreate(){
         $t = $this->beginTransaction();
         try{
@@ -170,11 +193,45 @@ class GoodsController extends Controller{
     }
 }
 /**
+ * @def #option_param
+ * - opt_name required,string,属性值名称
+ * - opt_value required,string,属性值
+ * - opt_attr_id required,integer,属性值对应属性id
+ *
+ * @def #price_param
+ * - price required,integer,价格
+ * - is_master optional,integer,是否是主价格
+ *
  * @def #goods_items_list
  * - total_count integer,总数
  * - items array#goods_item,商品列表
  *
  * @def #goods_item
  * - g_id integer,商品id
+ * - g_name string,商品名称
+ * - g_created_at integer,创建时间
+ * - g_updated_at integer,更新时间
+ * - g_m_img_id string,商品图片id
+ * - g_m_img_url string,图片url
+ * - g_skus array#sku_item,商品sku条目列表
+ * - g_attrs array#attr_item,商品属性列表
+ *
+ * @def #attr_item
+ * - values array#value_item,属性值对象
+ * - a_name string,属性值名称
+ * - a_id integer,属性值id
+ *
+ * @def #value_item
+ * - opt_id integer,选项值id
+ * - opt_name string,选项值名称
+ * - opt_value string,选项值
+ *
+ * @def #sku_item
+ * - sku_id integer,sku的id
+ * - sku_index string,sku索引名称
+ * - sku_index_status integer,索引的名称的状态
+ * - sku_is_master integer,是否是主要sku
+ * - sku_name string,sku的名称
+ * - sku_price integer,sku条目的价格
  * 
  */
