@@ -9,11 +9,11 @@ namespace lgoods\controllers;
 
 use lgoods\models\goods\GoodsModel;
 use lgoods\models\order\OrderModel;
+use lgoods\models\sale\SaleModel;
 use lgoods\models\trans\TransModel;
 use Yii;
 use lbase\Controller;
-
-
+use yii\data\ActiveDataProvider;
 
 
 class LsaleRuleController extends Controller{
@@ -32,7 +32,13 @@ class LsaleRuleController extends Controller{
      * - data object#sale_rule_item,返回规则对象
      */
     public function actionCreate(){
-
+        $postData = Yii::$app->request->getBodyParams();
+        $sModel = new SaleModel();
+        $rule = $sModel->createSaleRule($postData);
+        if(!$rule){
+            return $this->error(1, $sModel->getErrors());
+        }
+        return $this->succ($rule->toArray());
     }
 
     /**
@@ -49,13 +55,23 @@ class LsaleRuleController extends Controller{
      * - data object#sale_rule_item,返回规则对象
      */
     public function actionUpdate($index){
-
+        $rule = SaleModel::find()->where(["sr_id" => $index])->one();
+        if(!$rule){
+            return $this->notfound();
+        }
+        $postData = Yii::$app->request->getBodyParams();
+        $sModel = new SaleModel();
+        $rule = $sModel->updateSaleRule($postData, $rule);
+        if(!$rule){
+            return $this->error(1, $sModel->getErrors());
+        }
+        return $this->succ($rule->toArray());
     }
 
     /**
      * @api get,/lsale-rule,SaleRule,查询销售规则
-     * - sr_start_at optional,integer,in_query,开始时间
-     * - sr_end_at optional,integer,in_query,结束时间
+     * - sr_start_at_left optional,integer,in_query,开始时间
+     * - sr_end_at_right optional,integer,in_query,结束时间
      * - sr_status optional,integer,in_query,状态
      * - sr_object_id optional,integer,in_query,规则作用对象id
      * - sr_object_type optional,integer,in_query,规则作用对象类型
@@ -64,7 +80,27 @@ class LsaleRuleController extends Controller{
      * - data object#sale_rule_item_list,返回规则对象列表
      */
     public function actionList(){
-
+        $query = SaleModel::find();
+        $getData = Yii::$app->request->get();
+        if(!empty($getData['sr_start_at_left'])){
+            $query->andWhere(['<=', 'sr_start_at', $getData['sr_start_at_left']]);
+        }
+        if(!empty($getData['sr_end_at_right'])){
+            $query->andWhere(['>=', 'sr_end_at', $getData['sr_end_at_right']]);
+        }
+        if(!empty($getData['sr_status'])){
+            $query->andWhere(['=', 'sr_status', $getData['sr_status']]);
+        }
+        if(!empty($getData['sr_object_id'])){
+            $query->andWhere(['=', 'sr_object_id', $getData['sr_object_id']]);
+        }
+        if(!empty($getData['sr_object_type'])){
+            $query->andWhere(['=', 'sr_object_type', $getData['sr_object_type']]);
+        }
+        $provider = new ActiveDataProvider([
+            'query' => $query
+        ]);
+        return $this->succItems($provider->getModels(), $provider->totalCount);
     }
 }
 

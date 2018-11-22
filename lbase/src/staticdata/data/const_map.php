@@ -25,6 +25,11 @@ return [
         'test' => '测试文件',
         'default' => '默认分类'
     ],
+    'sr_object_type' => [
+        \lgoods\models\sale\SaleRule::SR_TYPE_SKU => '特定商品',
+        \lgoods\models\sale\SaleRule::SR_TYPE_GOODS => '商品',
+        \lgoods\models\sale\SaleRule::SR_TYPE_CATEGORY => '分类'
+    ]
     /*
 	'u_status' => [
 		\common\models\user\ar\User::STATUS_ACTIVE => Yii::t('app', '可用'),

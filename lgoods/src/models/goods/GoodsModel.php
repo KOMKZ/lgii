@@ -7,11 +7,14 @@
  */
 namespace lgoods\models\goods;
 
+use lbase\staticdata\ConstMap;
 use lfile\models\FileModel;
 use lfile\models\query\FileQuery;
 use lgoods\models\attr\Attr;
 use lgoods\models\attr\AttrModel;
 use lgoods\models\attr\Option;
+use lgoods\models\sale\SaleModel;
+use lgoods\models\sale\SaleRule;
 use Yii;
 use yii\base\Model;
 use yii\base\Object;
@@ -47,9 +50,25 @@ class GoodsModel extends Model{
         }
 
         if(isset($data['sku_price'])){
+            if(isset($data['sku_id'])){
+                $ruleRange[] = [
+                    'sr_object_id' => $data['sku_id'],
+                    'sr_object_type' => SaleRule::SR_TYPE_SKU
+                ];
+            }
+            if(isset($data['g_id'])){
+                $ruleRange[] =                 [
+                    'sr_object_id' => $data['g_id'],
+                    'sr_object_type' => SaleRule::SR_TYPE_GOODS
+                ];
+            }
+            $saleRules = SaleModel::fetchTargetRules($ruleRange);
+            $saleRules = SaleModel::filterRules($saleRules, []);
+            $params['discount_items'] = $saleRules;
             $priceItem = static::caculatePrice($data, $params);
             $data['g_price'] = $priceItem['og_total_price'];
-            $data['g_discount'] = 0;
+            $data['g_discount'] = $priceItem['og_total_discount'];
+            $data['g_discount_items'] = $priceItem['discount_items'];
         }
 
         return $data;
@@ -74,6 +93,7 @@ class GoodsModel extends Model{
             'all' => [
                 'attrs' => null,
                 'goods_skus' => null,
+                'master_sku_info' => null,
             ],
             'list' => [
                 'master_sku_info' => null,
@@ -228,6 +248,7 @@ class GoodsModel extends Model{
             $query->leftJoin(['g_sku' => $gskuTable], "g_sku.sku_g_id = g.g_id and g_sku.sku_is_master = 1");
             $select[] = "g_sku.sku_price";
             $select[] = "g_sku.sku_name";
+            $select[] = "g_sku.sku_id";
         }
         $query->select($select);
         return $query;
@@ -262,6 +283,7 @@ class GoodsModel extends Model{
             'og_total_num' => 0,
             'og_single_price' => 0,
             'og_total_price' => 0,
+            'og_total_discount' => 0,
             'discount_items' => []
         ];
         $defualtBuyParams = [
@@ -276,9 +298,29 @@ class GoodsModel extends Model{
         $priceItems['og_total_price'] = $priceItems['og_single_price']
                                         *
                                         $priceItems['og_total_num'];
-
-
+        foreach($buyParams['discount_items'] as $saleRule){
+            $discount = $saleRule->discount($priceItems);
+            $priceItems['discount_items'][] = static::buildDiscountItemDes(array_merge($saleRule->toArray(), [
+                'discount' => $discount,
+                'og_total_price' => $priceItems['og_total_price'],
+                'og_total_discount' => $priceItems['og_total_discount']
+            ]));
+            $priceItems['og_total_price'] -= $discount;
+            $priceItems['og_total_discount'] += $discount;
+        }
         return $priceItems;
+    }
+
+    public static function buildDiscountItemDes($data){
+        $ruleNameMap =  ConstMap::getConst('sr_object_type');
+        return sprintf("原价%s,折扣为%s,优惠后价格为%s(使用%s规则-优惠%s)",
+            $data['og_total_price'],
+        $data['discount'],
+        $data['og_total_price'] - $data['discount']
+        ,$ruleNameMap[$data['sr_object_type']]
+        ,$data['sr_name']
+            );
+
     }
 
     public static function handleGoodCreate($event){

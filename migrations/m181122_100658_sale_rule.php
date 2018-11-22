@@ -14,7 +14,7 @@ class m181122_100658_sale_rule extends Migration
         $tableName = $this->getTableName();
         $createTabelSql = "
         create table `{$tableName}`(
-            `sr_id` int(10) unsigned not null comment '主键',
+            `sr_id` int(10) unsigned not null auto_increment comment '主键',
             `sr_name` VARCHAR(64) not null DEFAULT '' comment '规则名称',
             `sr_caculate_type` smallint(3) unsigned not null comment '规则计算模型',
             `sr_caculate_params` VARCHAR(255) not null comment '规则计算模型参数',

@@ -17,6 +17,7 @@ $config = ArrayHelper::merge([
         'lfile' => '\lfile\controllers\LfileController',
         'lattr' => '\lgoods\controllers\LattrController',
         'lcollect' => '\lgoods\controllers\LcollectController',
+        'lsale-rule' => '\lgoods\controllers\LsaleRuleController',
     ],
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
