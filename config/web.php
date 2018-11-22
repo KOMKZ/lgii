@@ -75,13 +75,20 @@ $config = ArrayHelper::merge([
             'class' => "lbase\ErrorHandler",
             'errorAction' => 'site/error',
         ],
+        'apiurl' => [
+            'class' => 'yii\web\UrlManager',
+            'enablePrettyUrl' => true,
+            'showScriptName' => false,
+            'hostInfo' => '',
+            'baseUrl' => '/lfile/output',
+        ],
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
                 'OPTIONS <route:.*>' => "site/index",
                 'trans_notification/<type:.*?>' => 'trans/notify',
-                'file/output' => 'file/output',
+                'lfile/output/?' => 'lfile/output',
                 'POST update' => 'site/update',
 
                 'GET <controller:[\w\-:]+>/<index:[^\/]+>/<sub:[\w\-:]+>/<sub_index:[^\/]+>/?' => "<controller>/view-<sub>",
