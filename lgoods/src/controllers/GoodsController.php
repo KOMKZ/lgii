@@ -172,7 +172,6 @@ class GoodsController extends Controller{
      * @return #global_res
      * - data object#goods_item,返回商品详情
      */
-     */
     public function actionCreate(){
         $t = $this->beginTransaction();
         try{
@@ -214,7 +213,7 @@ class GoodsController extends Controller{
  * - g_m_img_id string,商品图片id
  * - g_m_img_url string,图片url
  * - g_skus array#sku_item,商品sku条目列表
- * - g_attrs array#attr_item,商品属性列表
+ * - g_attrs array#attr_item,商品sku属性列表
  *
  * @def #attr_item
  * - values array#value_item,属性值对象
