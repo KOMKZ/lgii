@@ -23,6 +23,7 @@ class m180921_150337_order extends Migration
             `od_title` varchar(255) not null comment '订单标题',
             `od_belong_uid` int(10) unsigned not null default 0 comment '订单所属用户uid',
             `od_price` int(10) unsigned not null default 0 comment '订单价格',
+            `od_discount` int(10) unsigned not null default 0 comment '订单折扣',
             `od_pay_status` smallint unsigned not null default 0 comment '订单支付状态',
             `od_paid_at` int(10) unsigned not null default 0 comment '支付时间',
             `od_pay_type` char(5) not null default '' comment '支付方式',

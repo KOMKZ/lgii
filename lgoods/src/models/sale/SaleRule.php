@@ -8,6 +8,7 @@
 namespace lgoods\models\sale;
 
 use lgoods\models\sale\caculators\Discount;
+use lgoods\models\sale\caculators\FullSub;
 use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
 
@@ -16,8 +17,10 @@ class SaleRule extends ActiveRecord{
     const SR_TYPE_GOODS = 1;
     CONST SR_TYPE_SKU = 2;
     CONST SR_TYPE_CATEGORY = 3;
+    CONST SR_TYPE_ORDER = 4;
 
     CONST SR_CACU_TYPE_DISCOUNT = 1;
+    const SR_CACU_TYPE_FULL_SUB = 2;
 
     const SR_STATUS_VALID = 1;
 
@@ -79,6 +82,9 @@ class SaleRule extends ActiveRecord{
         switch ($type){
             case SaleRule::SR_CACU_TYPE_DISCOUNT:
                 $caculator = new Discount();
+                break;
+            case SaleRule::SR_CACU_TYPE_FULL_SUB:
+                $caculator = new FullSub();
                 break;
             default:
                 throw new \Exception("制订的计算方式不存在");

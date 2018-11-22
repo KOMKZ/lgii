@@ -23,7 +23,7 @@ class RfModel extends Model{
     }
     public function createRefund($data){
         $order = OrderModel::findOrderFull()
-                            ->andWhere(['=','od_num', $data['od_num']])
+                            ->andWhere(['=','o.od_num', $data['od_num']])
                             ->asArray()
                             ->one();
         if(!$order){

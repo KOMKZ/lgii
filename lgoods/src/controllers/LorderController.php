@@ -19,7 +19,7 @@ use lbase\Controller;
 class LorderController extends Controller{
 
     public function actionView($index){
-        $order = OrderModel::findOrderFull()->andWhere(['=', 'od_num', $index])->asArray()->one();
+        $order = OrderModel::findOrderFull()->andWhere(['=', 'o.od_num', $index])->asArray()->one();
         if(!$order){
             return $this->notfound();
         }
@@ -35,9 +35,9 @@ class LorderController extends Controller{
             if(!$order){
                 return $this->error(1, $orderModel->getErrors());
             }
-            $orderData = OrderModel::findOrderFull()->andWhere(['=', 'od_id', $order['od_id']])->asArray()->one();
+            $orderData = OrderModel::findOrderFull()->andWhere(['=', 'o.od_id', $order['od_id']])->asArray()->one();
             $t->commit();
-            return $this->succ($orderData);
+            return $this->succ(OrderModel::formatOneOrder($orderData));
         }catch(\Exception $e){
             throw $e;
             $t->rollback();

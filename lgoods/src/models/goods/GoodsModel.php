@@ -50,21 +50,11 @@ class GoodsModel extends Model{
         }
 
         if(isset($data['sku_price'])){
-            if(isset($data['sku_id'])){
-                $ruleRange[] = [
-                    'sr_object_id' => $data['sku_id'],
-                    'sr_object_type' => SaleRule::SR_TYPE_SKU
-                ];
-            }
-            if(isset($data['g_id'])){
-                $ruleRange[] =                 [
-                    'sr_object_id' => $data['g_id'],
-                    'sr_object_type' => SaleRule::SR_TYPE_GOODS
-                ];
-            }
-            $saleRules = SaleModel::fetchTargetRules($ruleRange);
-            $saleRules = SaleModel::filterRules($saleRules, static::getGlobalRuleFilterParams());
-            $params['discount_items'] = $saleRules;
+
+            $params['discount_items'] = SaleModel::fetchGoodsRules([
+                'g_id' => $data['g_id'],
+                'sku_id' => $data['sku_id']
+            ]);
             $priceItem = static::caculatePrice($data, $params);
             $data['g_price'] = $priceItem['og_total_price'];
             $data['g_discount'] = $priceItem['og_total_discount'];
@@ -74,19 +64,7 @@ class GoodsModel extends Model{
         return $data;
     }
 
-    public static function getGlobalRuleFilterParams(){
-        return [
-            'exclude_defs' => [
-                SaleRule::SR_TYPE_SKU => [
-                    SaleRule::SR_TYPE_GOODS,
-                    SaleRule::SR_TYPE_CATEGORY
-                ],
-                SaleRule::SR_TYPE_GOODS => [
-                    SaleRule::SR_TYPE_CATEGORY
-                ]
-            ]
-        ];
-    }
+
     public static function ensureGoodsSkuIndexRight($index){
         $values = explode('-', $index);
         if(!$values){
@@ -298,7 +276,8 @@ class GoodsModel extends Model{
             'og_single_price' => 0,
             'og_total_price' => 0,
             'og_total_discount' => 0,
-            'discount_items' => []
+            'discount_items' => [],
+            'discount_items_des' => []
         ];
         $defualtBuyParams = [
             'buy_num' => 1, // 购买数量
@@ -314,11 +293,16 @@ class GoodsModel extends Model{
                                         $priceItems['og_total_num'];
         foreach($buyParams['discount_items'] as $saleRule){
             $discount = $saleRule->discount($priceItems);
-            $priceItems['discount_items'][] = static::buildDiscountItemDes(array_merge($saleRule->toArray(), [
+            $discountParams = array_merge($saleRule->toArray(), [
                 'discount' => $discount,
+                'sku_id' => $sku['sku_id'],
+                'g_name' => $sku['g_name'],
+                'sku_name' => $sku['sku_name'],
                 'og_total_price' => $priceItems['og_total_price'],
-                'og_total_discount' => $priceItems['og_total_discount']
-            ]));
+                'og_total_discount' => $priceItems['og_total_discount'],
+            ]);
+            $priceItems['discount_items'][] = $discountParams;
+            $priceItems['discount_items_des'][] = static::buildDiscountItemDes($discountParams);
             $priceItems['og_total_price'] -= $discount;
             $priceItems['og_total_discount'] += $discount;
         }
@@ -327,7 +311,9 @@ class GoodsModel extends Model{
 
     public static function buildDiscountItemDes($data){
         $ruleNameMap =  ConstMap::getConst('sr_object_type');
-        return sprintf("原价%s,折扣为%s,优惠后价格为%s(使用%s规则-优惠%s)",
+        return sprintf("%s,%s:原价%s,折扣为%s,优惠后价格为%s(使用%s规则-优惠%s)",
+            $data['g_name'],
+            $data['sku_name'],
             $data['og_total_price'],
         $data['discount'],
         $data['og_total_price'] - $data['discount']

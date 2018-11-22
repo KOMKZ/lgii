@@ -28,7 +28,9 @@ return [
     'sr_object_type' => [
         \lgoods\models\sale\SaleRule::SR_TYPE_SKU => '特定商品',
         \lgoods\models\sale\SaleRule::SR_TYPE_GOODS => '商品',
-        \lgoods\models\sale\SaleRule::SR_TYPE_CATEGORY => '分类'
+        \lgoods\models\sale\SaleRule::SR_TYPE_CATEGORY => '分类',
+        \lgoods\models\sale\SaleRule::SR_TYPE_ORDER => '订单'
+
     ]
     /*
 	'u_status' => [

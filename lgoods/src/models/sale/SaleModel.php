@@ -11,7 +11,20 @@ use lbase\helpers\ArrayHelper;
 use yii\base\Model;
 
 class SaleModel extends Model{
-
+    public static function getGlobalRuleFilterParams($params = []){
+        return array_merge([
+            'exclude_defs' => [
+                SaleRule::SR_TYPE_SKU => [
+                    SaleRule::SR_TYPE_GOODS,
+                    SaleRule::SR_TYPE_CATEGORY
+                ],
+                SaleRule::SR_TYPE_GOODS => [
+                    SaleRule::SR_TYPE_CATEGORY
+                ]
+            ],
+            'is_order_filter' => true,
+        ], $params);
+    }
     public static function fetchTargetRules($range){
         $rules = [];
         $query = static::find();
@@ -24,21 +37,70 @@ class SaleModel extends Model{
         $rules = $query->all();
         return $rules;
     }
+    public static function fetchOrderRules($data = []){
+        $ruleRange = [
+            [
+                'sr_object_id' => 0,
+                'sr_object_type' => SaleRule::SR_TYPE_ORDER
+            ]
+        ];
+        $saleRules = SaleModel::fetchTargetRules($ruleRange);
+        $saleRules = SaleModel::filterRules($saleRules, static::getGlobalRuleFilterParams($data));
+        return $saleRules;
+
+    }
+    public static function fetchGoodsRules($data){
+        if(isset($data['sku_id'])){
+            $ruleRange[] = [
+                'sr_object_id' => $data['sku_id'],
+                'sr_object_type' => SaleRule::SR_TYPE_SKU
+            ];
+        }
+        if(isset($data['g_id'])){
+            $ruleRange[] =                 [
+                'sr_object_id' => $data['g_id'],
+                'sr_object_type' => SaleRule::SR_TYPE_GOODS
+            ];
+        }
+        $saleRules = SaleModel::fetchTargetRules($ruleRange);
+        $saleRules = SaleModel::filterRules($saleRules, static::getGlobalRuleFilterParams([
+            'is_order_filter' => false
+        ]));
+        return $saleRules;
+    }
 
     public static function filterRules($rules, $filterParams = []){
         $excludeTypes = [];
-        if($filterParams['exclude_defs']){
-            $excludeTypes = [];
-            foreach($rules as $rule){
-                $type = $rule['sr_object_type'];
+        $excludeIds = [];
+        $maxPrice = 0;
+        $maxPriceId = 0;
+        foreach($rules as $rule){
+            $type = $rule['sr_object_type'];
+
+            if($filterParams['exclude_defs']){
                 if(isset($filterParams['exclude_defs'][$type])){
                     $excludeTypes = array_merge($excludeTypes, $filterParams['exclude_defs'][$type]);
                 }
             }
+            if($filterParams['is_order_filter'] && isset($filterParams['total_price']) && SaleRule::SR_TYPE_ORDER == $type){
+                list($price, ) = explode(',', $rule['sr_caculate_params']);
+                if($price <= $filterParams['total_price'] && $price > $maxPrice){
+                    $maxPrice = $price;
+                    $excludeIds[] = $maxPriceId;
+                    $maxPriceId = $rule['sr_id'];
+                }else{
+                    $excludeIds[] = $rule['sr_id'];
+                }
+            }
         }
+
         $result = [];
         foreach($rules as $key => $rule){
-            if(!in_array($rule['sr_object_type'], $excludeTypes)){
+            $exclude = in_array($rule['sr_object_type'], $excludeTypes)
+                ||
+                in_array($rule['sr_id'], $excludeIds)
+                ;
+            if(!$exclude){
                 $result[] = $rule;
             }
         }
