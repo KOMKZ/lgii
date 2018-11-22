@@ -17,13 +17,6 @@ class CreateCest
     // tests
     public function tryToTest(ApiTester $i)
     {
-        $i->sendGET("/goods/" . 7, [
-            'field_level' => 'all',
-        ]);
-        $res = json_decode($i->grabResponse(), true);
-        $goods = $res['data'];
-        Debug::debug($goods);
-        return ;
         $i->sendPOST("/lfile", [
             'file_category' => 'pub_img',
         ], [
