@@ -72,6 +72,7 @@ $config = ArrayHelper::merge([
             'enableAutoLogin' => true,
         ],
         'errorHandler' => [
+            'class' => "lbase\ErrorHandler",
             'errorAction' => 'site/error',
         ],
         'urlManager' => [

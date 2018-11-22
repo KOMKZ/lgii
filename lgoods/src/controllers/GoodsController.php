@@ -77,7 +77,10 @@ class GoodsController extends Controller{
      */
     public function actionList(){
         $getData = Yii::$app->request->get();
-        $query = GoodsModel::findFullForList();
+        $getData = array_merge($getData, [
+            'field_level' => 'list'
+        ]);
+        $query = GoodsModel::findFull($getData);
         $provider = new ActiveDataProvider([
             'query' => $query->asArray(),
         ]);
@@ -112,7 +115,7 @@ class GoodsController extends Controller{
      */
     public function actionView($index){
         $getData = Yii::$app->request->get();
-        $goodsData = GoodsModel::findFull()
+        $goodsData = GoodsModel::findFull($getData)
                     ->andWhere(['=', 'g.g_id', $index])
                     ->asArray()
                     ->one();
@@ -135,6 +138,17 @@ class GoodsController extends Controller{
         return $this->succItems($data, count($data));
     }
 
+    /**
+     * @api put,/goods,Goods,修改一个商品
+     * - g_name required,string,in_body,商品名称
+     * - g_sid required,integer,in_body,商品关联对象id，未定义的时候传0
+     * - g_stype required,integer,in_body,商品关联对象模块类型，未定义时传空字符
+     * - g_options optional,array#option_update_param,in_body,商品属性值更新列表
+     * - g_del_options optional,array#integer,in_body,需要删除的选项值id
+     *
+     * @return #global_res
+     * - data object#goods_item,返回商品详情
+     */
     public function actionUpdate($index){
         $t = $this->beginTransaction();
         try{
@@ -151,7 +165,8 @@ class GoodsController extends Controller{
             }
             GoodsModel::ensureGoodsSkusRight($goods);
             $goodsFullData = GoodsModel::formatOneGoods($goods->toArray(), [
-                'goods_attr_level' => 'all'
+                'goods_attr_level' => 'all',
+                'field_level' => 'all'
             ]);
             $t->commit();
             return $this->succ($goodsFullData);
@@ -183,7 +198,8 @@ class GoodsController extends Controller{
             }
             $t->commit();
             return $this->succ(GoodsModel::formatOneGoods($goods->toArray(), [
-                'goods_attr_level' => 'all'
+                'goods_attr_level' => 'all',
+                'field_level' => 'all'
             ]));
         }catch(\Exception $e){
             $t->rollback();
@@ -197,6 +213,11 @@ class GoodsController extends Controller{
  * - opt_value required,string,属性值
  * - opt_attr_id required,integer,属性值对应属性id
  *
+ * @def #option_update_param
+ * - opt_id required,integer,选项值id
+ * - opt_name optional,string,选项值名称
+ *
+ *
  * @def #price_param
  * - price required,integer,价格
  * - is_master optional,integer,是否是主价格
@@ -208,6 +229,8 @@ class GoodsController extends Controller{
  * @def #goods_item
  * - g_id integer,商品id
  * - g_name string,商品名称
+ * - g_price integer,商品价格
+ * - g_discount integer,商品折扣
  * - g_created_at integer,创建时间
  * - g_updated_at integer,更新时间
  * - g_m_img_id string,商品图片id

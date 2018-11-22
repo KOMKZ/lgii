@@ -24,24 +24,32 @@ use yii\helpers\ArrayHelper;
 class GoodsModel extends Model{
 
     CONST EVENT_GOODS_CREATE = 'goods_create';
-    public static function getDefaultGoodsFieldParams(){
-        return [
-            'g_attr_level' => 'all'
-        ];
-    }
+
     public static function formatOneGoods($data, $params = []){
-        $params = array_merge(static::getDefaultGoodsFieldParams(), $params);
-        if(!empty($params['g_attr_level'])){
+        $fields = static::getLevelFields(ArrayHelper::getValue($params, 'field_level', 'all'));
+
+        if(array_key_exists('attrs', $fields)){
             $attrs = empty($params['attrs']) ? static::getGoodsListAttrs([$data['g_id']], $params) : $params['attrs'];
             $data['g_attrs'] = isset($attrs[$data['g_id']]) ? $attrs[$data['g_id']] : [];
         }else{
             $data['g_attrs'] = [];
         }
+
+        if(!isset($data['goods_skus'])){
+            $data['goods_skus'] = [];
+        }
+
         if(isset($data['g_m_img_id'])){
             $fModel = new FileModel();
             $data['g_m_img_url'] = $fModel->buildFileUrlStatic(FileModel::parseQueryId($data['g_m_img_id']));
         }else{
-            $data['g_m_img_url'] = 'url';
+            $data['g_m_img_url'] = '';
+        }
+
+        if(isset($data['sku_price'])){
+            $priceItem = static::caculatePrice($data, $params);
+            $data['g_price'] = $priceItem['og_total_price'];
+            $data['g_discount'] = 0;
         }
 
         return $data;
@@ -61,14 +69,17 @@ class GoodsModel extends Model{
         }
         return static::buildSkusIndexByParams($params);
     }
-    public static function getLevelFields($type, $level){
+    public static function getLevelFields($level){
         $map = [
-            'g_attr_level' => [
-                'all' => ['attrs'],
-                'list' => ['attrs']
+            'all' => [
+                'attrs' => null,
+                'goods_skus' => null,
+            ],
+            'list' => [
+                'master_sku_info' => null,
             ]
         ];
-        return $map[$type][$level];
+        return $map[$level];
     }
     public static function formatGoods($dataList, $params = []){
         if(!empty($params['g_attr_level'])){
@@ -94,7 +105,6 @@ class GoodsModel extends Model{
             'sku' => Attr::A_TYPE_SKU,
             'short' => Attr::A_TYPE_NORMAL,
         ];
-
         $aTable = Attr::tableName();
         $optTable = Option::tableName();
         $query = Option::find()
@@ -158,6 +168,13 @@ class GoodsModel extends Model{
         return $query->asArray()->one();
     }
 
+    public static function getSkuIndexes($params){
+        $query = GoodsSku::find();
+        $query->andWhere(['=', 'sku_g_id', $params['g_id']]);
+        $query->select(['sku_index']);
+        return $query->asArray()->all();
+    }
+
     public static function getSkusFromGoods(GoodsInterface $target){
         $query = static::findSku();
         $query->andWhere(["=", 'g_sid', $target->getG_sid()]);
@@ -187,33 +204,32 @@ class GoodsModel extends Model{
         return $query;
     }
 
-    public static function findFullForList(){
-        $geTable = GoodsExtend::tableName();
-        $query = Goods::find()
-            ->from([
-                'g' => Goods::tableName(),
-            ])
-            ->select([
-                "g.*",
-                "ge.*"
-            ])
-            ->leftJoin(['ge' => GoodsExtend::tableName()], "ge.g_id = g.g_id")
-            ;
-        return $query;
-    }
 
-    public static function findFull(){
+
+    public static function findFull($params = []){
+        $fields = static::getLevelFields(ArrayHelper::getValue($params, 'field_level', 'all'));
+
         $geTable = GoodsExtend::tableName();
+        $gskuTable = GoodsSku::tableName();
+        $select = [
+            "g.*",
+            "ge.*",
+        ];
         $query = Goods::find()
             ->from([
                 'g' => Goods::tableName(),
             ])
-            ->select([
-                "g.*",
-                "ge.*"
-            ])
-            ->leftJoin(['ge' => GoodsExtend::tableName()], "ge.g_id = g.g_id")
-            ->with("goods_skus");
+            ->leftJoin(['ge' => $geTable], "ge.g_id = g.g_id")
+            ;
+        if(array_key_exists('goods_skus', $fields)){
+            $query->with('goods_skus');
+        }
+        if(array_key_exists('master_sku_info', $fields)){
+            $query->leftJoin(['g_sku' => $gskuTable], "g_sku.sku_g_id = g.g_id and g_sku.sku_is_master = 1");
+            $select[] = "g_sku.sku_price";
+            $select[] = "g_sku.sku_name";
+        }
+        $query->select($select);
         return $query;
     }
 
@@ -249,7 +265,7 @@ class GoodsModel extends Model{
             'discount_items' => []
         ];
         $defualtBuyParams = [
-            'buy_num' => 0, // 购买数量
+            'buy_num' => 1, // 购买数量
             'customer_uid' => 0, // 购买用户id
             'discount_items' => [], // 用户使用折扣情况
         ];
@@ -360,6 +376,24 @@ class GoodsModel extends Model{
                 'opt_ids' => $goodsData['g_del_options'],
             ]);
         }
+        if(!empty($goodsData['price_items'])){
+            list($skuData, $oldSkuData) = static::buildSkusData([
+                'g_id' => $goods['g_id'],
+                'price_items' => $goodsData['price_items']
+            ], false);
+            if($skuData){
+                $skus = static::createGoodsSkus($skuData);
+                if(!$skus){
+                    throw new \Exception("创建sku失败");
+                }
+            }
+            if($oldSkuData){
+                $skus = static::updateGoodsSkus($oldSkuData);
+                if(!$skus){
+                    throw new \Exception("更新sku失败");
+                }
+            }
+        }
         return $goods;
     }
 
@@ -413,51 +447,77 @@ class GoodsModel extends Model{
         }
         // 创建sku
         if(!empty($goodsData['price_items'])){
-            $skuData = [];
-            $hasMaster = 0;
-            $attrs = static::getGoodsAttrs($goods->g_id, ['g_attr_level' => 'sku']);
-            if(!$attrs){
-                $this->addError('price_items', '当前商品还没有定义属性列表');
-                return false;
-            }
-            foreach($attrs as $key => &$attr){
-                $attr['values'] = ArrayHelper::index($attr['values'], 'opt_value');
-            }
-            $attrs = ArrayHelper::index($attrs, 'a_id');
-            foreach ($goodsData['price_items'] as $key => $skuParams){
-                if(!isset($skuParams['price']) || !is_numeric($skuParams['price'])){
-                    throw new \Exception(sprintf("%s %s price非法", $key, implode(',', $skuParams)));
+            list($skuData, $oldSkuData) = static::buildSkusData([
+                'g_id' => $goods['g_id'],
+                'price_items' => $goodsData['price_items']
+            ]);
+            if($skuData){
+                $skus = static::createGoodsSkus($skuData);
+                if(!$skus){
+                    throw new \Exception("创建sku失败");
                 }
-                $isMaster = ArrayHelper::getValue($skuParams, 'is_master', 0);
-                $hasMaster = $isMaster || $hasMaster;
-                $skuPrice = $skuParams['price'];
-                unset($skuParams['is_master']);
-                unset($skuParams['price']);
+            }
+        }
+        return $goods;
+    }
 
-                foreach($skuParams as $aid => $value){
+    public static function buildSkusData($data, $insert = true){
+        $curIndexes = ArrayHelper::index(static::getSkuIndexes($data), 'sku_index');
+        $skuData = [];
+        $oldSkuData = [];
+        $hasMaster = 0;
+        $attrs = static::getGoodsAttrs($data['g_id'], ['g_attr_level' => 'sku']);
+        if(!$attrs){
+            throw new \Exception("当前商品还没有定义属性列表");
+        }
+        foreach($attrs as $key => &$attr){
+            $attr['values'] = ArrayHelper::index($attr['values'], 'opt_value');
+        }
+        $attrs = ArrayHelper::index($attrs, 'a_id');
+        foreach ($data['price_items'] as $key => $skuParams){
+            if(!isset($skuParams['price']) || !is_numeric($skuParams['price'])){
+                throw new \Exception(sprintf("%s %s price非法", $key, implode(',', $skuParams)));
+            }
+            $isMaster = ArrayHelper::getValue($skuParams, 'is_master', 0);
+            $hasMaster = $isMaster || $hasMaster;
+            $skuPrice = $skuParams['price'];
+            unset($skuParams['is_master']);
+            unset($skuParams['price']);
+
+            foreach($skuParams as $aid => $value){
+                if(isset($attrs[$aid]['values'][$value])){
                     $skuNameParams[$attrs[$aid]['a_name']] = $attrs[$aid]['values'][$value]['opt_name'];
+                }else{
+                    throw new \Exception("不存在的sku选项值：{$aid},{$value}");
                 }
-                $skuIndexName = static::buildSkusIndexByParams($skuNameParams);
-                $skuIndex = static::buildSkusIndexByParams($skuParams);
+            }
+            $skuIndexName = static::buildSkusIndexByParams($skuNameParams);
+            $skuIndex = static::buildSkusIndexByParams($skuParams);
+            if(array_key_exists($skuIndex, $curIndexes)){
+                $oldSkuData[] = [
+                    'sku_g_id' => $data['g_id'],
+                    'sku_index' => $skuIndex,
+                    'sku_name' => $skuIndexName,
+                    'sku_price' => $skuPrice,
+                    'sku_is_master' => $isMaster,
+                ];
+            }else{
                 $skuData[] = [
-                    'sku_g_id' => $goods->g_id,
+                    'sku_g_id' => $data['g_id'],
                     'sku_index' => $skuIndex,
                     'sku_name' => $skuIndexName,
                     'sku_price' => $skuPrice,
                     'sku_is_master' => $isMaster,
                 ];
             }
-            if(!$hasMaster){
-                throw new \Exception("价格参数必须指定指定主价格");
-            }
-            $skus = static::createGoodsSkus($skuData);
-            if(!$skus){
-                throw new \Exception("创建sku失败");
-            }
         }
-        return $goods;
+        if(!$hasMaster && $insert){
+            throw new \Exception("价格参数必须指定指定主价格");
+        }
+        return [$skuData, $oldSkuData];
     }
-    public static function ensureGoodsSkusRight($data){
+
+    public static function  ensureGoodsSkusRight($data){
         $attrs = static::getGoodsAttrs($data['g_id'], ['g_attr_level' => 'sku']);
         if(!$attrs){
             return null;
@@ -477,7 +537,7 @@ class GoodsModel extends Model{
         ])->all();
         $indexMap = ArrayHelper::map($skuIndexs, 'value', 'name');
         foreach($skus as $sku){
-            $sku->sku_index_status = GoodsSku::INDEX_STATUS_INVALID;
+            $sku->sku_index_status = GoodsSku::INDEX_STATUS_VALID;
             $sku->sku_name = $indexMap[$sku->sku_index];
             $sku->update(false);
         }
@@ -531,7 +591,25 @@ class GoodsModel extends Model{
         }
         return $skuIds;
     }
-
+    public static function updateGoodsSkus($oldSkuData){
+        $t = Yii::$app->db->beginTransaction();
+        try{
+            $r = [];
+            $oldSkuData = ArrayHelper::index($oldSkuData, 'sku_index');
+            foreach(GoodsSku::find()->where(['sku_index' => array_keys($oldSkuData)])->all() as $sku){
+                if(!$sku->load($oldSkuData[$sku['sku_index']], '') || !$sku->validate()){
+                    throw new \Exception(implode(',', $sku->getFirstErrors()));
+                }
+                $sku->update(false);
+                $skus[] = $sku;
+            }
+            $t->commit();
+            return $skus;
+        }catch(\Exception $e){
+            $t->rollBack();
+            throw $e;
+        }
+    }
     public static function createGoodsSkus($skuListData){
         $t = Yii::$app->db->beginTransaction();
         try{
@@ -548,9 +626,8 @@ class GoodsModel extends Model{
             $t->commit();
             return $skus;
         }catch(\Exception $e){
-            Yii::error($e);
             $t->rollBack();
-            return false;
+            throw $e;
         }
     }
 

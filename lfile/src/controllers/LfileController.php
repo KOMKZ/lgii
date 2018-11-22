@@ -93,7 +93,7 @@ class LfileController extends Controller
     }
 
     /**
-     * @api post,/files,File,上传一个文件
+     * @api post,/file,File,上传一个文件
      * - file_save_name optional,string,in_body,文件保存名称
      * - file_is_tmp optional,integer,in_body,文件是否是临时文件
      * - file_valid_time optional,integer,in_body,仅当is_tmp为1的时候有效，如定义3600，说明文件在服务器的有效时间是3600秒

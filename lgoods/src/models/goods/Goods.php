@@ -45,8 +45,10 @@ class Goods extends ActiveRecord{
 
     public function getGoods_skus(){
         return $this->hasMany(GoodsSku::class, [
-            'sku_g_id' => 'g_id'
-        ])->orderBy(['sku_is_master' => SORT_DESC]);
+            'sku_g_id' => 'g_id',
+
+        ])
+            ->orderBy(['sku_is_master' => SORT_DESC]);
     }
     public function rules(){
         return [
