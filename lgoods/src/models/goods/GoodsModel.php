@@ -63,7 +63,7 @@ class GoodsModel extends Model{
                 ];
             }
             $saleRules = SaleModel::fetchTargetRules($ruleRange);
-            $saleRules = SaleModel::filterRules($saleRules, []);
+            $saleRules = SaleModel::filterRules($saleRules, static::getGlobalRuleFilterParams());
             $params['discount_items'] = $saleRules;
             $priceItem = static::caculatePrice($data, $params);
             $data['g_price'] = $priceItem['og_total_price'];
@@ -72,6 +72,20 @@ class GoodsModel extends Model{
         }
 
         return $data;
+    }
+
+    public static function getGlobalRuleFilterParams(){
+        return [
+            'exclude_defs' => [
+                SaleRule::SR_TYPE_SKU => [
+                    SaleRule::SR_TYPE_GOODS,
+                    SaleRule::SR_TYPE_CATEGORY
+                ],
+                SaleRule::SR_TYPE_GOODS => [
+                    SaleRule::SR_TYPE_CATEGORY
+                ]
+            ]
+        ];
     }
     public static function ensureGoodsSkuIndexRight($index){
         $values = explode('-', $index);

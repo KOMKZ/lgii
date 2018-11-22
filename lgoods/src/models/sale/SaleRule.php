@@ -42,7 +42,8 @@ class SaleRule extends ActiveRecord{
 
             ['sr_caculate_type', 'required'],
 
-            ['sr_caculate_params', 'required']
+            ['sr_caculate_params', 'required'],
+
         ];
     }
 

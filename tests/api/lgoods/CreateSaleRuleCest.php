@@ -153,5 +153,12 @@ class CreateCest
         Debug::debug($file);
 
 
+        $i->sendGET("/goods/" . $data['g_id'], [
+            'field_level' => 'all',
+        ]);
+        $res = json_decode($i->grabResponse(), true);
+        $goods = $res['data'];
+        Debug::debug($goods);
+
     }
 }

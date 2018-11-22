@@ -7,6 +7,7 @@
  */
 namespace lgoods\models\sale;
 
+use lbase\helpers\ArrayHelper;
 use yii\base\Model;
 
 class SaleModel extends Model{
@@ -25,8 +26,23 @@ class SaleModel extends Model{
     }
 
     public static function filterRules($rules, $filterParams = []){
-        return $rules;
-
+        $excludeTypes = [];
+        if($filterParams['exclude_defs']){
+            $excludeTypes = [];
+            foreach($rules as $rule){
+                $type = $rule['sr_object_type'];
+                if(isset($filterParams['exclude_defs'][$type])){
+                    $excludeTypes = array_merge($excludeTypes, $filterParams['exclude_defs'][$type]);
+                }
+            }
+        }
+        $result = [];
+        foreach($rules as $key => $rule){
+            if(!in_array($rule['sr_object_type'], $excludeTypes)){
+                $result[] = $rule;
+            }
+        }
+        return $result;
     }
 
     public static function find(){
