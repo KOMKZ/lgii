@@ -10,26 +10,12 @@ namespace lgoods\models\sale;
 use yii\base\Model;
 
 class SaleModel extends Model{
-    public function caculateGoodsPrice($goods, $rules){
-        $ruleHistory = [];
-        foreach($rules as $rule){
-            if(!($rule instanceof SaleRuleInterface)){
-                throw new \Exception("销售规则不合法");
-            }
-            $newPrice = $rule->applyTo($goods, $ruleHistory);
-            $ruleName = $rule::className();
-            $ruleHistory[$ruleName][] = [
-                $newPrice, []
-            ];
-            if($rule->getIsFinal()){
-                break;
-            }
-        }
-        return [$newPrice, $ruleHistory];
+
+    public static function fetchTargetRules($params){
+        $rules = [];
+        return $rules;
     }
 
-    public function caculateListPrice($goods, $rules, $refresh = false){
-        // 使用静态值
-    }
+
 
 }
