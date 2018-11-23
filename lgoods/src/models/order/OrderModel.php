@@ -2,6 +2,7 @@
 namespace lgoods\models\order;
 
 use lbase\staticdata\ConstMap;
+use lgoods\helpers\PriceHelper;
 use lgoods\models\sale\SaleModel;
 use lgoods\models\trans\Trans;
 use Yii;
@@ -199,9 +200,9 @@ class OrderModel extends Model{
     public static function buildDiscountItemDes($data){
         $ruleNameMap =  ConstMap::getConst('sr_object_type');
         return sprintf("订单原价%s,折扣为%s,优惠后价格为%s(使用%s规则-优惠%s)",
-            $data['total_price'],
-            $data['discount'],
-            $data['total_price'] - $data['discount']
+            PriceHelper::format($data['total_price']),
+            PriceHelper::format($data['discount']),
+            PriceHelper::format($data['total_price'] - $data['discount'])
             ,$ruleNameMap[$data['sr_object_type']]
             ,$data['sr_name']
         );

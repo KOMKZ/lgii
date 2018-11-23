@@ -152,45 +152,6 @@ class CreateCest
         $file = $res['data'];
         Debug::debug($file);
 
-        if(0){
-            $i->sendPOST("/lsale-rule", [
-                'sr_name' => '满100元减20元',
-                'sr_start_at' => time(),
-                'sr_end_at' => time() + 3600,
-                'sr_caculate_type' => 2,
-                'sr_caculate_params' => "10000,2000",
-                "sr_object_id" => 0,
-                "sr_object_type" => 4,
-                'sr_usage_intro' => '满100元减20元',
-            ]);
-            $i->seeResponseCodeIs(200);
-            $i->seeResponseContainsJson([
-                'code' => 0
-            ]);
-            $res = json_decode($i->grabResponse(), true);
-            $file = $res['data'];
-            Debug::debug($file);
-
-            $i->sendPOST("/lsale-rule", [
-                'sr_name' => '满200元减50元',
-                'sr_start_at' => time(),
-                'sr_end_at' => time() + 3600,
-                'sr_caculate_type' => 2,
-                'sr_caculate_params' => "20000,5000",
-                "sr_object_id" => 0,
-                "sr_object_type" => 4,
-                'sr_usage_intro' => '满200元减50元',
-            ]);
-            $i->seeResponseCodeIs(200);
-            $i->seeResponseContainsJson([
-                'code' => 0
-            ]);
-            $res = json_decode($i->grabResponse(), true);
-            $file = $res['data'];
-            Debug::debug($file);
-
-        }
-
 
         $i->sendGET("/goods/" . $data['g_id'], [
             'field_level' => 'all',

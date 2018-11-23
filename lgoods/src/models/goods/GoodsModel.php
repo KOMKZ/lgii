@@ -10,6 +10,7 @@ namespace lgoods\models\goods;
 use lbase\staticdata\ConstMap;
 use lfile\models\FileModel;
 use lfile\models\query\FileQuery;
+use lgoods\helpers\PriceHelper;
 use lgoods\models\attr\Attr;
 use lgoods\models\attr\AttrModel;
 use lgoods\models\attr\Option;
@@ -314,9 +315,9 @@ class GoodsModel extends Model{
         return sprintf("%s,%s:原价%s,折扣为%s,优惠后价格为%s(使用%s规则-优惠%s)",
             $data['g_name'],
             $data['sku_name'],
-            $data['og_total_price'],
-        $data['discount'],
-        $data['og_total_price'] - $data['discount']
+            PriceHelper::format($data['og_total_price']),
+        PriceHelper::format($data['discount']),
+        PriceHelper::format($data['og_total_price'] - $data['discount'])
         ,$ruleNameMap[$data['sr_object_type']]
         ,$data['sr_name']
             );
