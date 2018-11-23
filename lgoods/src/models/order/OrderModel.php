@@ -9,10 +9,24 @@ use lgoods\models\trans\Trans;
 use Yii;
 use lgoods\models\goods\GoodsModel;
 use yii\base\Model;
+use yii\db\Query;
 use yii\helpers\ArrayHelper;
 use lgoods\models\order\AfterPayedEvent;
 
 class OrderModel extends Model{
+    public static function getLevelFields($level){
+        $map = [
+            'all' => [
+                'og_discount_info' => null,
+                'od_discount_items' => null,
+            ],
+            'list' => [
+
+            ]
+        ];
+        return $map[$level];
+    }
+
     public static function formatOrders($orders, $params = []){
         foreach($orders as &$order){
             $order = static::formatOneOrder($order, $params);
@@ -20,6 +34,8 @@ class OrderModel extends Model{
         return $orders;
     }
     public static function formatOneOrder($data, $params = []){
+        $fields = static::getLevelFields(ArrayHelper::getValue($params, 'fields_level', 'all'));
+
         if(!empty($data['od_discount_items'])){
             $data['od_discount_items'] = json_decode($data['od_discount_items'], true);
         }else{
@@ -41,10 +57,26 @@ class OrderModel extends Model{
                 }else{
                     $ogItem['g_m_img_url'] = '';
                 }
+                if(isset($ogItem['og_discount_items'])){
+                    $ogItem['og_discount_items'] = json_decode($ogItem['og_discount_items'], true);
+                }else{
+                    $ogItem['og_discount_items'] = [];
+                }
+                if(isset($ogItem['og_discount_des'])){
+                    $ogItem['og_discount_des'] = json_decode($ogItem['og_discount_des'], true);
+                }else{
+                    $ogItem['og_discount_des'] = [];
+                }
             }
         }
         return $data;
     }
+
+    public function ensureOrderCanPay($order){
+        // todo
+        return true;
+    }
+
 
     public static function handleReceivePayedEvent($event){
         $trans = $event->sender;
@@ -76,11 +108,27 @@ class OrderModel extends Model{
         return Order::find();
     }
 
-    public static function findOrderFull(){
+    public static function findOrderFull($params = []){
+        $fields = static::getLevelFields(ArrayHelper::getValue($params, 'fields_level', 'all'));
         $oTable = Order::tableName();
 
         $query = Order::find()
-                      ->with("order_goods_list");
+                      ->with([
+                          'order_goods_list' => function(Query $query) use($fields){
+                              $joinDiscount = array_key_exists("og_discount_info", $fields);
+                              $select = [
+                                 "og_od_id",
+                                 "og_g_id",
+                                 "og_name",
+                                 "oe.g_m_img_id",
+                             ];
+                             if($joinDiscount){
+                                 $select[] = "og_discount_items";
+                                 $select[] = "og_discount_des";
+                             }
+                             $query->select($select);
+                          }
+                      ]);
         $query->from([
             'o' => $oTable,
         ]);
@@ -89,6 +137,7 @@ class OrderModel extends Model{
         $select = [
             "o.od_id",
             "o.od_num",
+            "o.od_pay_status",
             "o.od_created_at",
             "o.od_price",
             'o.od_discount',
@@ -99,6 +148,9 @@ class OrderModel extends Model{
         ];
         $query->leftJoin(['t' => $tTable], "t.trs_type = :p1 and t.trs_target_id = o.od_id", [":p1" => Trans::TRADE_ORDER]);
         $query->leftJoin(['od' => $odTable], "od.od_id = o.od_id");
+        if(array_key_exists('od_discount_items', $fields)){
+            $select[] = "od.od_discount_items";
+        }
         $query->select($select);
         return $query;
     }
@@ -253,8 +305,8 @@ class OrderModel extends Model{
     public static function batchInsertOgData($ogListData){
         return Yii::$app->db->createCommand()->batchInsert(OrderGoods::tableName(), [
             'og_created_at',
-            'og_discount_items',
             'og_discount_des',
+            'og_discount_items',
             'og_g_id',
             'og_g_sid',
             'og_g_stype',

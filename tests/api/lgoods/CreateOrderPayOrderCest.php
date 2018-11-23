@@ -25,23 +25,22 @@ class CreateCest
         ]);
         $res = json_decode($i->grabResponse(), true);
         $goodsList = $res['data']['items'];
-        $orderData = [];
+        $orderData = [
+            'og_list' => []
+        ];
         foreach($goodsList as $goods){
-            $orderData[] = [
+            $orderData['order_goods_list'][] = [
                 'og_sku_id' => $goods['sku_id'],
                 'og_total_num' => 1,
                 'discount_params' => [],
             ];
         }
         Debug::debug($orderData);
-
-
         $i->sendPOST("/lorder", $orderData);
         $i->seeResponseCodeIs(200);
         $i->seeResponseContainsJson([
             'code' => 0
         ]);
-
         $res = json_decode($i->grabResponse(), true);
         $order = $res['data'];
         Debug::debug($order);
@@ -58,9 +57,11 @@ class CreateCest
         Debug::debug($data);
 
         $i->sendPOST(sprintf("/ltrans/%s/pay-order", $data['trs_num']), [
-            'pt_pay_type' => 'wxpay',
-            'pt_pre_order_type' => 'data',
-            'pt_payment_id' => 'wxpay_app'
+              'pt_pay_type' => 'npay',
+              'pt_pre_order_type' => 'data'
+//            'pt_pay_type' => 'wxpay',
+//            'pt_pre_order_type' => 'data',
+//            'pt_payment_id' => 'wxpay_app'
 //            'pt_pre_order_type' => 'url',
 //            'pt_payment_id' => 'wxpay'
         ]);

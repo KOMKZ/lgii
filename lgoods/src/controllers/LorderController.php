@@ -27,11 +27,13 @@ class LorderController extends Controller{
      *
      */
     public function actionList(){
-        $query = OrderModel::findOrderFull()->asArray();
+        $getData = Yii::$app->request->get();
+        $getData = array_merge(['fields_level' => 'list'], $getData);
+        $query = OrderModel::findOrderFull($getData)->asArray();
         $provider = new ActiveDataProvider([
             'query' => $query
         ]);
-        return $this->succItems(OrderModel::formatOrders($provider->getModels()), $provider->totalCount);
+        return $this->succItems(OrderModel::formatOrders($provider->getModels(), $getData), $provider->totalCount);
     }
 
 
@@ -44,11 +46,13 @@ class LorderController extends Controller{
      *
      */
     public function actionView($index){
-        $order = OrderModel::findOrderFull()->andWhere(['=', 'o.od_num', $index])->asArray()->one();
+        $getData = Yii::$app->request->get();
+        $getData = array_merge(['fields_level' => 'all'], $getData);
+        $order = OrderModel::findOrderFull($getData)->andWhere(['=', 'o.od_num', $index])->asArray()->one();
         if(!$order){
             return $this->notfound();
         }
-        return $this->succ($order);
+        return $this->succ(OrderModel::formatOneOrder($order, $getData));
     }
 
     /**
@@ -77,12 +81,25 @@ class LorderController extends Controller{
         }
     }
 
+    /**
+     * @api post,/lorder/{id}/trans,Order,创建一条订单
+     * - id required,string,in_path,订单编号
+     *
+     * @return #global_res
+     * - data object#trans_item,返回交易对象
+     *
+     */
     public function actionCreateTrans($index){
         $t = $this->beginTransaction();
         try{
             $order = OrderModel::findOrder()->andWhere(['=', 'od_num', $index])->one();
             if(!$order){
                 return $this->notfound();
+            }
+            $oModel = new OrderModel();
+            $check = $oModel->ensureOrderCanPay($order);
+            if(!$check){
+                return $this->error(1, $oModel->getErrors());
             }
             $postData = Yii::$app->request->getBodyParams();
             $transModel = new TransModel();
@@ -100,6 +117,7 @@ class LorderController extends Controller{
             $t->rollback();
         }
     }
+
 
 
 
@@ -125,9 +143,16 @@ class LorderController extends Controller{
  * - order_goods_list array#order_goods_item,订单明细列表
  * - od_price_str string,订单价格展示值
  * - od_discount_str string,订单折扣展示值
+ * - od_pay_status integer,订单支付状态
  *
  * @def #order_goods_item
  * - og_name string,明细名称，即商品名称
  * - g_m_img_url string,商品主图片url
+ *
+ * @def #trans_item
+ * - trs_type integer,交易类型
+ * - trs_num string,交易号码
+ * - trs_timeout integer,交易最迟支付时间
+ * - trs_id integer,交易id
  *
  */

@@ -67,6 +67,17 @@ $config = ArrayHelper::merge([
             'appsecret' => '',
             'sslcert_path' => '',
             'sslkey_path' => '',
+            'notifyUrl' => ''
+        ],
+        'wxpay_app' => [
+            'class' => '\\lgoods\models\\trans\\payment\\Wxpay',
+            'appid' => '',
+            'mchid' => '',
+            'key' => '',
+            'appsecret' => '',
+            'sslcert_path' => '',
+            'sslkey_path' => '',
+            'notifyUrl' => '',
         ],
         'user' => [
             'identityClass' => 'app\models\User',

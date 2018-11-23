@@ -42,12 +42,38 @@ class CreateCest
             'code' => 0
         ]);
         $res = json_decode($i->grabResponse(), true);
+        $order = $res['data'];
+        Debug::debug($order);
+
+        $i->sendPOST(sprintf("/lorder/%s/trans", $order['od_num']), [
+
+        ]);
+        $i->seeResponseCodeIs(200);
+        $i->seeResponseContainsJson([
+            'code' => 0
+        ]);
+        $res = json_decode($i->grabResponse(), true);
         $data = $res['data'];
         Debug::debug($data);
 
-        $i->sendPOST(sprintf("/lorder/%s/trans", $data['od_num']), [
-
+        $i->sendPOST(sprintf("/ltrans/%s/pay-order", $data['trs_num']), [
+            'pt_pay_type' => 'npay',
+            'pt_pre_order_type' => 'data'
+//            'pt_pay_type' => 'wxpay',
+//            'pt_pre_order_type' => 'data',
+//            'pt_payment_id' => 'wxpay_app'
+//            'pt_pre_order_type' => 'url',
+//            'pt_payment_id' => 'wxpay'
         ]);
+        $i->seeResponseCodeIs(200);
+        $i->seeResponseContainsJson([
+            'code' => 0
+        ]);
+        $res = json_decode($i->grabResponse(), true);
+        $data = $res['data'];
+        Debug::debug($data);
+
+        $i->sendGET(sprintf("/lorder/%s", $order['od_num']));
         $i->seeResponseCodeIs(200);
         $i->seeResponseContainsJson([
             'code' => 0
