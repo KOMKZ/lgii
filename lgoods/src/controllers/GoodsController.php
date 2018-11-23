@@ -71,9 +71,11 @@ class GoodsController extends Controller{
 
     /**
      * @api get,/goods,Goods,查询商品接口
+     * - fields_level optional,string,in_query,返回字段层级设定
      *
      * @return #global_res
      * - data object#goods_items_list,返回课程列表
+     *
      */
     public function actionList(){
         $getData = Yii::$app->request->get();
@@ -108,6 +110,7 @@ class GoodsController extends Controller{
     /**
      * @api get,/goods/{id},Goods,查看商品信信息
      * - id required,integer,in_path,商品g_id
+     * - fields_level optional,string,in_query,返回字段层级设定
      *
      * @return #global_res
      * - data object#goods_item,返回商品具体信息
@@ -186,6 +189,12 @@ class GoodsController extends Controller{
      *
      * @return #global_res
      * - data object#goods_item,返回商品详情
+     *
+     * <<<doc
+     * __接口开发说明：__
+     * 1. 商品的选项值设定需要关联属性id，属性id的获取开发者需要了解/lcollect接口
+     *
+     * >>>
      */
     public function actionCreate(){
         $t = $this->beginTransaction();

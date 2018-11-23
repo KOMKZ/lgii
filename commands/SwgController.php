@@ -4,6 +4,7 @@ namespace app\commands;
 use Yii;
 use yii\console\Controller;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Markdown;
 
 
 class SwgController extends Controller
@@ -162,7 +163,7 @@ tpl;
             "{{path}}" => $api['path'],
             "{{tag}}" => $api['tag'],
             "{{des}}" => $api['des'],
-
+            "{{doc}}" => $api['doc']
         ];
         $tpl = <<<tpl
 /**
@@ -170,6 +171,7 @@ tpl;
  *    path="{{path}}",
  *    tags={"{{tag}}"},
  *    summary="{{des}}",
+ *    description="{{doc}}",
  *    produces={"application/json"},
  %s
  *  )
@@ -603,23 +605,41 @@ tpl;
         if(!$result){
             throw new \Exception("api定义语法错误,格式有误，请仔细检查api出定义。");
         }
+
+        $hasDoc = preg_match("/<<<doc([\s\S]*)\*\s*>>>/u", $block, $docMatches);
         $method = $matches['method'];
         $path = $matches['path'];
         $des = $matches['des'];
         $tag = $matches['tag'];
+        if($hasDoc){
+            $doc = $docMatches[1];
+        }else{
+            $doc = "";
+        }
+
         $params = $this->parsePropsFromDocBlock($matches['props']);
         list($returnRef, $returnDes) = $this->parseReturnFromDocBlock($matches['return_def']);
         $return['ref'] = $returnRef;
         $return['des'] = $returnDes;
         $return['props'] = $this->parsePropsFromDocBlock($matches['return_props']);
+        $doc = $this->parseApiDocBlock($doc);
         return [
             'method' => $method,
             'path' => $path,
             'des' => $des,
             'tag' => $tag,
+            'doc' => $doc,
             'params' => $params,
             'return' => $return
         ];
+    }
+    protected  function parseApiDocBlock($doc){
+        $lines = explode("\n", trim($doc));
+        $result = [];
+        foreach($lines as $line){
+            $result[] = ltrim($line, "* ");
+        }
+        return preg_replace("/\"/", "\'", Markdown::process(implode("\n", $result), "gfm-comment"));
     }
     protected function parseReturnFromDocBlock($docBlock){
         $def = preg_split('/\s*,\s*/', $docBlock, 2, PREG_SPLIT_NO_EMPTY);

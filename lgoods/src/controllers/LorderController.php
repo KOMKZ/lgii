@@ -21,6 +21,7 @@ class LorderController extends Controller{
     /**
      * @api get,/lorder,Order,获取订单详情
      * - id required,string,in_query,订单编号od_num，支持模糊查询
+     * - fields_level optional,string,in_query,返回字段层级设定
      *
      * @return #global_res
      * - data object#order_item_list,返回创建订单详情列表对象
@@ -40,6 +41,7 @@ class LorderController extends Controller{
     /**
      * @api get,/lorder/{id},Order,获取订单详情
      * - id required,string,in_path,订单编号od_num
+     * - fields_level optional,string,in_query,返回字段层级设定
      *
      * @return #global_res
      * - data object#order_item,返回创建订单详情对象
@@ -61,6 +63,16 @@ class LorderController extends Controller{
      *
      * @return #global_res
      * - data object#order_item,返回创建订单对象
+     *
+     * <<<doc
+     * __订单支付流程__:
+     * 1. 创建订单 post /lorder
+     * 2. 创建交易 post /lorder/{id}/trans
+     * 3. 创建支付 post /trans/{id}/pay-order，必须选择某种支付方式
+     * 
+     * 注： 详细参考各自接口的开发流程
+     *
+     * >>>
      *
      */
     public function actionCreate(){
