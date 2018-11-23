@@ -26,7 +26,7 @@ class LorderController extends Controller{
      *
      */
     public function actionList(){
-        $query = OrderModel::findOrderFull();
+        $query = OrderModel::findOrderFull()->asArray();
         $provider = new ActiveDataProvider([
             'query' => $query
         ]);
