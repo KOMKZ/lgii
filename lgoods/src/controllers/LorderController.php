@@ -8,6 +8,7 @@
 namespace lgoods\controllers;
 
 use lgoods\models\goods\GoodsModel;
+use lgoods\models\order\Order;
 use lgoods\models\order\OrderModel;
 use lgoods\models\trans\TransModel;
 use Yii;
@@ -30,7 +31,7 @@ class LorderController extends Controller{
         $provider = new ActiveDataProvider([
             'query' => $query
         ]);
-        return $this->succItems($provider->getModels(), $provider->totalCount);
+        return $this->succItems(OrderModel::formatOrders($provider->getModels()), $provider->totalCount);
     }
 
 

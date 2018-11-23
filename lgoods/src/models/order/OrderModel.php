@@ -13,7 +13,12 @@ use yii\helpers\ArrayHelper;
 use lgoods\models\order\AfterPayedEvent;
 
 class OrderModel extends Model{
-
+    public static function formatOrders($orders, $params = []){
+        foreach($orders as &$order){
+            $order = static::formatOneOrder($order, $params);
+        }
+        return $orders;
+    }
     public static function formatOneOrder($data, $params = []){
         if(!empty($data['od_discount_items'])){
             $data['od_discount_items'] = json_decode($data['od_discount_items'], true);
