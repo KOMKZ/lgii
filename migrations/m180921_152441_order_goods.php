@@ -25,6 +25,8 @@ class m180921_152441_order_goods extends Migration
             `og_g_stype` char(5) not null comment '商品对象模块',
             `og_sku_id` int(10) unsigned not null comment 'sku主建id',
             `og_sku_index` varchar(255) not null comment 'sku索引名称',
+            `og_discount_items` text not null comment '商品折扣条目信息',
+            `og_discount_des` text not null comment '商品折扣条目信息描述',
             `og_created_at` int(10) unsigned not null comment '创建时间',
             `og_updated_at` int(10) unsigned not null comment '更新时间',
             primary key (`og_id`),

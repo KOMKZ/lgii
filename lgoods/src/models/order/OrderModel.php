@@ -92,8 +92,7 @@ class OrderModel extends Model{
         }
         $totalPrice = 0;
         $totalDiscount = 0;
-        $allDiscountItems = [];
-        $allDiscountItemsDes = [];
+
 
         $ogListData = [];
         foreach($skus as $index => $sku){
@@ -110,8 +109,7 @@ class OrderModel extends Model{
             }
             $totalPrice += $priceItems['og_total_price'];
             $totalDiscount += $priceItems['og_total_discount'];
-            $allDiscountItems = array_merge($allDiscountItems, $priceItems['discount_items']);
-            $allDiscountItemsDes = array_merge($allDiscountItemsDes, $priceItems['discount_items_des']);
+
             $ogData = [
                 'og_total_num' => $priceItems['og_total_num'],
                 'og_single_price' => $priceItems['og_single_price'],
@@ -122,6 +120,8 @@ class OrderModel extends Model{
                 'og_g_stype' => $sku['g_stype'],
                 'og_sku_id' => $sku['sku_id'],
                 'og_sku_index' => $sku['sku_index'],
+                'og_discount_items' => json_encode($priceItems['discount_items']),
+                'og_discount_des' => json_encode($priceItems['discount_items_des']),
                 'og_created_at' => time(),
                 'og_updated_at' => time(),
             ];
@@ -141,8 +141,7 @@ class OrderModel extends Model{
         if($priceItems['has_error']){
             throw new \Exception($priceItems['error_des']);
         }
-        $allDiscountItems = array_merge($allDiscountItems, $priceItems['discount_items']);
-        $allDiscountItemsDes = array_merge($allDiscountItemsDes, $priceItems['discount_items_des']);
+
 
         $order = new Order();
         $order->od_pid = 0;
@@ -161,8 +160,8 @@ class OrderModel extends Model{
         static::batchInsertODiscountData([
             [
                 'od_id' => $order->od_id,
-                'od_discount_items' => json_encode($allDiscountItems),
-                'od_discount_des' => json_encode($allDiscountItemsDes)
+                'od_discount_items' => json_encode($priceItems['discount_items']),
+                'od_discount_des' => json_encode($priceItems['discount_items_des'])
             ]
         ]);
         return $order;
@@ -229,6 +228,8 @@ class OrderModel extends Model{
     public static function batchInsertOgData($ogListData){
         return Yii::$app->db->createCommand()->batchInsert(OrderGoods::tableName(), [
             'og_created_at',
+            'og_discount_items',
+            'og_discount_des',
             'og_g_id',
             'og_g_sid',
             'og_g_stype',
