@@ -9,6 +9,6 @@ namespace lgoods\helpers;
 
 class PriceHelper{
     public static function format($value){
-        return sprintf('%0.2f', $value/100);
+        return sprintf('¥%0.2f', $value/100);
     }
 }

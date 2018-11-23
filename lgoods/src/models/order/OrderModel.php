@@ -2,6 +2,7 @@
 namespace lgoods\models\order;
 
 use lbase\staticdata\ConstMap;
+use lfile\models\FileModel;
 use lgoods\helpers\PriceHelper;
 use lgoods\models\sale\SaleModel;
 use lgoods\models\trans\Trans;
@@ -23,6 +24,19 @@ class OrderModel extends Model{
             $data['od_discount_des'] = json_decode($data['od_discount_des'], true);
         }else{
             $data['od_discount_des'] = [];
+        }
+        $data['od_price_str'] = PriceHelper::format($data['od_price']);
+        $data['od_discount_str'] = PriceHelper::format($data['od_discount']);
+        if(!empty($data['order_goods_list'])){
+            $fModel = new FileModel();
+            foreach($data['order_goods_list'] as &$ogItem){
+                if(isset($ogItem['g_m_img_id'])){
+                    $fModel = new FileModel();
+                    $ogItem['g_m_img_url'] = $fModel->buildFileUrlStatic(FileModel::parseQueryId($ogItem['g_m_img_id']));
+                }else{
+                    $ogItem['g_m_img_url'] = '';
+                }
+            }
         }
         return $data;
     }
@@ -68,9 +82,15 @@ class OrderModel extends Model{
         $tTable = Trans::tableName();
         $odTable = OrderDiscount::tableName();
         $select = [
-            "o.*",
-            "t.*",
-            "od.*"
+            "o.od_id",
+            "o.od_num",
+            "o.od_created_at",
+            "o.od_price",
+            'o.od_discount',
+            "t.trs_id",
+            "t.trs_target_id",
+            "t.trs_type",
+            "od.od_discount_des"
         ];
         $query->leftJoin(['t' => $tTable], "t.trs_type = :p1 and t.trs_target_id = o.od_id", [":p1" => Trans::TRADE_ORDER]);
         $query->leftJoin(['od' => $odTable], "od.od_id = o.od_id");
@@ -79,7 +99,7 @@ class OrderModel extends Model{
     }
 
     public function createOrderFromSkus($orderData){
-        $orderData = ArrayHelper::index($orderData, 'og_sku_id');
+        $orderData = ArrayHelper::index($orderData['order_goods_list'], 'og_sku_id');
         $skuIds = array_keys($orderData);
         $skus = GoodsModel::findValidSku()
                           ->andWhere(['in', 'sku_id', $skuIds])

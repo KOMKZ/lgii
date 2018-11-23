@@ -476,15 +476,26 @@ tpl;
 tpl;
             $varMap['{{type}}'] = $content;
         }elseif('array' == $prop['type']){
-            $content = <<<tpl
+            if(in_array($prop['ref'], ['string', 'integer', 'boolean'])){
+                $content = <<<tpl
+ *      type="array",
+ *      @SWG\Items(
+ *      type="%s"
+ *    )
+tpl;
+                $varMap['{{type}}'] = sprintf($content, $prop['ref']);
+            }else{
+                $content = <<<tpl
  *      type="array",
  *      @SWG\Items(
  *      type="object",
  *      ref="#/definitions/%s"
  *    )
 tpl;
-            // todo 未必都是object
-            $varMap['{{type}}'] = sprintf($content, $prop['ref']);
+                $varMap['{{type}}'] = sprintf($content, $prop['ref']);
+            }
+
+
         }elseif('object' == $prop['type']){
             $content = <<<tpl
  *      type="object",
@@ -590,7 +601,7 @@ tpl;
         "(?P<return_props>[^\n\/]*)\n*\s*"
         ), $block, $matches);
         if(!$result){
-            throw new \Exception("api定义语法错误");
+            throw new \Exception("api定义语法错误,格式有误，请仔细检查api出定义。");
         }
         $method = $matches['method'];
         $path = $matches['path'];

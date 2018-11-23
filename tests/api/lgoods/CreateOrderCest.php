@@ -25,9 +25,11 @@ class CreateCest
         ]);
         $res = json_decode($i->grabResponse(), true);
         $goodsList = $res['data']['items'];
-        $orderData = [];
+        $orderData = [
+            'og_list' => []
+        ];
         foreach($goodsList as $goods){
-            $orderData[] = [
+            $orderData['order_goods_list'][] = [
                 'og_sku_id' => $goods['sku_id'],
                 'og_total_num' => 1,
                 'discount_params' => [],
