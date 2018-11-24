@@ -17,6 +17,7 @@ $config = ArrayHelper::merge([
         'lfile' => '\lfile\controllers\LfileController',
         'lattr' => '\lgoods\controllers\LattrController',
         'lcollect' => '\lgoods\controllers\LcollectController',
+        'lclassification' => '\lgoods\controllers\LclassificationController',
         'lsale-rule' => '\lgoods\controllers\LsaleRuleController',
     ],
     'aliases' => [
@@ -101,12 +102,13 @@ $config = ArrayHelper::merge([
                 'OPTIONS <route:.*>' => "site/index",
                 'trans_notification/<type:.*?>' => 'trans/notify',
                 'lfile/output/?' => 'lfile/output',
-                'POST update' => 'site/update',
 
+                'DELETE <controller:[\w\-:]+>/<index:[^\/]+>/<sub:[\w\-:]+>/<sub_index:[^\/]+>/?' => "<controller>/delete-<sub>",
                 'GET <controller:[\w\-:]+>/<index:[^\/]+>/<sub:[\w\-:]+>/<sub_index:[^\/]+>/?' => "<controller>/view-<sub>",
                 'PUT <controller:[\w\-:]+>/<index:[^\/]+>/<sub:[\w\-:]+>/<sub_index:[^\/]+>/?' => "<controller>/update-<sub>",
                 'GET <controller:[\w\-:]+>/<index:[^\/]+>/?' => "<controller>/view",
                 'GET <controller:[\w\-:]+>/?' => "<controller>/list",
+                'DELETE <controller:[\w\-:]+>/<index:[^\/]+>/?' => "<controller>/delete",
                 'GET <controller:[\w\-:]+>/<index:[^\/]+>/<sub:[\w\-:]+>/?' => "<controller>/list-<sub>",
                 'POST <controller:[\w\-:]+>/<index:[^\/]+>/<sub:[\w\-:]+>/?' => '<controller>/create-<sub>',
                 'POST <controller:[\w\-:]+>/?' => "<controller>/create",
