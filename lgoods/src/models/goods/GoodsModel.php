@@ -14,6 +14,7 @@ use lgoods\helpers\PriceHelper;
 use lgoods\models\attr\Attr;
 use lgoods\models\attr\AttrModel;
 use lgoods\models\attr\Option;
+use lgoods\models\category\ClassificationModel;
 use lgoods\models\sale\SaleModel;
 use lgoods\models\sale\SaleRule;
 use Yii;
@@ -38,6 +39,14 @@ class GoodsModel extends Model{
         }else{
             $data['g_attrs'] = [];
         }
+        if(array_key_exists("category_path", $fields)){
+            $data['categroy_path'] = ClassificationModel::findParentsById($data['g_cls_id'], [
+                'g_cls_id', 'g_cls_show_name', 'g_cls_pid'
+            ]);
+        }else{
+            $data['categroy_path'] = [];
+        }
+
 
         if(!isset($data['goods_skus'])){
             $data['goods_skus'] = [];
@@ -87,6 +96,7 @@ class GoodsModel extends Model{
                 'attrs' => null,
                 'goods_skus' => null,
                 'master_sku_info' => null,
+                'category_path' => null
             ],
             'list' => [
                 'master_sku_info' => null,

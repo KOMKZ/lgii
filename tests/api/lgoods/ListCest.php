@@ -19,7 +19,8 @@ class ListCest
     {
         $i->sendGET("/goods", [
             'g_attr_level' => 'all',
-            'per-page' => 100
+            'per-page' => 100,
+            'g_cls_id' => 6
         ]);
         $i->seeResponseCodeIs(200);
         $i->seeResponseContainsJson([

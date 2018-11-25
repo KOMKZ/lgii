@@ -57,6 +57,7 @@ class Goods extends ActiveRecord{
                     'g_name',
                     'g_sid',
                     'g_stype',
+                    'g_cls_id'
                 ], 'safe'
             ]
         ];

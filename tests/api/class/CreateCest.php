@@ -31,7 +31,7 @@ class CreateCest
         Debug::debug($file);
 
         $i->sendPOST("/lclassification", [
-            'g_cls_name' => '服装',
+            'g_cls_name' => '鞋包配饰',
             'g_cls_img_id' => $file['file_query_id'],
         ]);
         $i->seeResponseCodeIs(200);
@@ -44,7 +44,7 @@ class CreateCest
 
 
         $i->sendPOST("/lclassification", [
-            'g_cls_name' => '男装',
+            'g_cls_name' => '鞋靴',
             'g_cls_img_id' => $file['file_query_id'],
             'g_cls_pid' => $cls['g_cls_id']
         ]);
@@ -57,7 +57,7 @@ class CreateCest
         Debug::debug($clsChild);
 
         $i->sendPOST("/lclassification", [
-            'g_cls_name' => '男士外套',
+            'g_cls_name' => '男鞋',
             'g_cls_img_id' => $file['file_query_id'],
             'g_cls_pid' => $clsChild['g_cls_id']
         ]);
@@ -69,58 +69,8 @@ class CreateCest
         $clsChild = $res['data'];
         Debug::debug($clsChild);
 
-        $i->sendPOST("/lclassification", [
-            'g_cls_name' => '男士牛仔',
-            'g_cls_img_id' => $file['file_query_id'],
-            'g_cls_pid' => $cls['g_cls_id']
-        ]);
-        $i->seeResponseCodeIs(200);
-        $i->seeResponseContainsJson([
-            'code' => 0
-        ]);
-        $res = json_decode($i->grabResponse(), true);
-        $clsChild = $res['data'];
-        Debug::debug($clsChild);
-
-        $i->sendPOST("/lclassification", [
-            'g_cls_name' => '女装',
-            'g_cls_img_id' => $file['file_query_id'],
-            'g_cls_pid' => $cls['g_cls_id']
-        ]);
-        $i->seeResponseCodeIs(200);
-        $i->seeResponseContainsJson([
-            'code' => 0
-        ]);
-        $res = json_decode($i->grabResponse(), true);
-        $clsChild = $res['data'];
-        Debug::debug($clsChild);
 
 
-        $i->sendPOST("/lclassification", [
-            'g_cls_name' => '女士外套',
-            'g_cls_img_id' => $file['file_query_id'],
-            'g_cls_pid' => $clsChild['g_cls_id']
-        ]);
-        $i->seeResponseCodeIs(200);
-        $i->seeResponseContainsJson([
-            'code' => 0
-        ]);
-        $res = json_decode($i->grabResponse(), true);
-        $clsChild = $res['data'];
-        Debug::debug($clsChild);
-
-        $i->sendPOST("/lclassification", [
-            'g_cls_name' => '女士牛仔',
-            'g_cls_img_id' => $file['file_query_id'],
-            'g_cls_pid' => $cls['g_cls_id']
-        ]);
-        $i->seeResponseCodeIs(200);
-        $i->seeResponseContainsJson([
-            'code' => 0
-        ]);
-        $res = json_decode($i->grabResponse(), true);
-        $clsChild = $res['data'];
-        Debug::debug($clsChild);
 
     }
 }

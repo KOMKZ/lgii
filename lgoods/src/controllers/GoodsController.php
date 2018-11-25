@@ -72,6 +72,7 @@ class GoodsController extends Controller{
     /**
      * @api get,/goods,Goods,查询商品接口
      * - fields_level optional,string,in_query,返回字段层级设定
+     * - g_cls_id optional,integer,in_query,查询指定分类的商品
      *
      * @return #global_res
      * - data object#goods_items_list,返回课程列表
@@ -83,6 +84,9 @@ class GoodsController extends Controller{
             'field_level' => 'list'
         ]);
         $query = GoodsModel::findFull($getData);
+        if(!empty($getData['g_cls_id'])){
+            $query->andWhere(['=', 'g_cls_id', $getData['g_cls_id']]);
+        }
         $provider = new ActiveDataProvider([
             'query' => $query->asArray(),
         ]);
@@ -206,7 +210,11 @@ class GoodsController extends Controller{
                 return $this->error(1, $model->getErrors());
             }
             $t->commit();
-            return $this->succ(GoodsModel::formatOneGoods($goods->toArray(), [
+            $goodsData = GoodsModel::findFull()
+                ->andWhere(['=', 'g.g_id', $goods['g_id']])
+                ->asArray()
+                ->one();
+            return $this->succ(GoodsModel::formatOneGoods($goodsData, [
                 'goods_attr_level' => 'all',
                 'field_level' => 'all'
             ]));
@@ -246,6 +254,12 @@ class GoodsController extends Controller{
  * - g_m_img_url string,图片url
  * - g_skus array#sku_item,商品sku条目列表
  * - g_attrs array#attr_item,商品sku属性列表
+ * - categroy_path array#category_path_item,分类路径列表，父辈分类排在前面
+ *
+ * @def #category_path_item
+ * - g_cls_id integer,分类id
+ * - g_cls_show_name string,分类名称
+ * - g_cls_pid integer,分类父级id
  *
  * @def #attr_item
  * - values array#value_item,属性值对象

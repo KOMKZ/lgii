@@ -149,9 +149,10 @@ class ClassificationModel extends Model
      * @param  [type] $clsId [description]
      * @return [type]        [description]
      */
-    public static function findParentsById($clsId){
+    public static function findParentsById($clsId, $fields = []){
         $parents = [];
         $one = static::find()
+            ->select($fields)
             ->where([ 'g_cls_id' => $clsId])
             ->one();
         if(!$one){
@@ -159,7 +160,7 @@ class ClassificationModel extends Model
         }elseif(0 == $one->g_cls_pid){
             return [$one];
         }else{
-            $r = self::findParentsById($one->g_cls_pid);
+            $r = self::findParentsById($one->g_cls_pid, $fields);
             if(null !== $r){
                 return array_merge($r, [$one]);
             }
