@@ -1,5 +1,10 @@
 # LShop
 lshop,开源商城系统
+## 在线例子
+**swagger-ui**: http://47.106.36.175/swagger-ui/dist
+
+**api地址**: http://47.106.36.175:8099
+
 ## 安装
 
 ### 安装项目
