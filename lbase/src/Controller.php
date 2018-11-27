@@ -11,24 +11,7 @@ class Controller extends BaseController
     public $enableCsrfValidation = false;
 
     public function behaviors(){
-        return [
-            'corsFilter' => [
-                'class' => \yii\filters\Cors::className(),
-                'cors' => [
-                    // restrict access to
-                    'Origin' => ["http://47.106.36.175:8099", "http://47.106.36.175"],
-                    'Access-Control-Request-Method' => ['POST', 'PUT', 'GET', 'DELETE', 'OPTION'],
-                    // Allow only POST and PUT methods
-                    'Access-Control-Request-Headers' => ['X-Wsse'],
-                    // Allow only headers 'X-Wsse'
-                    'Access-Control-Allow-Credentials' => true,
-                    // Allow OPTIONS caching
-                    'Access-Control-Max-Age' => 3600,
-                    // Allow the X-Pagination-Current-Page header to be exposed to the browser.
-                    'Access-Control-Expose-Headers' => ['X-Pagination-Current-Page'],
-                ],
-            ],
-        ];
+        return Yii::$app->params['api_behaviors'];
     }
     private function getRes(){
         return [

@@ -1,16 +1,20 @@
 <?php
 namespace lbase;
 
+use yii\base\ErrorException;
+use yii\base\UserException;
+use yii\web\HttpException;
+
 class ErrorHandler extends \yii\web\ErrorHandler{
     protected function convertExceptionToArray($exception)
     {
         if (!YII_DEBUG && !$exception instanceof UserException && !$exception instanceof HttpException) {
-            $exception = new HttpException(500, Yii::t('yii', 'An internal server error occurred.'));
+            $exception = new HttpException(500, \Yii::t('yii', 'An internal server error occurred.'));
         }
 
         $array = [
             'data' => null,
-            'message' => ($exception instanceof Exception || $exception instanceof ErrorException) ? $exception->getName() : 'Exception'
+            'message' => ($exception instanceof \Exception || $exception instanceof ErrorException) ? $exception->getName() : 'Exception'
                          . ':' . $exception->getMessage(),
             'code' => $exception->getCode(),
         ];

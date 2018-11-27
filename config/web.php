@@ -153,7 +153,31 @@ $config = ArrayHelper::merge([
         ],
     ],
     'params' => [
-        'github_update_secret' => ''
+        'github_update_secret' => '',
+        'api_behaviors' => [
+            'rateLimiter' => [
+                'class' => \lbase\filters\RateLimiter::className(),
+                'rateLimit' => 2,
+                'rateLimitPer' => 1,
+                'ignoreIps' => ["127.0.0.1"]
+            ],
+            'corsFilter' => [
+                'class' => \yii\filters\Cors::className(),
+                'cors' => [
+                    // restrict access to
+                    'Origin' => ["http://47.106.36.175:8099", "http://47.106.36.175"],
+                    'Access-Control-Request-Method' => ['POST', 'PUT', 'GET', 'DELETE', 'OPTION'],
+                    // Allow only POST and PUT methods
+                    'Access-Control-Request-Headers' => ['X-Wsse'],
+                    // Allow only headers 'X-Wsse'
+                    'Access-Control-Allow-Credentials' => true,
+                    // Allow OPTIONS caching
+                    'Access-Control-Max-Age' => 3600,
+                    // Allow the X-Pagination-Current-Page header to be exposed to the browser.
+                    'Access-Control-Expose-Headers' => ['X-Pagination-Current-Page'],
+                ],
+            ],
+        ]
     ],
 ], $configLocal);
 
