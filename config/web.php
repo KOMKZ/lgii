@@ -18,6 +18,7 @@ $config = ArrayHelper::merge([
         'lattr' => '\lgoods\controllers\LattrController',
         'lcollect' => '\lgoods\controllers\LcollectController',
         'lclassification' => '\lgoods\controllers\LclassificationController',
+        'cart-item' => '\lgoods\controllers\CartItemController',
         'lsale-rule' => '\lgoods\controllers\LsaleRuleController',
     ],
     'aliases' => [
