@@ -67,7 +67,7 @@ server {
 执行命令安装数据
 
 ```
-./yii rbac/install-data
+./yii site/install
 ```
 
 ### 检验安装结果

@@ -1,5 +1,5 @@
 <?php
-namespace cart;
+namespace category;
 use \ApiTester;
 use Codeception\Util\Debug;
 

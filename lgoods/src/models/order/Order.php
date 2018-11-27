@@ -36,6 +36,7 @@ class Order extends ActiveRecord{
             ->from(["og" => OrderGoods::tableName()])
             ->leftJoin(['oe' => GoodsExtend::tableName()], "oe.g_id = og.og_g_id")
             ->select([
+                "og_id",
                 "og_od_id",
                 "og_g_id",
                 "og_name",

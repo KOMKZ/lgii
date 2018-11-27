@@ -1,10 +1,10 @@
 <?php
-namespace cart;
+namespace goods;
 use \ApiTester;
 use Codeception\Util\Debug;
 
 
-class CreateCest
+class AttrsCreateCest
 {
     public function _before(ApiTester $I)
     {
@@ -20,9 +20,11 @@ class CreateCest
         $i->sendPOST("/lattr", [
             [
                 'a_name' => '尺寸',
+                'a_type' => 2,
             ],
             [
                 'a_name' => '颜色',
+                'a_type' => 2,
             ]
         ]);
         $i->seeResponseCodeIs(200);

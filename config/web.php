@@ -19,6 +19,7 @@ $config = ArrayHelper::merge([
         'lcollect' => '\lgoods\controllers\LcollectController',
         'lclassification' => '\lgoods\controllers\LclassificationController',
         'lsale-rule' => '\lgoods\controllers\LsaleRuleController',
+        'lbanner' => '\lsite\controllers\LbannerController',
     ],
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
@@ -151,6 +152,9 @@ $config = ArrayHelper::merge([
             'timeout' => 60,
             'bucket_cans' => [],
         ],
+        'file' => [
+            'class' => '\\lfile\models\\FileModel'
+        ]
     ],
     'params' => [
         'github_update_secret' => '',

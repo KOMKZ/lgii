@@ -53,11 +53,11 @@ class GoodsModel extends Model{
         }
 
         $fModel = new FileModel();
-        $data['g_m_img_url'] = $fModel->buildFileUrlStatic(FileModel::parseQueryId($data['g_m_img_id']));
-        $data['g_m_img_url1'] = $fModel->buildFileUrlStatic(FileModel::parseQueryId($data['g_m_img_id1']));
-        $data['g_m_img_url2'] = $fModel->buildFileUrlStatic(FileModel::parseQueryId($data['g_m_img_id2']));
-        $data['g_m_img_url3'] = $fModel->buildFileUrlStatic(FileModel::parseQueryId($data['g_m_img_id3']));
-        $data['g_m_img_url4'] = $fModel->buildFileUrlStatic(FileModel::parseQueryId($data['g_m_img_id4']));
+        $data['g_m_img_url'] = $fModel->buildFileUrlStatic(FileModel::parseQueryId(ArrayHelper::getValue($data, 'g_m_img_id', '')));
+        $data['g_m_img_url1'] = $fModel->buildFileUrlStatic(FileModel::parseQueryId(ArrayHelper::getValue($data, 'g_m_img_id1', '')));
+        $data['g_m_img_url2'] = $fModel->buildFileUrlStatic(FileModel::parseQueryId(ArrayHelper::getValue($data, 'g_m_img_id2', '')));
+        $data['g_m_img_url3'] = $fModel->buildFileUrlStatic(FileModel::parseQueryId(ArrayHelper::getValue($data, 'g_m_img_id3', '')));
+        $data['g_m_img_url4'] = $fModel->buildFileUrlStatic(FileModel::parseQueryId(ArrayHelper::getValue($data, 'g_m_img_id4', '')));
 
 
 
