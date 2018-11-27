@@ -120,6 +120,14 @@ class OrderModel extends Model{
                                  "og_od_id",
                                  "og_g_id",
                                  "og_name",
+                                  "og_total_num",
+                                  "og_single_price",
+                                  "og_total_price",
+                                  "og_g_sid",
+                                  "og_g_stype",
+                                  "og_sku_id",
+                                  "og_sku_index",
+                                  "og_id",
                                  "oe.g_m_img_id",
                              ];
                              if($joinDiscount){
@@ -142,6 +150,9 @@ class OrderModel extends Model{
             "o.od_price",
             'o.od_discount',
             "t.trs_id",
+            "o.od_pay_type",
+            "t.trs_pay_num",
+            "t.trs_num",
             "t.trs_target_id",
             "t.trs_type",
             "od.od_discount_des"

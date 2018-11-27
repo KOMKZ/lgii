@@ -9,7 +9,13 @@ Yii::setAlias('@ldebug', dirname(__DIR__) . "/ldebug/src");
 Yii::setAlias('@lgii', dirname(__DIR__) . "/lgii/src");
 Yii::setAlias('@lgoods', dirname(__DIR__) . '/lgoods/src');
 Yii::setAlias('@lfile', dirname(__DIR__) . '/lfile/src');
+Yii::setAlias('@lsite', dirname(__DIR__) . '/lsite/src');
 Yii::setAlias('@OSS', dirname(__DIR__) . '/lib/alisdk/OSS');
+
+Yii::$container->set('yii\data\Pagination', [
+    // 不限制页面的数量, per-page = -1时代表取全部
+    'pageSizeLimit' => [1]
+]);
 
 
 Event::on("\lgoods\models\goods\GoodsModel", GoodsModel::EVENT_GOODS_CREATE, ["\lgoods\models\goods\GoodsModel", 'handleGoodCreate']);

@@ -1,10 +1,10 @@
 <?php
-namespace cart;
+namespace category;
 use \ApiTester;
 use Codeception\Util\Debug;
 
 
-class CreateCest
+class DeleteCest
 {
     public function _before(ApiTester $I)
     {

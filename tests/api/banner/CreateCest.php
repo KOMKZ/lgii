@@ -1,10 +1,10 @@
 <?php
-namespace goods;
+namespace banner;
 use \ApiTester;
 use Codeception\Util\Debug;
 
 
-class CollectViewCest
+class CreateCest
 {
     public function _before(ApiTester $I)
     {
@@ -17,34 +17,37 @@ class CollectViewCest
     // tests
     public function tryToTest(ApiTester $i)
     {
-        $i->sendPOST("/lcollect", [
-            'ac_name' => '鞋子属性集',
-            'attrs' => [
-                [
-                    'a_name' => '尺寸',
-                    'a_type' => 2,
-                ],
-                [
-                    'a_name' => '颜色',
-                    'a_type' => 2,
-                ]
-            ]
+        $i->sendPOST("/lfile", [
+            'file_category' => 'pub_img',
+        ], [
+            'file' => codecept_data_dir() . '/1.png' ,
         ]);
         $i->seeResponseCodeIs(200);
         $i->seeResponseContainsJson([
             'code' => 0
         ]);
         $res = json_decode($i->grabResponse(), true);
-        $data = $res['data'];
-        Debug::debug($data);
+        $file = $res['data'];
+        Debug::debug($file);
 
-        $i->sendGET("/lcollect/" . $data['ac_id']);
+        $i->sendPOST("/lbanner", [
+            'b_img_id' => $file['file_query_id'],
+            'b_img_app' => 1,
+            'b_img_module' => 1,
+            'b_reffer_link' => 'http://www.baidu.com',
+            'b_reffer_label' => '百度',
+        ]);
         $i->seeResponseCodeIs(200);
         $i->seeResponseContainsJson([
             'code' => 0
         ]);
         $res = json_decode($i->grabResponse(), true);
-        $data = $res['data'];
-        Debug::debug($data);
+        $cls = $res['data'];
+        Debug::debug($cls);
+
+
+
+
+
     }
 }

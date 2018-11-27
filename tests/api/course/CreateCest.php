@@ -1,5 +1,5 @@
 <?php
-namespace cart;
+namespace course;
 use \ApiTester;
 use Codeception\Util\Debug;
 
@@ -17,6 +17,7 @@ class CreateCest
     // tests
     public function tryToTest(ApiTester $i)
     {
+        return ;
         $i->sendPOST("/course", [
             'course_title' => '安全防爆电器',
             'course_created_at' => time(),

@@ -1,5 +1,5 @@
 <?php
-namespace cart;
+namespace goods;
 use \ApiTester;
 use Codeception\Util\Debug;
 
@@ -19,8 +19,7 @@ class ListCest
     {
         $i->sendGET("/goods", [
             'g_attr_level' => 'all',
-            'per-page' => 100,
-            'g_cls_id' => 6
+            'per-page' => -1,
         ]);
         $i->seeResponseCodeIs(200);
         $i->seeResponseContainsJson([

@@ -1,10 +1,10 @@
 <?php
-namespace cart;
+namespace goods;
 use \ApiTester;
 use Codeception\Util\Debug;
 
 
-class CreateCest
+class ViewCest
 {
     public function _before(ApiTester $I)
     {
@@ -166,6 +166,10 @@ class CreateCest
         $attrs = $data['g_attrs'];
         Debug::debug($data);
 
+        $i->sendGET("/goods/" . $data['g_id']);
+        $res = json_decode($i->grabResponse(), true);
+        $data = $res['data'];
+        Debug::debug($data);
 
     }
 }

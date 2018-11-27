@@ -16,6 +16,7 @@ $params = [
             '@app/lgoods/src/controllers/LorderController.php',
             '@app/lgoods/src/controllers/LclassificationController.php',
             '@app/lgoods/src/controllers/CartItemController.php',
+            '@app/lsite/src/controllers/LbannerController.php',
             '@app/lfile/src/controllers/LfileController.php',
 
         ],

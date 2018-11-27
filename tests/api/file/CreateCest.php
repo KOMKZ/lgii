@@ -1,4 +1,7 @@
 <?php
+namespace file;
+use \ApiTester;
+
 use Codeception\Util\Debug;
 
 class CreateCest
