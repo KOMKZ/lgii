@@ -19,7 +19,7 @@ class SiteController extends Controller{
     }
     public function actionRunTest(){
         $testBin = Yii::getAlias("@app/vendor/codeception/base/codecept");
-        system(sprintf("%s run api lgoods/ViewCest --debug", $testBin));
+        system(sprintf("%s run api", $testBin));
 
     }
 }

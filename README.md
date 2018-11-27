@@ -70,6 +70,11 @@ server {
 ./yii site/install
 ```
 
+运行测试api用例
+```
+./yii site/run-test
+```
+
 ### 检验安装结果
 
 测试是否ok：
