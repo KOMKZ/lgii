@@ -21,6 +21,7 @@ $config = ArrayHelper::merge([
         'lsale-rule' => '\lgoods\controllers\LsaleRuleController',
         'luser' => '\luser\controllers\LuserController',
         'lauth' => '\luser\controllers\LauthController',
+        'luser' => '\luser\controllers\LuserController',
         'lbanner' => '\lsite\controllers\LbannerController',
     ],
     'aliases' => [

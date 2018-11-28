@@ -3,6 +3,10 @@ roles:
   - normal@登录用户
   - vistor@游客
 permissions:
+  - cart-item/create@加入购物车动作
+  - cart-item/update@更新购物车条目
+  - cart-item/delete@加入购物车动作
+  - cart-item/list@查询购物车条目
   - lattr/create@
   - lattr/update@
   - lclassification/list@查询分类信息
@@ -46,13 +50,14 @@ permissions:
   - lbanner/delete@删除banner图
   - lbanner/create@创建banner图
   - lbanner/update@修改banner图
-  - lauth/login@
+  - >
+    lauth/login@登录用户获取访问token
   - lauth/get-info@
   - lauth/logout@
   - luser/update@
   - luser/view@
   - luser/list@
-  - luser/create@
+  - luser/create@创建用户
   - 'lgoods/*@商品的全部权限'
   - 'lattr/*@属性管理全部权限'
   - 'lclassification/*@分类管理全部权限'

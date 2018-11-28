@@ -1,7 +1,7 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
     "content-hash": "9d2fabac85b68116dc37ddac6e2df1b3",
@@ -165,7 +165,7 @@
                 "markdown",
                 "markdown-extra"
             ],
-            "time": "2018-06-13 20:42:05"
+            "time": "2018-06-13T20:42:05+00:00"
         },
         {
             "name": "doctrine/annotations",
@@ -293,7 +293,7 @@
                 "parser",
                 "php"
             ],
-            "time": "2018-10-21 19:22:05"
+            "time": "2018-10-21T19:22:05+00:00"
         },
         {
             "name": "elasticsearch/elasticsearch",
@@ -441,7 +441,7 @@
             ],
             "description": "A simple library to encode and decode JSON Web Tokens (JWT) in PHP. Should conform to the current spec.",
             "homepage": "https://github.com/firebase/php-jwt",
-            "time": "2018-01-26 19:13:29"
+            "time": "2018-01-26T19:13:29+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -506,7 +506,7 @@
                 "rest",
                 "web service"
             ],
-            "time": "2018-11-24 20:31:03"
+            "time": "2018-11-24T20:31:03+00:00"
         },
         {
             "name": "guzzlehttp/promises",
@@ -557,7 +557,7 @@
             "keywords": [
                 "promise"
             ],
-            "time": "2018-10-30 00:20:04"
+            "time": "2018-10-30T00:20:04+00:00"
         },
         {
             "name": "guzzlehttp/psr7",
@@ -624,7 +624,7 @@
                 "uri",
                 "url"
             ],
-            "time": "2018-11-25 15:30:48"
+            "time": "2018-11-25T15:30:48+00:00"
         },
         {
             "name": "guzzlehttp/ringphp",
@@ -675,7 +675,7 @@
                 }
             ],
             "description": "Provides a simple API and specification that abstracts away the details of HTTP into a single PHP function.",
-            "time": "2018-07-31 13:22:33"
+            "time": "2018-07-31T13:22:33+00:00"
         },
         {
             "name": "guzzlehttp/streams",
@@ -725,7 +725,7 @@
                 "Guzzle",
                 "stream"
             ],
-            "time": "2016-04-13 16:32:01"
+            "time": "2016-04-13T16:32:01+00:00"
         },
         {
             "name": "psr/http-message",
@@ -775,7 +775,7 @@
                 "request",
                 "response"
             ],
-            "time": "2016-08-06 14:39:51"
+            "time": "2016-08-06T14:39:51+00:00"
         },
         {
             "name": "psr/log",
@@ -822,7 +822,7 @@
                 "psr",
                 "psr-3"
             ],
-            "time": "2018-11-21 13:42:00"
+            "time": "2018-11-21T13:42:00+00:00"
         },
         {
             "name": "ralouphie/getallheaders",
@@ -908,7 +908,7 @@
                 "promise",
                 "promises"
             ],
-            "time": "2018-06-13 15:59:06"
+            "time": "2018-06-13T15:59:06+00:00"
         },
         {
             "name": "swiftmailer/swiftmailer",
@@ -962,7 +962,7 @@
                 "mail",
                 "mailer"
             ],
-            "time": "2018-07-31 09:26:32"
+            "time": "2018-07-31T09:26:32+00:00"
         },
         {
             "name": "symfony/finder",
@@ -1011,7 +1011,7 @@
             ],
             "description": "Symfony Finder Component",
             "homepage": "https://symfony.com",
-            "time": "2018-11-11 19:48:54"
+            "time": "2018-11-11T19:48:54+00:00"
         },
         {
             "name": "yiisoft/yii2",
@@ -1019,12 +1019,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/yiisoft/yii2-framework.git",
-                "reference": "f31a6565a143093622c6f1a34db49e81d09f1d4d"
+                "reference": "ffa06c0fc6fae7cb23e17def6e238bb8077c1ff4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/yiisoft/yii2-framework/zipball/f31a6565a143093622c6f1a34db49e81d09f1d4d",
-                "reference": "f31a6565a143093622c6f1a34db49e81d09f1d4d",
+                "url": "https://api.github.com/repos/yiisoft/yii2-framework/zipball/ffa06c0fc6fae7cb23e17def6e238bb8077c1ff4",
+                "reference": "ffa06c0fc6fae7cb23e17def6e238bb8077c1ff4",
                 "shasum": ""
             },
             "require": {
@@ -1111,7 +1111,7 @@
                 "framework",
                 "yii2"
             ],
-            "time": "2018-11-23 09:55:07"
+            "time": "2018-11-28T07:22:04+00:00"
         },
         {
             "name": "yiisoft/yii2-bootstrap",
@@ -1171,7 +1171,7 @@
                 "bootstrap",
                 "yii2"
             ],
-            "time": "2018-05-04 06:55:14"
+            "time": "2018-05-04T06:55:14+00:00"
         },
         {
             "name": "yiisoft/yii2-composer",
@@ -1225,7 +1225,7 @@
                 "extension installer",
                 "yii2"
             ],
-            "time": "2018-08-25 10:44:34"
+            "time": "2018-08-25T10:44:34+00:00"
         },
         {
             "name": "yiisoft/yii2-swiftmailer",
@@ -1337,7 +1337,7 @@
                 "rest",
                 "service discovery"
             ],
-            "time": "2018-01-26 10:07:40"
+            "time": "2018-01-26T10:07:40+00:00"
         }
     ],
     "packages-dev": [
@@ -1507,7 +1507,7 @@
                 "functional testing",
                 "unit testing"
             ],
-            "time": "2018-10-29 21:37:15"
+            "time": "2018-10-29T21:37:15+00:00"
         },
         {
             "name": "codeception/phpunit-wrapper",
@@ -1713,7 +1713,7 @@
                 "constructor",
                 "instantiate"
             ],
-            "time": "2018-09-01 02:07:49"
+            "time": "2018-09-01T02:07:49+00:00"
         },
         {
             "name": "fzaninotto/faker",
@@ -1992,7 +1992,7 @@
                 }
             ],
             "description": "A comprehensive library for generating differences between two hashable objects (strings or arrays).",
-            "time": "2016-04-07 12:29:16"
+            "time": "2016-04-07T12:29:16+00:00"
         },
         {
             "name": "phpspec/prophecy",
@@ -2055,7 +2055,7 @@
                 "spy",
                 "stub"
             ],
-            "time": "2018-11-04 18:50:11"
+            "time": "2018-11-04T18:50:11+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
@@ -2118,7 +2118,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2017-04-02 07:44:40"
+            "time": "2017-04-02T07:44:40+00:00"
         },
         {
             "name": "phpunit/php-file-iterator",
@@ -2165,7 +2165,7 @@
                 "filesystem",
                 "iterator"
             ],
-            "time": "2017-11-27 13:52:08"
+            "time": "2017-11-27T13:52:08+00:00"
         },
         {
             "name": "phpunit/php-text-template",
@@ -2255,7 +2255,7 @@
             "keywords": [
                 "timer"
             ],
-            "time": "2018-01-06 05:27:16"
+            "time": "2018-01-06T05:27:16+00:00"
         },
         {
             "name": "phpunit/php-token-stream",
@@ -2304,7 +2304,7 @@
             "keywords": [
                 "tokenizer"
             ],
-            "time": "2017-12-04 15:11:28"
+            "time": "2017-12-04T15:11:28+00:00"
         },
         {
             "name": "phpunit/phpunit",
@@ -2386,7 +2386,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2018-02-01 05:50:59"
+            "time": "2018-02-01T05:50:59+00:00"
         },
         {
             "name": "phpunit/phpunit-mock-objects",
@@ -2445,7 +2445,7 @@
                 "mock",
                 "xunit"
             ],
-            "time": "2017-06-30 09:13:00"
+            "time": "2017-06-30T09:13:00+00:00"
         },
         {
             "name": "sebastian/code-unit-reverse-lookup",
@@ -2490,7 +2490,7 @@
             ],
             "description": "Looks up which function or method a line of code belongs to",
             "homepage": "https://github.com/sebastianbergmann/code-unit-reverse-lookup/",
-            "time": "2018-05-15 05:52:48"
+            "time": "2018-05-15T05:52:48+00:00"
         },
         {
             "name": "sebastian/comparator",
@@ -2554,7 +2554,7 @@
                 "compare",
                 "equality"
             ],
-            "time": "2017-03-07 10:34:43"
+            "time": "2017-03-07T10:34:43+00:00"
         },
         {
             "name": "sebastian/diff",
@@ -2606,7 +2606,7 @@
             "keywords": [
                 "diff"
             ],
-            "time": "2017-05-22 07:24:03"
+            "time": "2017-05-22T07:24:03+00:00"
         },
         {
             "name": "sebastian/environment",
@@ -2656,7 +2656,7 @@
                 "environment",
                 "hhvm"
             ],
-            "time": "2016-11-26 07:53:53"
+            "time": "2016-11-26T07:53:53+00:00"
         },
         {
             "name": "sebastian/exporter",
@@ -2723,7 +2723,7 @@
                 "export",
                 "exporter"
             ],
-            "time": "2017-03-07 10:36:49"
+            "time": "2017-03-07T10:36:49+00:00"
         },
         {
             "name": "sebastian/global-state",
@@ -2774,7 +2774,7 @@
             "keywords": [
                 "global state"
             ],
-            "time": "2017-02-23 14:11:06"
+            "time": "2017-02-23T14:11:06+00:00"
         },
         {
             "name": "sebastian/object-enumerator",
@@ -2820,7 +2820,7 @@
             ],
             "description": "Traverses array structures and object graphs to enumerate all referenced objects",
             "homepage": "https://github.com/sebastianbergmann/object-enumerator/",
-            "time": "2017-03-07 10:37:45"
+            "time": "2017-03-07T10:37:45+00:00"
         },
         {
             "name": "sebastian/recursion-context",
@@ -2873,7 +2873,7 @@
             ],
             "description": "Provides functionality to recursively process PHP variables",
             "homepage": "http://www.github.com/sebastianbergmann/recursion-context",
-            "time": "2017-03-08 08:21:15"
+            "time": "2017-03-08T08:21:15+00:00"
         },
         {
             "name": "sebastian/resource-operations",
@@ -3137,7 +3137,7 @@
             ],
             "description": "Symfony CssSelector Component",
             "homepage": "https://symfony.com",
-            "time": "2018-11-11 19:48:54"
+            "time": "2018-11-11T19:48:54+00:00"
         },
         {
             "name": "symfony/debug",
@@ -3489,7 +3489,7 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
-            "time": "2018-11-11 19:48:54"
+            "time": "2018-11-11T19:48:54+00:00"
         },
         {
             "name": "webmozart/assert",
@@ -3539,7 +3539,7 @@
                 "check",
                 "validate"
             ],
-            "time": "2018-05-29 14:25:02"
+            "time": "2018-05-29T14:25:02+00:00"
         },
         {
             "name": "yiisoft/yii2-debug",
@@ -3586,7 +3586,7 @@
                 "debugger",
                 "yii2"
             ],
-            "time": "2018-09-23 21:41:56"
+            "time": "2018-09-23T21:41:56+00:00"
         },
         {
             "name": "yiisoft/yii2-faker",
@@ -3633,7 +3633,7 @@
                 "faker",
                 "yii2"
             ],
-            "time": "2018-05-04 06:55:41"
+            "time": "2018-05-04T06:55:41+00:00"
         },
         {
             "name": "yiisoft/yii2-gii",

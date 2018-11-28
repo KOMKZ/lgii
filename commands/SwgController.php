@@ -512,8 +512,8 @@ tpl;
         }
         return sprintf($tpl, implode(",\n", $varMap));
     }
-
     protected function geneSwgRootContentFromDef($root, $module){
+
         $rootTempalte = <<<tpl
 /**
  *  @SWG\Swagger(
@@ -532,6 +532,9 @@ tpl;
  *  )
  */
 tpl;
+//        "security": [{"Bearer": []}],
+//    "securityDefinitions": {"Bearer": {"type": "apiKey", "name": "Authorization", "in": "header"}},
+
         $varMap = [];
         foreach($root as $name => $value){
             if('description' == $name){
@@ -549,7 +552,6 @@ tpl;
         }
         return $target;
     }
-
     protected function parseDocesFormPhpFile($file){
         $content = file_get_contents($file);
         $result = preg_match_all("/\/\*[\s\S]*?\*\//", $content, $matches);

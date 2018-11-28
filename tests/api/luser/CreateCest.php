@@ -35,9 +35,5 @@ class CreateCest
         $data = $res['data'];
         Debug::debug($data);
 
-
-
-
-
     }
 }
