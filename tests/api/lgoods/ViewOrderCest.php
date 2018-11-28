@@ -6,8 +6,7 @@ use Codeception\Util\Debug;
 
 class ViewOrderCest
 {
-    public function _before(ApiTester $I)
-    {
+    public function _before(ApiTester $I){ $I->loginAdmin();
     }
 
     public function _after(ApiTester $I)
@@ -18,7 +17,7 @@ class ViewOrderCest
     public function tryToTest(ApiTester $i)
     {
 
-        $i->sendGET("/goods");
+        $i->setAuthHeader();$i->sendGET("/lgoods");
         $i->seeResponseCodeIs(200);
         $i->seeResponseContainsJson([
             'code' => 0
@@ -36,7 +35,7 @@ class ViewOrderCest
             ];
         }
         Debug::debug($orderData);
-        $i->sendPOST("/lorder", $orderData);
+        $i->setAuthHeader();$i->sendPOST("/lorder", $orderData);
         $i->seeResponseCodeIs(200);
         $i->seeResponseContainsJson([
             'code' => 0
@@ -45,7 +44,7 @@ class ViewOrderCest
         $order = $res['data'];
         Debug::debug($order);
 
-        $i->sendPOST(sprintf("/lorder/%s/trans", $order['od_num']), [
+        $i->setAuthHeader();$i->sendPOST(sprintf("/lorder/%s/trans", $order['od_num']), [
 
         ]);
         $i->seeResponseCodeIs(200);
@@ -56,7 +55,7 @@ class ViewOrderCest
         $data = $res['data'];
         Debug::debug($data);
 
-        $i->sendPOST(sprintf("/ltrans/%s/pay-order", $data['trs_num']), [
+        $i->setAuthHeader();$i->sendPOST(sprintf("/ltrans/%s/pay-order", $data['trs_num']), [
             'pt_pay_type' => 'npay',
             'pt_pre_order_type' => 'data'
 //            'pt_pay_type' => 'wxpay',
@@ -73,7 +72,7 @@ class ViewOrderCest
         $data = $res['data'];
         Debug::debug($data);
 
-        $i->sendGET(sprintf("/lorder/%s", $order['od_num']));
+        $i->setAuthHeader();$i->sendGET(sprintf("/lorder/%s", $order['od_num']));
         $i->seeResponseCodeIs(200);
         $i->seeResponseContainsJson([
             'code' => 0

@@ -6,8 +6,7 @@ use Codeception\Util\Debug;
 
 class AttrUpdateCest
 {
-    public function _before(ApiTester $I)
-    {
+    public function _before(ApiTester $I){ $I->loginAdmin();
     }
 
     public function _after(ApiTester $I)
@@ -17,7 +16,7 @@ class AttrUpdateCest
     // tests
     public function tryToTest(ApiTester $i)
     {
-        $i->sendPOST("/lattr", [
+        $i->setAuthHeader();$i->sendPOST("/lattr", [
             'a_name' => '尺寸',
             'a_type' => 2,
         ]);
@@ -29,7 +28,7 @@ class AttrUpdateCest
         $attr = $res['data'];
         Debug::debug($res);
 
-        $i->sendPUT("/lattr/" . $attr['a_id'], [
+        $i->setAuthHeader();$i->sendPUT("/lattr/" . $attr['a_id'], [
             'a_name' => 'size'
         ]);
         $i->seeResponseCodeIs(200);

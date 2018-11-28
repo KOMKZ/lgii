@@ -10,15 +10,15 @@ $params = [
     'apifiles' => [
         'all' => [
             '@app/config/swagger-root.php',
-            '@app/lgoods/src/controllers/GoodsController.php',
+            '@app/lgoods/src/controllers/LgoodsController.php',
             '@app/lgoods/src/controllers/LcollectController.php',
             '@app/lgoods/src/controllers/LsaleRuleController.php',
             '@app/lgoods/src/controllers/LorderController.php',
             '@app/lgoods/src/controllers/LclassificationController.php',
             '@app/lgoods/src/controllers/CartItemController.php',
             '@app/lsite/src/controllers/LbannerController.php',
+            '@app/luser/src/controllers/LauthController.php',
             '@app/lfile/src/controllers/LfileController.php',
-
         ],
     ]
 ];
@@ -36,6 +36,9 @@ $config = ArrayHelper::merge([
     'components' => [
         'cache' => [
             'class' => 'yii\caching\FileCache',
+        ],
+        'authManager' => [
+            'class' => 'yii\rbac\DbManager',
         ],
         'es' => \Elasticsearch\ClientBuilder::create()
             ->setHosts(['localhost:9200'])

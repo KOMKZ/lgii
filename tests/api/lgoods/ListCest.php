@@ -6,8 +6,7 @@ use Codeception\Util\Debug;
 
 class ListCest
 {
-    public function _before(ApiTester $I)
-    {
+    public function _before(ApiTester $I){ $I->loginAdmin();
     }
 
     public function _after(ApiTester $I)
@@ -17,7 +16,7 @@ class ListCest
     // tests
     public function tryToTest(ApiTester $i)
     {
-        $i->sendGET("/goods", [
+        $i->setAuthHeader();$i->sendGET("/lgoods", [
             'g_attr_level' => 'all',
             'per-page' => -1,
         ]);

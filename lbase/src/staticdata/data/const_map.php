@@ -31,17 +31,18 @@ return [
         \lgoods\models\sale\SaleRule::SR_TYPE_CATEGORY => '分类',
         \lgoods\models\sale\SaleRule::SR_TYPE_ORDER => '订单'
 
-    ]
+    ],
+    'u_status' => [
+        \luser\models\user\User::STATUS_ACTIVE => Yii::t('app', '可用'),
+        \luser\models\user\User::STATUS_NO_AUTH => Yii::t('app', "没有验证"),
+        \luser\models\user\User::STATUS_LOCKED => Yii::t('app', '锁定状态')
+    ],
+    'u_auth_status' => [
+        \luser\models\user\User::NOT_AUTH => Yii::t('app', '未验证'),
+        \luser\models\user\User::HAD_AUTH => Yii::t('app', "已验证")
+    ],
     /*
-	'u_status' => [
-		\common\models\user\ar\User::STATUS_ACTIVE => Yii::t('app', '可用'),
-		\common\models\user\ar\User::STATUS_NO_AUTH => Yii::t('app', "没有验证"),
-		\common\models\user\ar\User::STATUS_LOCKED => Yii::t('app', '锁定状态')
-	],
-	'u_auth_status' => [
-		\common\models\user\ar\User::NOT_AUTH => Yii::t('app', '未验证'),
-		\common\models\user\ar\User::HAD_AUTH => Yii::t('app', "已验证")
-	],
+
 
 
 	'g_status' => [

@@ -1,7 +1,12 @@
 {
     "name": "yiisoft/yii2-app-basic",
     "description": "Yii 2 Basic Project Template",
-    "keywords": ["yii2", "framework", "basic", "project template"],
+    "keywords": [
+        "yii2",
+        "framework",
+        "basic",
+        "project template"
+    ],
     "homepage": "http://www.yiiframework.com/",
     "type": "project",
     "license": "BSD-3-Clause",
@@ -20,13 +25,13 @@
         "yiisoft/yii2-swiftmailer": "~2.0.0",
         "elasticsearch/elasticsearch": "^5.3",
         "guzzlehttp/guzzle": "^6.3@dev",
-        "zircote/swagger-php": "2.x-dev"
+        "zircote/swagger-php": "2.x-dev",
+        "firebase/php-jwt": "dev-master"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.0.0",
         "yiisoft/yii2-gii": "~2.0.0",
         "yiisoft/yii2-faker": "~2.0.0",
-
         "codeception/base": "^2.2.3",
         "codeception/verify": "~0.3.1",
         "codeception/specify": "~0.4.3"
@@ -62,10 +67,10 @@
             ]
         }
     },
-    "repositories": [
-        {
+    "repositories": {
+        "packagist": {
             "type": "composer",
-            "url": "https://asset-packagist.org"
+            "url": "https://packagist.phpcomposer.com"
         }
-    ]
+    }
 }

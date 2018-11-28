@@ -21,7 +21,7 @@ use lgoods\models\goods\GoodsEvent;
 use yii\data\ActiveDataProvider;
 
 
-class GoodsController extends Controller{
+class LgoodsController extends Controller{
 
     public function actionHandle($type){
         $t = Yii::$app->db->beginTransaction();
@@ -70,7 +70,7 @@ class GoodsController extends Controller{
     }
 
     /**
-     * @api get,/goods,Goods,查询商品接口
+     * @api get,/lgoods,Goods,查询商品接口
      * - fields_level optional,string,in_query,返回字段层级设定
      * - g_cls_id optional,integer,in_query,查询指定分类的商品
      *
@@ -112,7 +112,7 @@ class GoodsController extends Controller{
     }
 
     /**
-     * @api get,/goods/{id},Goods,查看商品信信息
+     * @api get,/lgoods/{id},Goods,查看商品信信息
      * - id required,integer,in_path,商品g_id
      * - fields_level optional,string,in_query,返回字段层级设定
      *
@@ -146,7 +146,7 @@ class GoodsController extends Controller{
     }
 
     /**
-     * @api put,/goods,Goods,修改一个商品
+     * @api put,/lgoods,Goods,修改一个商品
      * - g_name required,string,in_body,商品名称
      * - g_sid required,integer,in_body,商品关联对象id，未定义的时候传0
      * - g_stype required,integer,in_body,商品关联对象模块类型，未定义时传空字符
@@ -184,7 +184,7 @@ class GoodsController extends Controller{
     }
 
     /**
-     * @api post,/goods,Goods,创建一个商品
+     * @api post,/lgoods,Goods,创建一个商品
      * - g_name required,string,in_body,商品名称
      * - g_sid required,integer,in_body,商品关联对象id，未定义的时候传0
      * - g_stype required,integer,in_body,商品关联对象模块类型，未定义时传空字符

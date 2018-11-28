@@ -20,6 +20,9 @@ class SiteController extends Controller
             ],
         ];
     }
+    public function actionIndex(){
+        return $this->succ("welcome to lshop");
+    }
     public function actionUpdate(){
         $secret = Yii::$app->params['github_update_secret'];
         $headers = getallheaders();

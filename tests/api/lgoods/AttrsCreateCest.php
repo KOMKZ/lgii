@@ -6,8 +6,7 @@ use Codeception\Util\Debug;
 
 class AttrsCreateCest
 {
-    public function _before(ApiTester $I)
-    {
+    public function _before(ApiTester $I){ $I->loginAdmin();
     }
 
     public function _after(ApiTester $I)
@@ -17,7 +16,7 @@ class AttrsCreateCest
     // tests
     public function tryToTest(ApiTester $i)
     {
-        $i->sendPOST("/lattr", [
+        $i->setAuthHeader();$i->sendPOST("/lattr", [
             [
                 'a_name' => '尺寸',
                 'a_type' => 2,

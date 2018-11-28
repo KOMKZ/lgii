@@ -6,15 +6,14 @@ use Codeception\Util\Debug;
 
 class CreateOrderCest
 {
-    public function _before(ApiTester $I)
-    {
+    public function _before(ApiTester $I){ $I->loginAdmin();
     }
 
     public function _after(ApiTester $I)
     {
     }
     private function installCategory(ApiTester $i){
-        $i->sendPOST("/lfile", [
+        $i->setAuthHeader();$i->sendPOST("/lfile", [
             'file_category' => 'pub_img',
         ], [
             'file' => codecept_data_dir() . '/1.png' ,
@@ -27,7 +26,7 @@ class CreateOrderCest
         $file = $res['data'];
         Debug::debug($file);
 
-        $i->sendPOST("/lclassification", [
+        $i->setAuthHeader();$i->sendPOST("/lclassification", [
             'g_cls_name' => '鞋包配饰',
             'g_cls_img_id' => $file['file_query_id'],
         ]);
@@ -40,7 +39,7 @@ class CreateOrderCest
         Debug::debug($cls);
 
 
-        $i->sendPOST("/lclassification", [
+        $i->setAuthHeader();$i->sendPOST("/lclassification", [
             'g_cls_name' => '鞋靴',
             'g_cls_img_id' => $file['file_query_id'],
             'g_cls_pid' => $cls['g_cls_id']
@@ -53,7 +52,7 @@ class CreateOrderCest
         $clsChild = $res['data'];
         Debug::debug($clsChild);
 
-        $i->sendPOST("/lclassification", [
+        $i->setAuthHeader();$i->sendPOST("/lclassification", [
             'g_cls_name' => '男鞋',
             'g_cls_img_id' => $file['file_query_id'],
             'g_cls_pid' => $clsChild['g_cls_id']
@@ -68,7 +67,7 @@ class CreateOrderCest
         return $clsChild;
     }
     private function installGoods(ApiTester $i){
-        $i->sendPOST("/lfile", [
+        $i->setAuthHeader();$i->sendPOST("/lfile", [
             'file_category' => 'pub_img',
         ], [
             'file' => codecept_data_dir() . '/1.png' ,
@@ -82,7 +81,7 @@ class CreateOrderCest
         Debug::debug($file);
 
 
-        $i->sendPOST("/lcollect", [
+        $i->setAuthHeader();$i->sendPOST("/lcollect", [
             'ac_name' => '鞋子属性集',
             'attrs' => [
                 [
@@ -115,7 +114,7 @@ class CreateOrderCest
         $data = $res['data'];
         Debug::debug($data);
 
-        $i->sendGET("/lcollect/" . $data['ac_id']);
+        $i->setAuthHeader();$i->sendGET("/lcollect/" . $data['ac_id']);
         $i->seeResponseCodeIs(200);
         $i->seeResponseContainsJson([
             'code' => 0
@@ -130,7 +129,7 @@ class CreateOrderCest
 
         $cls = $this->installCategory($i);
 
-        $i->sendPOST("/goods", [
+        $i->setAuthHeader();$i->sendPOST("/lgoods", [
             'g_name' => "鞋子",
             'g_sid' => 0,
             'g_cls_id' => $cls['g_cls_id'],
@@ -169,7 +168,7 @@ class CreateOrderCest
         $this->installGoods($i);
         $this->installGoods($i);
 
-        $i->sendGET("/goods");
+        $i->setAuthHeader();$i->sendGET("/lgoods");
         $i->seeResponseCodeIs(200);
         $i->seeResponseContainsJson([
             'code' => 0
@@ -187,7 +186,7 @@ class CreateOrderCest
             ];
         }
         Debug::debug($orderData);
-        $i->sendPOST("/lorder", $orderData);
+        $i->setAuthHeader();$i->sendPOST("/lorder", $orderData);
         $i->seeResponseCodeIs(200);
         $i->seeResponseContainsJson([
             'code' => 0

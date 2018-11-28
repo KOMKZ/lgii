@@ -10,6 +10,7 @@ Yii::setAlias('@lgii', dirname(__DIR__) . "/lgii/src");
 Yii::setAlias('@lgoods', dirname(__DIR__) . '/lgoods/src');
 Yii::setAlias('@lfile', dirname(__DIR__) . '/lfile/src');
 Yii::setAlias('@lsite', dirname(__DIR__) . '/lsite/src');
+Yii::setAlias('@luser', dirname(__DIR__) . '/luser/src');
 Yii::setAlias('@OSS', dirname(__DIR__) . '/lib/alisdk/OSS');
 
 Yii::$container->set('yii\data\Pagination', [
@@ -31,3 +32,7 @@ require(dirname(__DIR__) . '/lib/wxsdk/wxpay/lib/WxPay.Data.php');
 require(dirname(__DIR__) . '/lib/wxsdk/wxpay/lib/WxPay.Notify.php');
 require(dirname(__DIR__) . '/lib/wxsdk/wxpay/lib/WxPay.Api.php');
 require(dirname(__DIR__) . '/lib/alisdk/alipay/AopSdk.php');
+require(dirname(__DIR__) . '/lib/Spyc.php');
+
+// fix bug https://github.com/auth0/auth0-PHP/issues/56
+\Firebase\JWT\JWT::$leeway = 50;

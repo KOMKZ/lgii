@@ -3,14 +3,13 @@ use yii\helpers\ArrayHelper;
 require __DIR__ . '/bootstrap.php';
 
 $configLocal = require __DIR__ . '/web-local.php';
-
 $config = ArrayHelper::merge([
     'id' => 'basic',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
     'timeZone'=>'Asia/Shanghai',
     'controllerMap' => [
-        'goods' => '\lgoods\controllers\GoodsController',
+        'lgoods' => '\lgoods\controllers\LgoodsController',
         'lorder' => '\lgoods\controllers\LorderController',
         'ltrans' => '\lgoods\controllers\LtransController',
         'lrefund' => '\lgoods\controllers\LrefundController',
@@ -20,6 +19,8 @@ $config = ArrayHelper::merge([
         'lclassification' => '\lgoods\controllers\LclassificationController',
         'cart-item' => '\lgoods\controllers\CartItemController',
         'lsale-rule' => '\lgoods\controllers\LsaleRuleController',
+        'luser' => '\luser\controllers\LuserController',
+        'lauth' => '\luser\controllers\LauthController',
         'lbanner' => '\lsite\controllers\LbannerController',
     ],
     'aliases' => [
@@ -30,6 +31,9 @@ $config = ArrayHelper::merge([
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
             'cookieValidationKey' => 'YajfqYjgy2inkKO1zMuKnDcdbh_vWf1D',
+            'parsers' => [
+                'application/json' => 'yii\web\JsonParser',
+            ]
         ],
         'cache' => [
             'class' => 'yii\caching\FileCache',
@@ -83,12 +87,15 @@ $config = ArrayHelper::merge([
             'notifyUrl' => '',
         ],
         'user' => [
-            'identityClass' => 'app\models\User',
+            'identityClass' => 'luser\models\user\User',
             'enableAutoLogin' => true,
         ],
         'errorHandler' => [
             'class' => "lbase\ErrorHandler",
             'errorAction' => 'site/error',
+        ],
+        'authManager' => [
+            'class' => 'yii\rbac\DbManager',
         ],
         'apiurl' => [
             'class' => 'yii\web\UrlManager',
@@ -104,6 +111,7 @@ $config = ArrayHelper::merge([
                 'OPTIONS <route:.*>' => "site/index",
                 'trans_notification/<type:.*?>' => 'trans/notify',
                 'lfile/output/?' => 'lfile/output',
+                'auth/login/?' => 'auth/login',
 
                 'DELETE <controller:[\w\-:]+>/<index:[^\/]+>/<sub:[\w\-:]+>/<sub_index:[^\/]+>/?' => "<controller>/delete-<sub>",
                 'GET <controller:[\w\-:]+>/<index:[^\/]+>/<sub:[\w\-:]+>/<sub_index:[^\/]+>/?' => "<controller>/view-<sub>",
@@ -159,11 +167,22 @@ $config = ArrayHelper::merge([
     ],
     'params' => [
         'github_update_secret' => '',
+        'jwt' => [
+            'secret_key' => 'abc',
+            'allow_algs' => ['HS512'],
+            'encode_alg' => 'HS512'
+        ],
+        'api_behaviors_bootstrap' => [
+            "rateLimiter" => 1,
+            "corsFilter" => 1,
+            "bearerAuth" => 1,
+            "access" => 1,
+        ],
         'api_behaviors' => [
             'rateLimiter' => [
                 'class' => \lbase\filters\RateLimiter::className(),
-                'rateLimit' => 2,
-                'rateLimitPer' => 1,
+                'rateLimit' => 70,
+                'rateLimitPer' => 60,
                 'ignoreIps' => ["127.0.0.1"]
             ],
             'corsFilter' => [
@@ -171,9 +190,9 @@ $config = ArrayHelper::merge([
                 'cors' => [
                     // restrict access to
                     'Origin' => ["http://47.106.36.175:8099", "http://47.106.36.175"],
-                    'Access-Control-Request-Method' => ['POST', 'PUT', 'GET', 'DELETE', 'OPTION'],
+                    'Access-Control-Request-Method' => ['POST', 'PUT', 'GET', 'DELETE', 'OPTIONS'],
                     // Allow only POST and PUT methods
-                    'Access-Control-Request-Headers' => ['X-Wsse'],
+                    'Access-Control-Request-Headers' => ['*'],
                     // Allow only headers 'X-Wsse'
                     'Access-Control-Allow-Credentials' => true,
                     // Allow OPTIONS caching
@@ -182,10 +201,37 @@ $config = ArrayHelper::merge([
                     'Access-Control-Expose-Headers' => ['X-Pagination-Current-Page'],
                 ],
             ],
+            'bearerAuth' => [
+                'class' => \lbase\filters\HttpBearerAuth::class,
+                'optional' => ['auth/login']
+            ],
+            'access' => [
+                'class' => \yii\filters\AccessControl::class,
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'matchCallback' => function($rule, $action){
+                            $authMg = Yii::$app->authManager;
+                            $permName = $action->controller->id . '/' . $action->id;
+                            $identity = Yii::$app->user->identity;
+                            if(null === $identity
+                                && in_array($permName, array_keys($authMg->getPermissionsByRole('vistor')))
+                            ){
+                                return true;
+                            }
+                            if(null !== $identity
+                                && $authMg->checkAccess($identity->u_id, $permName)
+                            ){
+                                return true;
+                            }
+                            return false;
+                        }
+                    ]
+                ]
+            ]
         ]
     ],
 ], $configLocal);
-
 
 
 return $config;

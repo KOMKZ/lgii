@@ -1,5 +1,5 @@
 <?php
-namespace banner;
+namespace category;
 use \ApiTester;
 use Codeception\Util\Debug;
 
@@ -8,6 +8,8 @@ class UpdateCest
 {
     public function _before(ApiTester $I)
     {
+        $I->loginAdmin();
+
     }
 
     public function _after(ApiTester $I)
@@ -17,7 +19,7 @@ class UpdateCest
     // tests
     public function tryToTest(ApiTester $i)
     {
-        $i->sendPOST("/lfile", [
+        $i->setAuthHeader();$i->sendPOST("/lfile", [
             'file_category' => 'pub_img',
         ], [
             'file' => codecept_data_dir() . '/1.png' ,
@@ -30,22 +32,20 @@ class UpdateCest
         $file = $res['data'];
         Debug::debug($file);
 
-        $i->sendPOST("/lbanner", [
-            'b_img_id' => $file['file_query_id'],
-            'b_img_app' => 1,
-            'b_img_module' => 1,
-            'b_reffer_link' => 'http://www.baidu.com',
-            'b_reffer_label' => '百度',
+        $i->setAuthHeader();$i->sendPOST("/lclassification", [
+            'g_cls_name' => '服装',
+            'g_cls_img_id' => $file['file_query_id'],
         ]);
         $i->seeResponseCodeIs(200);
         $i->seeResponseContainsJson([
             'code' => 0
         ]);
         $res = json_decode($i->grabResponse(), true);
-        $data = $res['data'];
-        Debug::debug($data);
+        $cls = $res['data'];
+        Debug::debug($cls);
 
-        $i->sendPOST("/lfile", [
+
+        $i->setAuthHeader();$i->sendPOST("/lfile", [
             'file_category' => 'pub_img',
         ], [
             'file' => codecept_data_dir() . '/1.png' ,
@@ -58,20 +58,17 @@ class UpdateCest
         $file = $res['data'];
         Debug::debug($file);
 
-        $i->sendPUT("/lbanner/" . $data['b_id'], [
-            'b_img_id' => $file['file_query_id'],
-            'b_img_app' => 1,
-            'b_img_module' => 1,
-            'b_reffer_link' => 'http://www.baidu.com',
-            'b_reffer_label' => '百度1',
+        $i->setAuthHeader();$i->sendPUT("/lclassification/" . $cls['g_cls_id'] , [
+            'g_cls_name' => '服装(修改)',
+            'g_cls_img_id' => $file['file_query_id'],
         ]);
         $i->seeResponseCodeIs(200);
         $i->seeResponseContainsJson([
             'code' => 0
         ]);
         $res = json_decode($i->grabResponse(), true);
-        $data = $res['data'];
-        Debug::debug($data);
+        $cls = $res['data'];
+        Debug::debug($cls);
 
 
     }

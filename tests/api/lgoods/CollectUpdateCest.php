@@ -6,8 +6,7 @@ use Codeception\Util\Debug;
 
 class CollectUpdateCest
 {
-    public function _before(ApiTester $I)
-    {
+    public function _before(ApiTester $I){ $I->loginAdmin();
     }
 
     public function _after(ApiTester $I)
@@ -17,7 +16,7 @@ class CollectUpdateCest
     // tests
     public function tryToTest(ApiTester $i)
     {
-        $i->sendPOST("/lcollect", [
+        $i->setAuthHeader();$i->sendPOST("/lcollect", [
             'ac_name' => '鞋子属性集',
             'attrs' => [
                 [
@@ -38,7 +37,7 @@ class CollectUpdateCest
         $collect = $res['data'];
         Debug::debug($res);
 
-        $i->sendPUT("/lcollect/" . $collect['ac_id'], [
+        $i->setAuthHeader();$i->sendPUT("/lcollect/" . $collect['ac_id'], [
             'ac_name' => 'shoes attr collections'
         ]);
         $i->seeResponseCodeIs(200);

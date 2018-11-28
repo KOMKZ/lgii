@@ -6,24 +6,22 @@ use Codeception\Util\Debug;
 
 class CreateCest
 {
+
     public function _before(ApiTester $I)
     {
-
+        $I->loginAdmin();
+//        $I->loginNormal();
     }
-
-
 
     public function _after(ApiTester $I)
     {
     }
 
-    private function getResData($I){
-        $res = json_decode($I->grabResponse(), true);
-        return $res;
-    }
+
 
     // tests
     public function tryToTest(ApiTester $I){
+        $I->setAuthHeader();
 		$I->sendPOST("/lfile", [
 			'file_category' => 'pub_img',
 		], [
@@ -33,7 +31,7 @@ class CreateCest
 		$I->seeResponseContainsJson([
 			'code' => 0
 		]);
-		$res = $this->getResData($I);
+        $res = json_decode($I->grabResponse(), true);
 		Debug::debug($res);
 
 	}
