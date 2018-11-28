@@ -186,7 +186,7 @@ $config = ArrayHelper::merge([
                 'cors' => [
                     // restrict access to
                     'Origin' => ["http://47.106.36.175:8099", "http://47.106.36.175"],
-                    'Access-Control-Request-Method' => ['POST', 'PUT', 'GET', 'DELETE', 'OPTION'],
+                    'Access-Control-Request-Method' => ['POST', 'PUT', 'GET', 'DELETE', 'OPTIONS'],
                     // Allow only POST and PUT methods
                     'Access-Control-Request-Headers' => ['X-Wsse'],
                     // Allow only headers 'X-Wsse'
