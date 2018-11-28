@@ -19,8 +19,30 @@
 class ApiTester extends \Codeception\Actor
 {
     use _generated\ApiTesterActions;
+    public $jwt = "";
+    /**
+     * Define custom actions here
+     */
 
-   /**
-    * Define custom actions here
-    */
+    public function setAuthHeader(){
+        $this->haveHttpHeader("Authorization", "Bearer " . $this->jwt);
+    }
+    public function loginNormal(){
+        $this->sendPOST('/auth/login', [
+            'u_email' => '784248378@qq.com',
+            'password' => '123456',
+            'type' => 'token'
+        ]);
+        $res = json_decode($this->grabResponse(), true);
+        $this->jwt = $res['data']['jwt'];
+    }
+    public function loginAdmin(){
+        $this->sendPOST('/auth/login', [
+            'u_email' => '784248377@qq.com',
+            'password' => '123456',
+            'type' => 'token'
+        ]);
+        $res = json_decode($this->grabResponse(), true);
+        $this->jwt = $res['data']['jwt'];
+    }
 }

@@ -19,6 +19,8 @@ $config = ArrayHelper::merge([
         'lcollect' => '\lgoods\controllers\LcollectController',
         'lclassification' => '\lgoods\controllers\LclassificationController',
         'lsale-rule' => '\lgoods\controllers\LsaleRuleController',
+        'luser' => '\luser\controllers\UserController',
+        'auth' => '\luser\controllers\AuthController',
         'lbanner' => '\lsite\controllers\LbannerController',
     ],
     'aliases' => [
@@ -82,12 +84,15 @@ $config = ArrayHelper::merge([
             'notifyUrl' => '',
         ],
         'user' => [
-            'identityClass' => 'app\models\User',
+            'identityClass' => 'luser\models\user\User',
             'enableAutoLogin' => true,
         ],
         'errorHandler' => [
             'class' => "lbase\ErrorHandler",
             'errorAction' => 'site/error',
+        ],
+        'authManager' => [
+            'class' => 'yii\rbac\DbManager',
         ],
         'apiurl' => [
             'class' => 'yii\web\UrlManager',
@@ -103,6 +108,7 @@ $config = ArrayHelper::merge([
                 'OPTIONS <route:.*>' => "site/index",
                 'trans_notification/<type:.*?>' => 'trans/notify',
                 'lfile/output/?' => 'lfile/output',
+                'auth/login/?' => 'auth/login',
 
                 'DELETE <controller:[\w\-:]+>/<index:[^\/]+>/<sub:[\w\-:]+>/<sub_index:[^\/]+>/?' => "<controller>/delete-<sub>",
                 'GET <controller:[\w\-:]+>/<index:[^\/]+>/<sub:[\w\-:]+>/<sub_index:[^\/]+>/?' => "<controller>/view-<sub>",
@@ -158,6 +164,11 @@ $config = ArrayHelper::merge([
     ],
     'params' => [
         'github_update_secret' => '',
+        'jwt' => [
+            'secret_key' => 'abc',
+            'allow_algs' => ['HS512'],
+            'encode_alg' => 'HS512'
+        ],
         'api_behaviors' => [
             'rateLimiter' => [
                 'class' => \lbase\filters\RateLimiter::className(),
@@ -181,6 +192,34 @@ $config = ArrayHelper::merge([
                     'Access-Control-Expose-Headers' => ['X-Pagination-Current-Page'],
                 ],
             ],
+            'bearerAuth' => [
+                'class' => \lbase\filters\HttpBearerAuth::class,
+                'optional' => ['auth/login']
+            ],
+            'access' => [
+                'class' => \yii\filters\AccessControl::class,
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'matchCallback' => function($rule, $action){
+                            $authMg = Yii::$app->authManager;
+                            $permName = $action->controller->id . '/' . $action->id;
+                            $identity = Yii::$app->user->identity;
+                            if(null === $identity
+                                && in_array($permName, array_keys($authMg->getPermissionsByRole('vistor')))
+                            ){
+                                return true;
+                            }
+                            if(null !== $identity
+                                && $authMg->checkAccess($identity->u_id, $permName)
+                            ){
+                                return true;
+                            }
+                            return false;
+                        }
+                    ]
+                ]
+            ]
         ]
     ],
 ], $configLocal);

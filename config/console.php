@@ -36,6 +36,9 @@ $config = ArrayHelper::merge([
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],
+        'authManager' => [
+            'class' => 'yii\rbac\DbManager',
+        ],
         'es' => \Elasticsearch\ClientBuilder::create()
             ->setHosts(['localhost:9200'])
             ->build(),
