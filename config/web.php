@@ -3,7 +3,6 @@ use yii\helpers\ArrayHelper;
 require __DIR__ . '/bootstrap.php';
 
 $configLocal = require __DIR__ . '/web-local.php';
-
 $config = ArrayHelper::merge([
     'id' => 'basic',
     'basePath' => dirname(__DIR__),

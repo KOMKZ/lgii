@@ -11,6 +11,16 @@ use lbase\filters\HttpBearerAuth;
  */
 class LauthController extends Controller
 {
+    /**
+     * @api post,/auth,Auth,登录用户获取访问token
+     * - u_email required,string,in_body,注册邮箱
+     * - password required,string,in_body,密码
+     * - type required,string,in_body,填入token即可
+     *
+     * @return #global_res
+     * - data object#login_res,返回访问token
+     *
+     */
 	public function actionLogin(){
 		$post = Yii::$app->request->getBodyParams();
 		if(empty($post['u_email']) || empty($post['password']) || empty($post['type'])){
@@ -58,3 +68,7 @@ class LauthController extends Controller
 	}
 
 }
+/**
+ * @def #login_res
+ * - jwt string,访问token
+ */

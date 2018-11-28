@@ -20,7 +20,7 @@ class CreateCest
     {
         $i->setAuthHeader();
         $i->sendPOST("/luser", [
-            'u_username' => 'lartik',
+            'u_username' => 'lartik' . time(),
             'password' => 'philips',
             'password_confirm' => 'philips',
             'u_email' => '784248377@qq.com',

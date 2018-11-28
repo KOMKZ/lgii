@@ -10,14 +10,14 @@ $params = [
     'apifiles' => [
         'all' => [
             '@app/config/swagger-root.php',
-            '@app/lgoods/src/controllers/lgoodsController.php',
+            '@app/lgoods/src/controllers/LgoodsController.php',
             '@app/lgoods/src/controllers/LcollectController.php',
             '@app/lgoods/src/controllers/LsaleRuleController.php',
             '@app/lgoods/src/controllers/LorderController.php',
             '@app/lgoods/src/controllers/LclassificationController.php',
             '@app/lsite/src/controllers/LbannerController.php',
+            '@app/luser/src/controllers/LauthController.php',
             '@app/lfile/src/controllers/LfileController.php',
-
         ],
     ]
 ];
