@@ -12,7 +12,7 @@ use lbase\filters\HttpBearerAuth;
 class LauthController extends Controller
 {
     /**
-     * @api post,/auth,Auth,登录用户获取访问token
+     * @api post,/lauth,Auth,登录用户获取访问token
      * - u_email required,string,in_body,注册邮箱
      * - password required,string,in_body,密码
      * - type required,string,in_body,填入token即可
