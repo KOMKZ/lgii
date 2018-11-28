@@ -162,7 +162,8 @@ class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
     }
 
     public static function getDefaultRateLimit(){
-        return [60, 60];
+        $limiter = Yii::$app->params['api_behaviors']['rateLimiter'];
+        return [$limiter['rateLimit'], $limiter['rateLimitPer']];
     }
 
     /**

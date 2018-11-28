@@ -1,6 +1,7 @@
 <?php
 namespace lbase;
 
+use lsite\models\set\SetModel;
 use Yii;
 use yii\web\Controller as BaseController;
 /**
@@ -11,7 +12,19 @@ class Controller extends BaseController
     public $enableCsrfValidation = false;
 
     public function behaviors(){
-        return Yii::$app->params['api_behaviors'];
+        $behaviors = SetModel::get("api_behaviors");
+        foreach(SetModel::get("api_behaviors_bootstrap") as $name => $ok){
+            if(!$ok){
+                unset($behaviors[$name]);
+            }
+        }
+        if(array_key_exists('bearerAuth', $behaviors)){
+            $ignoreRoutes = array_keys(Yii::$app->authManager->getPermissionsByRole('vistor'));
+            foreach($ignoreRoutes as $name){
+                $behaviors['bearerAuth']['optional'][] = $name;
+            }
+        }
+        return $behaviors;
     }
     private function getRes(){
         return [

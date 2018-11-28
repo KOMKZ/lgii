@@ -6,8 +6,7 @@ use Codeception\Util\Debug;
 
 class UpdateCest
 {
-    public function _before(ApiTester $I)
-    {
+    public function _before(ApiTester $I){ $I->loginAdmin();
     }
 
     public function _after(ApiTester $I)
@@ -17,7 +16,7 @@ class UpdateCest
     // tests
     public function tryToTest(ApiTester $i)
     {
-        $i->sendPOST("/lfile", [
+        $i->setAuthHeader();$i->sendPOST("/lfile", [
             'file_category' => 'pub_img',
         ], [
             'file' => codecept_data_dir() . '/1.png' ,
@@ -31,7 +30,7 @@ class UpdateCest
         Debug::debug($file);
 
 
-        $i->sendPOST("/lcollect", [
+        $i->setAuthHeader();$i->sendPOST("/lcollect", [
             'ac_name' => '鞋子属性集',
             'attrs' => [
                 [
@@ -64,7 +63,7 @@ class UpdateCest
         $data = $res['data'];
         Debug::debug($data);
 
-        $i->sendGET("/lcollect/" . $data['ac_id']);
+        $i->setAuthHeader();$i->sendGET("/lcollect/" . $data['ac_id']);
         $i->seeResponseCodeIs(200);
         $i->seeResponseContainsJson([
             'code' => 0
@@ -76,7 +75,7 @@ class UpdateCest
 
         $sizeId = $attrs[0]['a_id'];
         $colorId = $attrs[1]['a_id'];
-        $i->sendPOST("/goods", [
+        $i->setAuthHeader();$i->sendPOST("/lgoods", [
             'g_name' => "鞋子",
             'g_sid' => 0,
             'g_m_img_id' => $file['file_query_id'],
@@ -108,7 +107,7 @@ class UpdateCest
         $attrs = $data['g_attrs'];
         Debug::debug($data);
 
-        $i->sendPUT('/goods/' . $data['g_id'], [
+        $i->setAuthHeader();$i->sendPUT('/lgoods/' . $data['g_id'], [
             'price_items' => [
                 [$sizeId  => 39, $colorId => 'black', 'price' => 5],
                 [$sizeId  => 37, $colorId => 'black', 'price' => 6],
@@ -141,7 +140,7 @@ class UpdateCest
         Debug::debug($data);
 
 
-        $i->sendGET("/goods/" . $data['g_id'], [
+        $i->setAuthHeader();$i->sendGET("/lgoods/" . $data['g_id'], [
             'field_level' => 'all',
             'g_attr_level' => 'all'
         ]);

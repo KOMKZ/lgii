@@ -4,10 +4,12 @@ use \ApiTester;
 use Codeception\Util\Debug;
 
 
-class CreateCest
+class ViewCest
 {
     public function _before(ApiTester $I)
     {
+        $I->loginAdmin();
+
     }
 
     public function _after(ApiTester $I)
@@ -17,7 +19,7 @@ class CreateCest
     // tests
     public function tryToTest(ApiTester $i)
     {
-        $i->sendPOST("/lfile", [
+        $i->setAuthHeader();$i->sendPOST("/lfile", [
             'file_category' => 'pub_img',
         ], [
             'file' => codecept_data_dir() . '/1.png' ,
@@ -30,7 +32,7 @@ class CreateCest
         $file = $res['data'];
         Debug::debug($file);
 
-        $i->sendPOST("/lbanner", [
+        $i->setAuthHeader();$i->sendPOST("/lbanner", [
             'b_img_id' => $file['file_query_id'],
             'b_img_app' => 1,
             'b_img_module' => 1,
@@ -42,11 +44,31 @@ class CreateCest
             'code' => 0
         ]);
         $res = json_decode($i->grabResponse(), true);
-        $cls = $res['data'];
-        Debug::debug($cls);
+        $data = $res['data'];
+        Debug::debug($data);
 
+        $i->setAuthHeader();$i->sendPOST("/lfile", [
+            'file_category' => 'pub_img',
+        ], [
+            'file' => codecept_data_dir() . '/1.png' ,
+        ]);
+        $i->seeResponseCodeIs(200);
+        $i->seeResponseContainsJson([
+            'code' => 0
+        ]);
+        $res = json_decode($i->grabResponse(), true);
+        $file = $res['data'];
+        Debug::debug($file);
 
-
+        $i->setAuthHeader();$i->sendGET("/lbanner/" . $data['b_id'], [
+        ]);
+        $i->seeResponseCodeIs(200);
+        $i->seeResponseContainsJson([
+            'code' => 0
+        ]);
+        $res = json_decode($i->grabResponse(), true);
+        $data = $res['data'];
+        Debug::debug($data);
 
 
     }

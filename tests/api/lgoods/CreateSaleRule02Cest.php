@@ -6,8 +6,7 @@ use Codeception\Util\Debug;
 
 class CreateSaleRule02Cest
 {
-    public function _before(ApiTester $I)
-    {
+    public function _before(ApiTester $I){ $I->loginAdmin();
     }
 
     public function _after(ApiTester $I)
@@ -17,7 +16,7 @@ class CreateSaleRule02Cest
     // tests
     public function tryToTest(ApiTester $i)
     {
-        $i->sendPOST("/lsale-rule", [
+        $i->setAuthHeader();$i->sendPOST("/lsale-rule", [
             'sr_name' => '满100元减20元',
             'sr_start_at' => time(),
             'sr_end_at' => time() + 3600 * 24,
@@ -35,7 +34,7 @@ class CreateSaleRule02Cest
         $data = $res['data'];
         Debug::debug($data);
 
-        $i->sendPOST("/lsale-rule", [
+        $i->setAuthHeader();$i->sendPOST("/lsale-rule", [
             'sr_name' => '满200元减50元',
             'sr_start_at' => time(),
             'sr_end_at' => time() + 3600 * 24,
@@ -53,7 +52,7 @@ class CreateSaleRule02Cest
         $data = $res['data'];
         Debug::debug($data);
 
-        $i->sendPOST("/lsale-rule", [
+        $i->setAuthHeader();$i->sendPOST("/lsale-rule", [
             'sr_name' => '满300元减80元',
             'sr_start_at' => time(),
             'sr_end_at' => time() + 3600 * 24,

@@ -10,7 +10,7 @@ $config = ArrayHelper::merge([
     'bootstrap' => ['log'],
     'timeZone'=>'Asia/Shanghai',
     'controllerMap' => [
-        'goods' => '\lgoods\controllers\GoodsController',
+        'lgoods' => '\lgoods\controllers\LgoodsController',
         'lorder' => '\lgoods\controllers\LorderController',
         'ltrans' => '\lgoods\controllers\LtransController',
         'lrefund' => '\lgoods\controllers\LrefundController',
@@ -19,8 +19,8 @@ $config = ArrayHelper::merge([
         'lcollect' => '\lgoods\controllers\LcollectController',
         'lclassification' => '\lgoods\controllers\LclassificationController',
         'lsale-rule' => '\lgoods\controllers\LsaleRuleController',
-        'luser' => '\luser\controllers\UserController',
-        'auth' => '\luser\controllers\AuthController',
+        'luser' => '\luser\controllers\LuserController',
+        'lauth' => '\luser\controllers\LauthController',
         'lbanner' => '\lsite\controllers\LbannerController',
     ],
     'aliases' => [
@@ -169,11 +169,17 @@ $config = ArrayHelper::merge([
             'allow_algs' => ['HS512'],
             'encode_alg' => 'HS512'
         ],
+        'api_behaviors_bootstrap' => [
+            "rateLimiter" => 1,
+            "corsFilter" => 1,
+            "bearerAuth" => 1,
+            "access" => 1,
+        ],
         'api_behaviors' => [
             'rateLimiter' => [
                 'class' => \lbase\filters\RateLimiter::className(),
-                'rateLimit' => 2,
-                'rateLimitPer' => 1,
+                'rateLimit' => 70,
+                'rateLimitPer' => 60,
                 'ignoreIps' => ["127.0.0.1"]
             ],
             'corsFilter' => [
@@ -223,7 +229,6 @@ $config = ArrayHelper::merge([
         ]
     ],
 ], $configLocal);
-
 
 
 return $config;

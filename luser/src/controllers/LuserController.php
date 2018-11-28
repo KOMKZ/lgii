@@ -13,7 +13,7 @@ use luser\models\user\User;
 /**
  *
  */
-class UserController extends Controller{
+class LuserController extends Controller{
     public function actionUpdate($index){
         $postData = Yii::$app->request->getBodyParams();
         $uTab = User::tableName();

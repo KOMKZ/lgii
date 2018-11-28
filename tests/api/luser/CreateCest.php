@@ -8,6 +8,7 @@ class CreateCest
 {
     public function _before(ApiTester $I)
     {
+        $I->loginAdmin();
     }
 
     public function _after(ApiTester $I)
@@ -17,6 +18,7 @@ class CreateCest
     // tests
     public function tryToTest(ApiTester $i)
     {
+        $i->setAuthHeader();
         $i->sendPOST("/luser", [
             'u_username' => 'lartik',
             'password' => 'philips',

@@ -8,6 +8,8 @@ class ListCest
 {
     public function _before(ApiTester $I)
     {
+        $I->loginAdmin();
+
     }
 
     public function _after(ApiTester $I)
@@ -17,7 +19,7 @@ class ListCest
     // tests
     public function tryToTest(ApiTester $i)
     {
-        $i->sendGET("/lclassification");
+        $i->setAuthHeader();$i->sendGET("/lclassification");
         $i->seeResponseCodeIs(200);
         $i->seeResponseContainsJson([
             'code' => 0

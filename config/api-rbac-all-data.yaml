@@ -3,13 +3,6 @@ roles:
   - normal@登录用户
   - vistor@游客
 permissions:
-  - goods/handle@
-  - goods/list@查询商品接口
-  - goods/view-sku@
-  - goods/view@查看商品信信息
-  - goods/list-attrs@
-  - goods/update@修改一个商品
-  - goods/create@创建一个商品
   - lattr/create@
   - lattr/update@
   - lclassification/list@查询分类信息
@@ -23,6 +16,13 @@ permissions:
   - lcollect/list@
   - lcollect/create@创建属性集合
   - lcollect/update@
+  - lgoods/handle@
+  - lgoods/list@查询商品接口
+  - lgoods/view-sku@
+  - lgoods/view@查看商品信信息
+  - lgoods/list-attrs@
+  - lgoods/update@修改一个商品
+  - lgoods/create@创建一个商品
   - lorder/list@获取订单详情
   - lorder/view@获取订单详情
   - lorder/create@创建一条订单
@@ -46,30 +46,33 @@ permissions:
   - lbanner/delete@删除banner图
   - lbanner/create@创建banner图
   - lbanner/update@修改banner图
-  - auth/login@
-  - auth/get-info@
-  - auth/logout@
-  - user/update@
-  - user/view@
-  - user/list@
-  - user/create@
-  - 'goods/*@商品的全部权限'
+  - lauth/login@
+  - lauth/get-info@
+  - lauth/logout@
+  - luser/update@
+  - luser/view@
+  - luser/list@
+  - luser/create@
+  - 'lgoods/*@商品的全部权限'
   - 'lattr/*@属性管理全部权限'
   - 'lclassification/*@分类管理全部权限'
   - 'lorder/*@订单管理全部权限'
+  - 'lcollect/*@属性集合全部管理权限'
   - 'lrefund/*@售后管理全部权限'
   - 'lsale-rule/*@销售规则管理全部权限'
   - 'lfile/*@文件管理全部权限'
-  - 'auth/*@认证管理全部权限'
-  - 'user/*@用户管理全部权限'
+  - 'ltrans/*@交易管理全部权限'
+  - 'lbanner/*@banner图全部管理权限'
+  - 'lauth/*@认证管理全部权限'
+  - 'luser/*@用户管理全部权限'
 assign:
-  - root@goods/handle
-  - root@goods/list
-  - root@goods/view-sku
-  - root@goods/view
-  - root@goods/list-attrs
-  - root@goods/update
-  - root@goods/create
+  - root@lgoods/handle
+  - root@lgoods/list
+  - root@lgoods/view-sku
+  - root@lgoods/view
+  - root@lgoods/list-attrs
+  - root@lgoods/update
+  - root@lgoods/create
   - root@lattr/create
   - root@lattr/update
   - root@lclassification/list
@@ -91,17 +94,27 @@ assign:
   - root@lfile/chunk-task-create
   - root@lfile/create
   - root@lfile/output
-  - root@auth/login
-  - root@auth/get-info
-  - root@auth/logout
-  - root@user/update
-  - root@user/view
-  - root@user/list
-  - root@user/create
-  - normal@auth/login
-  - normal@goods/list
-  - normal@goods/view
+  - root@lauth/login
+  - root@lauth/get-info
+  - root@lauth/logout
+  - root@luser/update
+  - root@luser/view
+  - root@luser/list
+  - root@luser/create
+  - root@lcollect/view
+  - root@lcollect/list
+  - root@lcollect/create
+  - root@lcollect/update
+  - root@ltrans/create-pay-order
+  - root@lbanner/list
+  - root@lbanner/view
+  - root@lbanner/delete
+  - root@lbanner/create
+  - root@lbanner/update
+  - normal@lauth/login
+  - normal@lgoods/list
+  - normal@lgoods/view
   - normal@lfile/create
-  - vistor@auth/login
-  - vistor@goods/list
-  - vistor@goods/view
+  - vistor@lauth/login
+  - vistor@lgoods/list
+  - vistor@lgoods/view

@@ -9,7 +9,7 @@ use lbase\filters\HttpBearerAuth;
 /**
  *
  */
-class AuthController extends Controller
+class LauthController extends Controller
 {
 	public function actionLogin(){
 		$post = Yii::$app->request->getBodyParams();

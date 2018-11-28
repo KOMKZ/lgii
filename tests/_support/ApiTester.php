@@ -28,7 +28,7 @@ class ApiTester extends \Codeception\Actor
         $this->haveHttpHeader("Authorization", "Bearer " . $this->jwt);
     }
     public function loginNormal(){
-        $this->sendPOST('/auth/login', [
+        $this->sendPOST('/lauth/login', [
             'u_email' => '784248378@qq.com',
             'password' => '123456',
             'type' => 'token'
@@ -37,7 +37,7 @@ class ApiTester extends \Codeception\Actor
         $this->jwt = $res['data']['jwt'];
     }
     public function loginAdmin(){
-        $this->sendPOST('/auth/login', [
+        $this->sendPOST('/lauth/login', [
             'u_email' => '784248377@qq.com',
             'password' => '123456',
             'type' => 'token'
