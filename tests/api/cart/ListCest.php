@@ -171,7 +171,7 @@ class ListCest
     // tests
     public function tryToTest(ApiTester $i)
     {
-//        $this->installGoods($i);
+        $this->installGoods($i);
         $i->setAuthHeader();$i->sendGET("/lgoods", [
     ]);
         $i->seeResponseCodeIs(200);
