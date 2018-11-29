@@ -27,11 +27,37 @@ class CItemModel extends Model{
         $cartItem->insert(false);
         return $cartItem;
     }
+    public function updateItem($citem, $data){
+        if(!$citem->load($data, '') || !$citem->validate()){
+            $this->addErrors($citem->getErrors());
+            return false;
+        }
+        $citem->update(false);
+        return $citem;
+    }
+    public function removeItem($citem){
+        $citem->ci_status = CartItem::STATUS_DELETE;
+        $citem->update(false);
+        return $citem;
+    }
+
+    public static function adjustAmount($citem, $value){
+        $citem->ci_amount += $value;
+        $citem->ci_amount = $citem->ci_amount <= 0 ? 1 : $citem->ci_amount;
+        $citem->update(false);
+        return $citem;
+    }
     public static function findFull($params = []){
-        $query = CartItem::find();
+        $query = CartItem::find()->andWhere(['=', 'ci_status', CartItem::STATUS_VALID]);
         return $query;
     }
-    public static function formatOne($data, $params = []){
-        return $data;
+    public static function formatList($items, $parmas = []){
+        foreach($items as &$item){
+            $item = static::formatOne($item, $parmas);
+        }
+        return $items;
+    }
+    public static function formatOne($item, $params = []){
+        return $item;
     }
 }

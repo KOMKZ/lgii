@@ -21,7 +21,10 @@ class CartItem extends ActiveRecord{
         return [
             ['ci_sku_id', 'required'],
             ['ci_belong_uid', 'required'],
-            ['ci_amount', 'required']
+            ['ci_amount', 'required'],
+            ['ci_amount', 'filter', 'filter' => function($value){
+                return $value <= 0 ? 1 : $value;
+            }]
         ];
     }
     public function scenarios(){
