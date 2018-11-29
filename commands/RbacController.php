@@ -159,7 +159,9 @@ class RbacController extends Controller{
 				$oldData['assign'][$roleName . '-' . $permName] = [$roleName, $permName];
 
 			}
-		}
+		}else{
+            $permNames = [];
+        }
 		$rbacResult = array_merge($oldData, [
 			'roles' => $roles,
 			'permissions' => $permissions,
