@@ -1,4 +1,4 @@
-# yii2shop
+# yii2shop-api
 yii2shop,开源商城系统
 ## 在线例子
 **swagger-ui**: http://47.106.36.175/swagger-ui/dist
@@ -62,14 +62,7 @@ server {
 
 ### 安装数据库和初始数据
 
-执行命令安装数据表：
-
-```
-./yii migrate/up
-```
-
-
-执行命令安装数据
+执行命令安装数据表和数据
 
 ```
 ./yii site/install
