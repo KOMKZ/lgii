@@ -1,4 +1,4 @@
-# yii2shop
+# yii2shop-api
 yii2shop,开源商城系统
 ## 在线例子
 **swagger-ui**: http://47.106.36.175/swagger-ui/dist
