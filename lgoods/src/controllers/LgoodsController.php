@@ -129,7 +129,7 @@ class LgoodsController extends Controller{
         if(!$goodsData){
             return $this->notfound();
         }
-        $goodsData = GoodsModel::formatOneGoods($goodsData, $getData);
+        $goodsData = GoodsModel::formatOne($goodsData, $getData);
         return $this->succ($goodsData);
     }
 
@@ -171,7 +171,7 @@ class LgoodsController extends Controller{
                 return $this->error(1, $model->getErrors());
             }
             GoodsModel::ensureGoodsSkusRight($goods);
-            $goodsFullData = GoodsModel::formatOneGoods($goods->toArray(), [
+            $goodsFullData = GoodsModel::formatOne($goods->toArray(), [
                 'goods_attr_level' => 'all',
                 'field_level' => 'all'
             ]);
@@ -214,7 +214,7 @@ class LgoodsController extends Controller{
                 ->andWhere(['=', 'g.g_id', $goods['g_id']])
                 ->asArray()
                 ->one();
-            return $this->succ(GoodsModel::formatOneGoods($goodsData, [
+            return $this->succ(GoodsModel::formatOne($goodsData, [
                 'goods_attr_level' => 'all',
                 'field_level' => 'all'
             ]));

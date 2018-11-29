@@ -115,9 +115,12 @@ class LcartItemController extends Controller{
  * - ci_amount integer,商品购买的数量
  * - ci_total_price integer,商品的总价格
  * - ci_belong_uid integer,条目所属用户id
- * - ci_created_at integer,条目创建时间
- * - ci_updated_at integer,条目更新时间
- * - ci_status integer,条目的状态
+ * - g_name string,商品的名称
+ * - sku_index string,商品sku的尺寸
+ * - g_discount integer,商品的折扣
+ * - g_price integer,本条目实际支付价格
+ * - discount_items_des array#string,折扣描述列表
+ *
  *
  * @def #cart_item_list
  * - total_count integer,总数量

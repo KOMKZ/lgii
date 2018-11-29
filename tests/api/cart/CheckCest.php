@@ -174,6 +174,8 @@ class ListCest
 
 
         $this->installGoods($i);
+        $this->installGoods($i);
+
         $i->setAuthHeader();$i->sendGET("/lgoods", [
     ]);
         $i->seeResponseCodeIs(200);
@@ -197,6 +199,19 @@ class ListCest
         $data = $res['data'];
         Debug::debug($data);
 
+        $i->setAuthHeader();$i->sendPost("/lcart-item", [
+        'ci_sku_id' => $goodsList[1]['sku_id'],
+        'ci_amount' => 2,
+        'ci_belong_uid' => 0,
+    ]);
+        $i->seeResponseCodeIs(200);
+        $i->seeResponseContainsJson([
+            'code' => 0
+        ]);
+        $res = json_decode($i->grabResponse(), true);
+        $data = $res['data'];
+        Debug::debug($data);
+
 
         $i->setAuthHeader();$i->sendGET("/lcart-item", []);
         $i->seeResponseCodeIs(200);
@@ -207,7 +222,22 @@ class ListCest
         $data = $res['data'];
         Debug::debug($data);
 
+        $ids = [];
+        foreach ($data['items'] as $item){
+            $ids[] = $item['ci_id'];
+        }
 
+        $i->setAuthHeader();$i->sendPOST("/lorder/check", [
+            'type' => 'cart',
+        'ids' => $ids
+    ]);
+        $i->seeResponseCodeIs(200);
+        $i->seeResponseContainsJson([
+            'code' => 0
+        ]);
+        $res = json_decode($i->grabResponse(), true);
+        $data = $res['data'];
+        Debug::debug($data);
 
     }
 }

@@ -113,6 +113,8 @@ $config = ArrayHelper::merge([
                 'trans_notification/<type:.*?>' => 'trans/notify',
                 'lfile/output/?' => 'lfile/output',
                 'auth/login/?' => 'auth/login',
+                'lorder/check/?' => 'lorder/check',
+
 
                 'DELETE <controller:[\w\-:]+>/<index:[^\/]+>/<sub:[\w\-:]+>/<sub_index:[^\/]+>/?' => "<controller>/delete-<sub>",
                 'GET <controller:[\w\-:]+>/<index:[^\/]+>/<sub:[\w\-:]+>/<sub_index:[^\/]+>/?' => "<controller>/view-<sub>",

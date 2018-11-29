@@ -30,7 +30,7 @@ class GoodsModel extends Model{
 
     CONST EVENT_GOODS_CREATE = 'goods_create';
 
-    public static function formatOneGoods($data, $params = []){
+    public static function formatOne($data, $params = []){
         $fields = static::getLevelFields(ArrayHelper::getValue($params, 'field_level', 'all'));
 
         if(array_key_exists('attrs', $fields)){
@@ -117,7 +117,7 @@ class GoodsModel extends Model{
             $params['attrs'] = static::getGoodsListAttrs($gids, $params);
         }
         foreach($dataList as $key => &$data){
-            $data = static::formatOneGoods($data, $params);
+            $data = static::formatOne($data, $params);
         }
         return $dataList;
     }
@@ -283,6 +283,17 @@ class GoodsModel extends Model{
         return $query;
     }
 
+    /**
+     * @param $sku
+     * - sku_price required,integer,单品的价格
+     * - sku_id required,integer,单品的id
+     * - sku_name required,string,单品的名称
+     * - g_name required,string,商品的名称
+     * @param array $buyParams
+     * - buy_num optional,integer,购买的数量,默认是1
+     * - customer_uid optional,integer,购买的用户id
+     * @return array
+     */
     public static function caculatePrice($sku, $buyParams = []){
         $priceItems = [
             'has_error' => 0,

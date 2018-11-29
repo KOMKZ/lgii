@@ -7,6 +7,7 @@
  */
 namespace lgoods\controllers;
 
+use lgoods\models\cart\CItemModel;
 use lgoods\models\goods\GoodsModel;
 use lgoods\models\order\Order;
 use lgoods\models\order\OrderModel;
@@ -18,6 +19,27 @@ use yii\data\ActiveDataProvider;
 
 class LorderController extends Controller{
 
+    /**
+     * @api post,/lorder/check,Order,商品结算接口
+     * - type required,string,in_body,结算方式:填入cart即可
+     * - ids required,array#integer,in_body,购物车条目id列表
+     *
+     * @return #global_res
+     * - data object#check_result,结算结果
+     *
+     */
+    public function actionCheck(){
+        $result = [
+            'total_price' => 0,
+            'discount_des' => []
+        ];
+        $postData = Yii::$app->request->getBodyParams();
+        if('cart' == $postData['type']){
+            $citems = CItemModel::findFull()->andWhere(['in', 'ci_id', $postData['ids']])->asArray()->all();
+
+        }
+        return $this->succ($result);
+    }
     /**
      * @api get,/lorder,Order,获取订单详情
      * - id required,string,in_query,订单编号od_num，支持模糊查询
@@ -135,6 +157,10 @@ class LorderController extends Controller{
 
 }
 /**
+ * @def #check_result
+ * - total_price integer,总价格
+ * - discount_des array#string,折扣描述列表
+ *
  * @def #order_item_list
  * - total_count integer,总数量
  * - order_item_list array#order_item,订单对象列表
