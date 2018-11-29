@@ -4,7 +4,7 @@ use \ApiTester;
 use Codeception\Util\Debug;
 
 
-class ListCest
+class CheckCest
 {
     public function _before(ApiTester $I)
     {
