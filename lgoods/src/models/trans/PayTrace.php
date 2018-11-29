@@ -72,6 +72,13 @@ class PayTrace extends ActiveRecord{
                 static::STATUS_ERROR
             ]]
 
+            ,['pt_payment_id', 'filter', 'filter' => function($value){
+                if($value == "" && 'npay' != $this->pt_pay_type){
+                    $this->addError('pt_payment_id', "pt_payment_id当前支付方式下不能为空");
+                }
+                return $value;
+            }]
+
 
         ];
     }

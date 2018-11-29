@@ -3,12 +3,12 @@ roles:
   - normal@登录用户
   - vistor@游客
 permissions:
-  - cart-item/create@加入购物车动作
-  - cart-item/update@更新购物车条目
-  - cart-item/delete@加入购物车动作
-  - cart-item/list@查询购物车条目
   - lattr/create@
   - lattr/update@
+  - lcart-item/create@加入购物车动作
+  - lcart-item/update@更新购物车条目
+  - lcart-item/delete@加入购物车动作
+  - lcart-item/list@查询购物车条目
   - lclassification/list@查询分类信息
   - >
     lclassification/update@更新分类信息

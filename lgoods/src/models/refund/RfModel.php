@@ -49,6 +49,8 @@ class RfModel extends Model{
         $rf->rf_status = RfApplication::STATUS_SUBMIT;
         $rf->rf_ori_pay_type = $order['od_pay_type'];
         $rf->rf_num = static::buildRfNumber();
+        $rf->rf_title = '';
+        $rf->rf_fee = 0;
         $rf->insert(false);
         $rfOgList = static::buildRfOgList($rf, $data['og_rf_goods_list'], $validOgList);
         static::batchInsertRgOgList($rfOgList);

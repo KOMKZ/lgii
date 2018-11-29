@@ -243,6 +243,7 @@ class TransModel extends Model
             $payOrder->pt_status = PayTrace::STATUS_PAYED;
             $payOrder->pt_third_data = '';
             $payOrder->pt_belong_trans_id = $trans['trs_id'];
+            $payOrder->pt_payment_id = $oldTrans['pt_payment_id'];
 
 
             $payOrder->insert(false);
@@ -324,7 +325,7 @@ class TransModel extends Model
                 $payOrder->pt_timeout = $data['pt_timeout'];
             }
 
-            if(!$this->validate()){
+            if(!$payOrder->validate()){
                 throw new \Exception(implode(',', $payOrder->getFirstErrors()));
             }
             $payOrder->insert(false);
