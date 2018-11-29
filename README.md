@@ -1,4 +1,4 @@
-# LShop
+# yii2shop
 lshop,开源商城系统
 ## 在线例子
 **swagger-ui**: http://47.106.36.175/swagger-ui/dist
