@@ -5,9 +5,11 @@
  * Date: 18-11-22
  * Time: 下午9:53
  */
-namespace lgoods\models\sale\caculators;
+namespace lgoods\caculators;
 
 class FullSub{
+    CONST CACU_FULL_SUB = 2;
+
     public function check($priceItems){
         return true;
     }

@@ -7,8 +7,8 @@
  */
 namespace lgoods\models\sale;
 
-use lgoods\models\sale\caculators\Discount;
-use lgoods\models\sale\caculators\FullSub;
+use lgoods\caculators\Discount;
+use lgoods\caculators\FullSub;
 use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
 

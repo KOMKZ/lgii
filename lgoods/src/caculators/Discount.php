@@ -5,9 +5,12 @@
  * Date: 18-11-22
  * Time: 下午9:53
  */
-namespace lgoods\models\sale\caculators;
+namespace lgoods\caculators;
 
 class Discount{
+    const CACU_DISCOUNT = 1;
+
+
     public function check($priceItems){
         return true;
     }

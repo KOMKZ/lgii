@@ -23,6 +23,7 @@ class LorderController extends Controller{
      * @api post,/lorder/check,Order,商品结算接口
      * - type required,string,in_body,结算方式:填入cart即可
      * - ids required,array#integer,in_body,购物车条目id列表
+     * - og_list optional,array#og_list_param,in_body,购买商品列表
      *
      * @return #global_res
      * - data object#check_result,结算结果
@@ -195,5 +196,9 @@ class LorderController extends Controller{
  * - trs_num string,交易号码
  * - trs_timeout integer,交易最迟支付时间
  * - trs_id integer,交易id
+ *
+ * @def #og_list_param
+ * - sku_id required,integer,单品的sku的id
+ * - buy_num required,integer,购买的数量
  *
  */
