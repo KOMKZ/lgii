@@ -36,7 +36,10 @@ class LorderController extends Controller{
         $postData = Yii::$app->request->getBodyParams();
         if('cart' == $postData['type']){
             $citems = CItemModel::findFull()->andWhere(['in', 'ci_id', $postData['ids']])->asArray()->all();
-
+            $buyParams = [];
+            $priceItems = OrderModel::checkOrderFromOgList($citems, $buyParams);
+            $result['discount_des'] = $priceItems['discount_items_des'];
+            $result['total_price'] = $priceItems['total_price'];
         }
         return $this->succ($result);
     }

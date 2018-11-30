@@ -180,17 +180,22 @@ class OrderModel extends Model{
         }
         $totalPrice = 0;
         $totalDiscount = 0;
-
-
+        $skuIds = [];
+        $gids = [];
+        foreach($skus as $index => $sku){
+            $skuIds[] = $sku['sku_id'];
+            $gids[] = $sku['sku_g_id'];
+        }
+        $discountItems = SaleModel::fetchGoodsRules([
+            'g_id' => $skuIds,
+            'sku_id' => $gids
+        ]);
         $ogListData = [];
         foreach($skus as $index => $sku){
             $buyParams = [
                 'buy_num' => $orderData[$sku['sku_id']]['og_total_num']
             ];
-            $buyParams['discount_items'] = SaleModel::fetchGoodsRules([
-                'g_id' => $sku['sku_g_id'],
-                'sku_id' => $sku['sku_id']
-            ]);
+            $buyParams['discount_items'] = $discountItems;
             $priceItems = GoodsModel::caculatePrice($sku, $buyParams);
             if($priceItems['has_error']){
                 throw new \Exception($priceItems['error_des']);
@@ -230,7 +235,6 @@ class OrderModel extends Model{
             throw new \Exception($priceItems['error_des']);
         }
 
-
         $order = new Order();
         $order->od_pid = 0;
         $order->od_belong_uid = 0;
@@ -255,6 +259,48 @@ class OrderModel extends Model{
         return $order;
 
     }
+
+    public static function checkOrderFromOgList($ogList, $buyParams = []){
+        $skuIds = [];
+        $gids = [];
+        foreach($ogList as $item){
+            $skuIds[] = $item['ci_sku_id'];
+            $gids = $item['ci_g_id'];
+        }
+        $discountItems = SaleModel::fetchGoodsRules([
+            'g_id' => $skuIds,
+            'sku_id' => $gids
+        ]);
+        $totalPrice = 0;
+        $totalDiscount = 0;
+        foreach($ogList as $item){
+            $buyParams = [
+                'buy_num' => $item['ci_amount'],
+            ];
+            $buyParams['discount_items'] = $discountItems;
+            $priceItems = GoodsModel::caculatePrice($item, $buyParams);
+            if($priceItems['has_error']){
+                throw new \Exception($priceItems['error_des']);
+            }
+            $totalPrice += $priceItems['og_total_price'];
+            $totalDiscount += $priceItems['og_total_discount'];
+        }
+        $orderSaleRules = SaleModel::fetchOrderRules([
+            'total_price' => $totalPrice
+        ]);
+        $buyParams = [
+            'discount_items' => $orderSaleRules
+        ];
+        $priceItems = static::caculatePrice([
+            'total_price' => $totalPrice,
+            'total_discount' => $totalDiscount,
+        ], $buyParams);
+        if($priceItems['has_error']){
+            throw new \Exception($priceItems['error_des']);
+        }
+        return $priceItems;
+    }
+
     public static function caculatePrice($order, $buyParams = []){
         $priceItems = [
             'has_error' => 0,
@@ -271,6 +317,7 @@ class OrderModel extends Model{
         $priceItems['total_price'] = $order['total_price'];
         $priceItems['total_discount'] = $order['total_discount'];
         foreach($buyParams['discount_items'] as $saleRule){
+            if(!SaleModel::checkAllow($order, $saleRule)){continue;}
             $discount = $saleRule->discount($priceItems);
             $discountParams = array_merge($saleRule->toArray(), [
                 'discount' => $discount,

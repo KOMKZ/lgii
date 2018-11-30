@@ -64,11 +64,12 @@ class GoodsModel extends Model{
 
 
         if(isset($data['sku_price'])){
-
-            $params['discount_items'] = SaleModel::fetchGoodsRules([
-                'g_id' => $data['g_id'],
-                'sku_id' => $data['sku_id']
-            ]);
+            if(empty($params['discount_items'])){
+                $params['discount_items'] = SaleModel::fetchGoodsRules([
+                    'g_id' => $data['g_id'],
+                    'sku_id' => $data['sku_id']
+                ]);
+            }
             $priceItem = static::caculatePrice($data, $params);
             $data['g_price'] = $priceItem['og_total_price'];
             $data['g_discount'] = $priceItem['og_total_discount'];
@@ -108,7 +109,7 @@ class GoodsModel extends Model{
         ];
         return $map[$level];
     }
-    public static function formatGoods($dataList, $params = []){
+    public static function formatList($dataList, $params = []){
         if(!empty($params['g_attr_level'])){
             $gids = [];
             foreach($dataList as $item){
@@ -116,6 +117,16 @@ class GoodsModel extends Model{
             }
             $params['attrs'] = static::getGoodsListAttrs($gids, $params);
         }
+        $gids = [];
+        $skuIds = [];
+        foreach($dataList as $data){
+            $gids[] = $data['g_id'];
+            $skuIds[] = $data['sku_id'];
+        }
+        $params['discount_items'] = SaleModel::fetchGoodsRules([
+            'g_id' => $gids,
+            'sku_id' => $skuIds
+        ], true);
         foreach($dataList as $key => &$data){
             $data = static::formatOne($data, $params);
         }
@@ -318,6 +329,7 @@ class GoodsModel extends Model{
                                         *
                                         $priceItems['og_total_num'];
         foreach($buyParams['discount_items'] as $saleRule){
+            if(!SaleModel::checkAllow($sku, $saleRule)){continue;}
             $discount = $saleRule->discount($priceItems);
             $discountParams = array_merge($saleRule->toArray(), [
                 'discount' => $discount,

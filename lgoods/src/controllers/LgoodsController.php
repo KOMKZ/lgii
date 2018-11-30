@@ -90,7 +90,7 @@ class LgoodsController extends Controller{
         $provider = new ActiveDataProvider([
             'query' => $query->asArray(),
         ]);
-        $items = GoodsModel::formatGoods($provider->getModels(), $getData);
+        $items = GoodsModel::formatList($provider->getModels(), $getData);
         return $this->succItems($items, $provider->totalCount);
     }
 

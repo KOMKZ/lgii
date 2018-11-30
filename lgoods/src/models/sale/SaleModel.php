@@ -11,6 +11,23 @@ use lbase\helpers\ArrayHelper;
 use yii\base\Model;
 
 class SaleModel extends Model{
+    public static function checkAllow($target, $rule){
+        switch ($rule['sr_object_type']){
+            case SaleRule::SR_TYPE_GOODS:
+                return $target['g_id'] == $rule['sr_object_id'];
+                break;
+            case SaleRule::SR_TYPE_SKU:
+                return $target['sku_id'] == $rule['sr_object_id'];
+                break;
+            case SaleRule::SR_TYPE_CATEGORY:
+                return $target['g_cls_id'] == $rule['sr_object_id'];
+                break;
+            case SaleRule::SR_TYPE_ORDER:
+                return !empty($target['od_id']);
+                break;
+        }
+        return false;
+    }
     public static function getGlobalRuleFilterParams($params = []){
         return array_merge([
             'exclude_defs' => [
@@ -49,7 +66,7 @@ class SaleModel extends Model{
         return $saleRules;
 
     }
-    public static function fetchGoodsRules($data){
+    public static function fetchGoodsRules($data, $group = false){
         if(isset($data['sku_id'])){
             $ruleRange[] = [
                 'sr_object_id' => $data['sku_id'],
@@ -62,10 +79,20 @@ class SaleModel extends Model{
                 'sr_object_type' => SaleRule::SR_TYPE_GOODS
             ];
         }
-        $saleRules = SaleModel::fetchTargetRules($ruleRange);
-        $saleRules = SaleModel::filterRules($saleRules, static::getGlobalRuleFilterParams([
-            'is_order_filter' => false
-        ]));
+        if($ruleRange){
+            $saleRules = SaleModel::fetchTargetRules($ruleRange);
+            $saleRules = SaleModel::filterRules($saleRules, static::getGlobalRuleFilterParams([
+                'is_order_filter' => false
+            ]));
+//            if($group){
+//                $result = [];
+//                foreach($saleRules as $rule){
+//                    console($rule->toArray());
+//                }
+//            }
+        }else{
+            $saleRules = [];
+        }
         return $saleRules;
     }
 
