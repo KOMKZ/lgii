@@ -26,7 +26,25 @@ class CreateUc01Cest
         $goodsList = $res['data']['items'];
         Debug::debug($goodsList);
 
-
+        $ogList = [];
+        foreach($goodsList as $goods){
+            $ogList[] = [
+                'ci_sku_id' => $goods['sku_id'],
+                'ci_g_id' => $goods['g_id'],
+                'ci_amount' => 1
+            ];
+        }
+        $i->setAuthHeader();$i->sendPOST("/lorder/check", [
+            'type' => "order",
+            "og_list" => $ogList
+        ]);
+        $i->seeResponseCodeIs(200);
+        $i->seeResponseContainsJson([
+            'code' => 0
+        ]);
+        $res = json_decode($i->grabResponse(), true);
+        $data = $res['data'];
+        Debug::debug($data);
 
         return ;
         $orderData = [

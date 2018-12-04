@@ -31,7 +31,6 @@ class CouponModel extends Model{
             $this->addErrors($coupon->getErrors());
             return false;
         }
-        $coupon->coup_status = Coupon::STATUS_VALID;
         $coupon->update(false);
         return $coupon;
     }
@@ -55,6 +54,7 @@ class CouponModel extends Model{
             return false;
         }
         $uc->ucou_status = UserCoupon::STATUS_NOT_USE;
+        $uc->ucou_created_at = time();
         $uc->insert(false);
         return $uc;
     }
@@ -64,6 +64,7 @@ class CouponModel extends Model{
             $this->addErrors($coupon->getErrors());
             return false;
         }
+        $coupon->coup_status = Coupon::STATUS_VALID;
         $coupon->insert(false);
         return $coupon;
     }

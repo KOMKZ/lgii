@@ -229,8 +229,9 @@ class CheckCest
 
         $i->setAuthHeader();$i->sendPOST("/lorder/check", [
             'type' => 'cart',
-        'ids' => $ids
-    ]);
+            'ids' => $ids,
+            'buy_uid' => 1,
+        ]);
         $i->seeResponseCodeIs(200);
         $i->seeResponseContainsJson([
             'code' => 0

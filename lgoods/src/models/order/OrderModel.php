@@ -273,12 +273,10 @@ class OrderModel extends Model{
         ]);
         $totalPrice = 0;
         $totalDiscount = 0;
+        $goodsParams['discount_items'] = $discountItems;
         foreach($ogList as $item){
-            $buyParams = [
-                'buy_num' => $item['ci_amount'],
-            ];
-            $buyParams['discount_items'] = $discountItems;
-            $priceItems = GoodsModel::caculatePrice($item, $buyParams);
+            $goodsParams['buy_num'] = $item['ci_amount'];
+            $priceItems = GoodsModel::caculatePrice($item, $goodsParams);
             if($priceItems['has_error']){
                 throw new \Exception($priceItems['error_des']);
             }
@@ -288,9 +286,7 @@ class OrderModel extends Model{
         $orderSaleRules = SaleModel::fetchOrderRules([
             'total_price' => $totalPrice
         ]);
-        $buyParams = [
-            'discount_items' => $orderSaleRules
-        ];
+        $buyParams['discount_items'] = $orderSaleRules;
         $priceItems = static::caculatePrice([
             'total_price' => $totalPrice,
             'total_discount' => $totalDiscount,
