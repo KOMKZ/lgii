@@ -1,5 +1,5 @@
 <?php
-namespace goods;
+namespace lorder;
 use \ApiTester;
 use Codeception\Util\Debug;
 

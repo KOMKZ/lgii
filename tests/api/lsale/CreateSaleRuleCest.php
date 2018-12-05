@@ -1,10 +1,10 @@
 <?php
-namespace goods;
+namespace lsale;
 use \ApiTester;
 use Codeception\Util\Debug;
 
 
-class ListSaleRuleCest
+class CreateSaleRuleCest
 {
     public function _before(ApiTester $I){ $I->loginAdmin();
     }
@@ -92,10 +92,10 @@ class ListSaleRuleCest
                 ['opt_name' => '等下我要删除这个属性值的', 'opt_attr_id' => $attrs[4]['a_id']],
             ],
             'price_items' => [
-                [$sizeId => 37,  $colorId=> 'yellow', 'price' => 1, 'is_master' => 1],
-                [$sizeId  => 37, $colorId => 'black', 'price' => 2],
-                [$sizeId => 38,  $colorId => 'yellow', 'price' => 3],
-                [$sizeId  => 38, $colorId => 'black', 'price' => 4],
+                [$sizeId => 37,  $colorId=> 'yellow', 'price' => 10000, 'is_master' => 1],
+                [$sizeId  => 37, $colorId => 'black', 'price' => 20000],
+                [$sizeId => 38,  $colorId => 'yellow', 'price' => 30000],
+                [$sizeId  => 38, $colorId => 'black', 'price' => 40000],
             ]
         ]);
         $i->seeResponseCodeIs(200);
@@ -110,7 +110,6 @@ class ListSaleRuleCest
 
         $i->setAuthHeader();$i->sendGET("/lgoods/" . $data['g_id'], [
             'field_level' => 'all',
-
         ]);
         $res = json_decode($i->grabResponse(), true);
         $goods = $res['data'];
@@ -131,8 +130,8 @@ class ListSaleRuleCest
             'code' => 0
         ]);
         $res = json_decode($i->grabResponse(), true);
-        $rule = $res['data'];
-        Debug::debug($rule);
+        $file = $res['data'];
+        Debug::debug($file);
 
         $i->setAuthHeader();$i->sendPOST("/lsale-rule", [
             'sr_name' => '限定时间7折',
@@ -149,16 +148,16 @@ class ListSaleRuleCest
             'code' => 0
         ]);
         $res = json_decode($i->grabResponse(), true);
-        $rule = $res['data'];
-        Debug::debug($rule);
+        $file = $res['data'];
+        Debug::debug($file);
 
-        $i->setAuthHeader();$i->sendGET("/lsale-rule");
-        $i->seeResponseCodeIs(200);
-        $i->seeResponseContainsJson([
-            'code' => 0
+
+        $i->setAuthHeader();$i->sendGET("/lgoods/" . $data['g_id'], [
+            'field_level' => 'all',
         ]);
         $res = json_decode($i->grabResponse(), true);
-        $rule = $res['data'];
-        Debug::debug($rule);
+        $goods = $res['data'];
+        Debug::debug($goods);
+
     }
 }

@@ -37,6 +37,29 @@ class CouponModel extends Model{
     public static function findUserCoupon(){
         return UserCoupon::find();
     }
+
+    /**
+     * @param $params
+     * - buy_uid required,integer
+     * - og_list required,integer,必须包含折扣信息,如果有的话
+     * - total_price required,integer,
+     * - discount_items required
+     */
+    public static function getUserValidCoupons($params){
+        $query = static::findUserCouponFull()->andWhere(['=', 'ucou_u_id', $params['buy_uid']])->asArray();
+        $query->andWhere(['=', 'ucou_status', UserCoupon::STATUS_NOT_USE]);
+        $query->andWhere(['<=', 'coup_start_at', time()]);
+        $query->andWhere(['>=', 'coup_end_at', time()]);
+        $result = [];
+        $coupon = new Coupon();
+        foreach($query->each() as $couponData){
+            $coupon->load($couponData, '');
+            if($coupon->check($params)){
+                $result[] = $couponData;
+            }
+        }
+        return $result;
+    }
     public static function findUserCouponFull(){
         $query = static::findUserCoupon();
         $query->from(['ucou' => UserCoupon::tableName()]);

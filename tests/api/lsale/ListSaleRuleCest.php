@@ -1,10 +1,10 @@
 <?php
-namespace goods;
+namespace lsale;
 use \ApiTester;
 use Codeception\Util\Debug;
 
 
-class UpdateSaleRuleCest
+class ListSaleRuleCest
 {
     public function _before(ApiTester $I){ $I->loginAdmin();
     }
@@ -152,12 +152,7 @@ class UpdateSaleRuleCest
         $rule = $res['data'];
         Debug::debug($rule);
 
-        $i->setAuthHeader();$i->sendPUT("/lsale-rule/" . $rule['sr_id'], [
-            'sr_name' => '限定时间7折!',
-            'sr_start_at' => time(),
-            'sr_end_at' => time() + 7200,
-            'sr_usage_intro' => '限定时间7折!',
-        ]);
+        $i->setAuthHeader();$i->sendGET("/lsale-rule");
         $i->seeResponseCodeIs(200);
         $i->seeResponseContainsJson([
             'code' => 0

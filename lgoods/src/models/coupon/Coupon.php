@@ -7,6 +7,8 @@
  */
 namespace lgoods\models\coupon;
 
+use lgoods\caculators\Discount;
+use lgoods\caculators\FullSub;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 
@@ -20,7 +22,25 @@ class Coupon extends  ActiveRecord{
     CONST SR_TYPE_SKU = 2;
     CONST SR_TYPE_CATEGORY = 3;
     CONST SR_TYPE_ORDER = 4;
+    public function check($params){
+        // todo
+        return true;
+    }
+    public function apply($params = []){
+        $caculator = null;
+        switch ($this->coup_caculate_type){
+//            case Discount::ID:
+//                $caculator = new Discount();
+//                break;
+            case FullSub::ID:
+                $caculator = new FullSub();
+                break;
+            default:
+                throw new \Exception("未知的计算类型");
+        }
 
+        return $caculator->caculate(['sr_caculate_params' => $this->coup_caculate_params]);
+    }
     public static function tableName(){
         return "{{%coupon}}";
     }

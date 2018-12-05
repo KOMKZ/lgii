@@ -1,10 +1,10 @@
 <?php
-namespace goods;
+namespace lorder;
 use \ApiTester;
 use Codeception\Util\Debug;
 
 
-class CreateOrderTransCest
+class CreateOrderRefundCest
 {
     public function _before(ApiTester $I){ $I->loginAdmin();
     }
@@ -162,11 +162,9 @@ class CreateOrderTransCest
         $attrs = $data['g_attrs'];
         Debug::debug($data);
     }
-
     // tests
     public function tryToTest(ApiTester $i)
     {
-
         $this->installGoods($i);
         $this->installGoods($i);
 
@@ -205,6 +203,66 @@ class CreateOrderTransCest
         $i->seeResponseContainsJson([
             'code' => 0
         ]);
+        $res = json_decode($i->grabResponse(), true);
+        $data = $res['data'];
+        Debug::debug($data);
+
+        $i->setAuthHeader();$i->sendPOST(sprintf("/ltrans/%s/pay-order", $data['trs_num']), [
+            'pt_pay_type' => 'npay',
+            'pt_pre_order_type' => 'data'
+//            'pt_pay_type' => 'wxpay',
+//            'pt_pre_order_type' => 'data',
+//            'pt_payment_id' => 'wxpay_app'
+//            'pt_pre_order_type' => 'url',
+//            'pt_payment_id' => 'wxpay'
+        ]);
+        $i->seeResponseCodeIs(200);
+        $i->seeResponseContainsJson([
+            'code' => 0
+        ]);
+        $res = json_decode($i->grabResponse(), true);
+        $data = $res['data'];
+        Debug::debug($data);
+
+        $i->setAuthHeader();$i->sendGET(sprintf("/lorder/%s", $order['od_num']));
+        $i->seeResponseCodeIs(200);
+        $i->seeResponseContainsJson([
+            'code' => 0
+        ]);
+        $res = json_decode($i->grabResponse(), true);
+        $data = $res['data'];
+        Debug::debug($data);
+
+        // 申请退款
+        $i->setAuthHeader();$i->sendPOST("/lrefund", [
+            'od_num' => $order['od_num'],
+            'og_rf_goods_list' => [
+                [
+                    'og_id' => $order['order_goods_list'][0]['og_id']
+                ],
+                [
+                    'og_id' => $order['order_goods_list'][0]['og_id']
+                ],
+            ]
+        ]);
+        $i->seeResponseCodeIs(200);
+        $i->seeResponseContainsJson([
+            'code' => 0
+        ]);
+
+        $res = json_decode($i->grabResponse(), true);
+        $data = $res['data'];
+        Debug::debug($data);
+
+        // 管理员同意退款
+        $i->setAuthHeader();$i->sendPUT(sprintf("/lrefund/%s/status/agree", $data['rf_num']), [
+            'opr_uid' => 1
+        ]);
+        $i->seeResponseCodeIs(200);
+        $i->seeResponseContainsJson([
+            'code' => 0
+        ]);
+
         $res = json_decode($i->grabResponse(), true);
         $data = $res['data'];
         Debug::debug($data);

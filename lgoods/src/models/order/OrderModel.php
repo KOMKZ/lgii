@@ -4,6 +4,8 @@ namespace lgoods\models\order;
 use lbase\staticdata\ConstMap;
 use lfile\models\FileModel;
 use lgoods\helpers\PriceHelper;
+use lgoods\models\coupon\Coupon;
+use lgoods\models\coupon\CouponModel;
 use lgoods\models\sale\SaleModel;
 use lgoods\models\trans\Trans;
 use Yii;
@@ -191,6 +193,7 @@ class OrderModel extends Model{
             'sku_id' => $gids
         ]);
         $ogListData = [];
+        $couponsOgListParams = [];
         foreach($skus as $index => $sku){
             $buyParams = [
                 'buy_num' => $orderData[$sku['sku_id']]['og_total_num']
@@ -218,6 +221,14 @@ class OrderModel extends Model{
                 'og_created_at' => time(),
                 'og_updated_at' => time(),
             ];
+            $couponsOgListParams[] = [
+                'og_total_num' => $priceItems['og_total_num'],
+                'og_single_price' => $priceItems['og_single_price'],
+                'og_total_price' => $priceItems['og_total_price'],
+                'og_discount_items' => $priceItems['discount_items'],
+                'og_g_id' => $sku['sku_g_id'],
+                'og_sku_id' => $sku['sku_id'],
+            ];
             ksort($ogData);
             $ogListData[] = $ogData;
         }
@@ -225,7 +236,9 @@ class OrderModel extends Model{
             'total_price' => $totalPrice
         ]);
         $buyParams = [
-            'discount_items' => $orderSaleRules
+            'discount_items' => $orderSaleRules,
+            'og_list' => $couponsOgListParams,
+            'buy_uid' => 1// todo
         ];
         $priceItems = static::caculatePrice([
             'total_price' => $totalPrice,
@@ -260,6 +273,17 @@ class OrderModel extends Model{
 
     }
 
+    /**
+     * @param $ogList
+     * - ci_sku_id required,integer
+     * - ci_g_id required,integer
+     * - ci_amount required,integer
+     * - buy_uid required,integer
+     * - use_coupons required,array#use_coupon_param
+     * @param array $buyParams
+     * @return array
+     * @throws \Exceptionadf
+     */
     public static function checkOrderFromOgList($ogList, $buyParams = []){
         $skuIds = [];
         $gids = [];
@@ -274,7 +298,8 @@ class OrderModel extends Model{
         $totalPrice = 0;
         $totalDiscount = 0;
         $goodsParams['discount_items'] = $discountItems;
-        foreach($ogList as $item){
+        $couponsOgListParams = [];
+        foreach($ogList as &$item){
             $goodsParams['buy_num'] = $item['ci_amount'];
             $priceItems = GoodsModel::caculatePrice($item, $goodsParams);
             if($priceItems['has_error']){
@@ -282,22 +307,31 @@ class OrderModel extends Model{
             }
             $totalPrice += $priceItems['og_total_price'];
             $totalDiscount += $priceItems['og_total_discount'];
+            $couponsOgListParams[] = [
+                'og_total_num' => $priceItems['og_total_num'],
+                'og_single_price' => $priceItems['og_single_price'],
+                'og_total_price' => $priceItems['og_total_price'],
+                'og_discount_items' => $priceItems['discount_items'],
+                'og_g_id' => $item['ci_g_id'],
+                'og_sku_id' => $item['ci_sku_id'],
+            ];
         }
         $orderSaleRules = SaleModel::fetchOrderRules([
             'total_price' => $totalPrice
         ]);
         $buyParams['discount_items'] = $orderSaleRules;
+        $buyParams['og_list'] = $couponsOgListParams;
         $priceItems = static::caculatePrice([
             'total_price' => $totalPrice,
             'total_discount' => $totalDiscount,
         ], $buyParams);
+
         if($priceItems['has_error']){
             throw new \Exception($priceItems['error_des']);
         }
         return $priceItems;
     }
-
-    public static function caculatePrice($order, $buyParams = []){
+    public static function caculateDiscountPrice($order, $buyParams){
         $priceItems = [
             'has_error' => 0,
             'error_des' => '',
@@ -307,7 +341,8 @@ class OrderModel extends Model{
             'discount_items_des' => []
         ];
         $defualtBuyParams = [
-            'discount_items' => [], // 用户使用折扣情况
+            'discount_items' => [],
+            'valid_coupons' => []
         ];
         $buyParams = array_merge($defualtBuyParams, $buyParams);
         $priceItems['total_price'] = $order['total_price'];
@@ -325,6 +360,61 @@ class OrderModel extends Model{
             $priceItems['total_price'] -= $discount;
             $priceItems['total_discount'] += $discount;
         }
+        return $priceItems;
+    }
+    public static function caculateCouponPrice($order, $buyParams = []){
+        $priceItems = [
+            'total_price' => $order['total_price'],
+            'total_discount'  => $order['total_discount'],
+            'use_coupons' => $buyParams['use_coupons'],
+            'valid_coupons' => [],
+            'use_coupons_des' => [],
+        ];
+        $coupons = CouponModel::getUserValidCoupons([
+            'buy_uid' => $buyParams['buy_uid'],
+            'og_list' => $buyParams['og_list'],
+            'total_pr       ice' => $order['total_price'],
+            'discount_items' => $order['discount_items']
+        ]);
+        $useCoupons = [];
+        foreach($coupons as $coupon){
+            if(in_array($coupon['ucou_id'], $buyParams['use_coupons'])){
+                $useCoupons[] = $coupon;
+            }else{
+                $priceItems['valid_coupons'][] = [
+                    'ucou_id' => $coupon['ucou_id'],
+                    'coup_name' => $coupon['coup_name'],
+                    'coup_start_at' => $coupon['coup_start_at'],
+                    'coup_end_at' => $coupon['coup_end_at']
+                ];
+            }
+        }
+        $coupon = new Coupon();
+        foreach($useCoupons as $couponData){
+            $coupon->load($couponData, '');
+            
+            $discount = $coupon->apply();
+            $priceItems['total_price'] -= $discount;
+            $priceItems['total_discount'] += $discount;
+            $priceItems['use_coupons_des'][] = static::buildUseCouponDes($coupon);
+        }
+        return $priceItems;
+    }
+    public static function buildUseCouponDes($coupon){
+        return sprintf("%s", $coupon['coup_name']);
+    }
+    public static function caculatePrice($order, $buyParams = []){
+        $priceDiscountItems = static::caculateDiscountPrice($order, $buyParams);
+        $priceCouponItems = static::caculateCouponPrice([
+            'total_price' => $priceDiscountItems['total_price'],
+            'total_discount' => $priceDiscountItems['total_discount'],
+            'discount_items' => $priceDiscountItems['discount_items'],
+        ], [
+            'og_list' => $buyParams['og_list'],
+            'buy_uid' => $buyParams['buy_uid'],
+            'use_coupons' => ArrayHelper::getValue($buyParams, 'use_coupons', [])
+        ]);
+        $priceItems = array_merge($priceDiscountItems, $priceCouponItems);
         return $priceItems;
     }
     public static function buildDiscountItemDes($data){

@@ -1,10 +1,10 @@
 <?php
-namespace goods;
+namespace lorder;
 use \ApiTester;
 use Codeception\Util\Debug;
 
 
-class CreateOrderRefundCest
+class CheckOrderCest
 {
     public function _before(ApiTester $I){ $I->loginAdmin();
     }
@@ -165,8 +165,8 @@ class CreateOrderRefundCest
     // tests
     public function tryToTest(ApiTester $i)
     {
-        $this->installGoods($i);
-        $this->installGoods($i);
+//        $this->installGoods($i);
+//        $this->installGoods($i);
 
         $i->setAuthHeader();$i->sendGET("/lgoods");
         $i->seeResponseCodeIs(200);
@@ -175,96 +175,26 @@ class CreateOrderRefundCest
         ]);
         $res = json_decode($i->grabResponse(), true);
         $goodsList = $res['data']['items'];
-        $orderData = [
-            'og_list' => []
-        ];
+        $ogList = [];
         foreach($goodsList as $goods){
-            $orderData['order_goods_list'][] = [
-                'og_sku_id' => $goods['sku_id'],
-                'og_total_num' => 1,
-                'discount_params' => [],
+            $ogList[] = [
+                'ci_sku_id' => $goods['sku_id'],
+                'ci_g_id' => $goods['g_id'],
+                'ci_amount' => 1,
             ];
         }
-        Debug::debug($orderData);
-        $i->setAuthHeader();$i->sendPOST("/lorder", $orderData);
+        Debug::debug($ogList);
+        $i->setAuthHeader();$i->sendPOST("/lorder/check", [
+            'og_list' => $ogList,
+        'type' => 'order',
+        'buy_uid' => 1,
+        'use_coupons' => [1,2,3]
+    ]);
         $i->seeResponseCodeIs(200);
         $i->seeResponseContainsJson([
             'code' => 0
         ]);
         $res = $i->grabResponse();
-        $res = json_decode($i->grabResponse(), true);
-        $order = $res['data'];
-        Debug::debug($order);
-
-        $i->setAuthHeader();$i->sendPOST(sprintf("/lorder/%s/trans", $order['od_num']), [
-
-        ]);
-        $i->seeResponseCodeIs(200);
-        $i->seeResponseContainsJson([
-            'code' => 0
-        ]);
-        $res = json_decode($i->grabResponse(), true);
-        $data = $res['data'];
-        Debug::debug($data);
-
-        $i->setAuthHeader();$i->sendPOST(sprintf("/ltrans/%s/pay-order", $data['trs_num']), [
-            'pt_pay_type' => 'npay',
-            'pt_pre_order_type' => 'data'
-//            'pt_pay_type' => 'wxpay',
-//            'pt_pre_order_type' => 'data',
-//            'pt_payment_id' => 'wxpay_app'
-//            'pt_pre_order_type' => 'url',
-//            'pt_payment_id' => 'wxpay'
-        ]);
-        $i->seeResponseCodeIs(200);
-        $i->seeResponseContainsJson([
-            'code' => 0
-        ]);
-        $res = json_decode($i->grabResponse(), true);
-        $data = $res['data'];
-        Debug::debug($data);
-
-        $i->setAuthHeader();$i->sendGET(sprintf("/lorder/%s", $order['od_num']));
-        $i->seeResponseCodeIs(200);
-        $i->seeResponseContainsJson([
-            'code' => 0
-        ]);
-        $res = json_decode($i->grabResponse(), true);
-        $data = $res['data'];
-        Debug::debug($data);
-
-        // 申请退款
-        $i->setAuthHeader();$i->sendPOST("/lrefund", [
-            'od_num' => $order['od_num'],
-            'og_rf_goods_list' => [
-                [
-                    'og_id' => $order['order_goods_list'][0]['og_id']
-                ],
-                [
-                    'og_id' => $order['order_goods_list'][0]['og_id']
-                ],
-            ]
-        ]);
-        $i->seeResponseCodeIs(200);
-        $i->seeResponseContainsJson([
-            'code' => 0
-        ]);
-
-        $res = json_decode($i->grabResponse(), true);
-        $data = $res['data'];
-        Debug::debug($data);
-
-        // 管理员同意退款
-        $i->setAuthHeader();$i->sendPUT(sprintf("/lrefund/%s/status/agree", $data['rf_num']), [
-            'opr_uid' => 1
-        ]);
-        $i->seeResponseCodeIs(200);
-        $i->seeResponseContainsJson([
-            'code' => 0
-        ]);
-
-        $res = json_decode($i->grabResponse(), true);
-        $data = $res['data'];
-        Debug::debug($data);
+        Debug::debug(json_decode($res, true));
     }
 }

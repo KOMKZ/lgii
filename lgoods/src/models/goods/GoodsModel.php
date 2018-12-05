@@ -226,6 +226,7 @@ class GoodsModel extends Model{
         $select = [
             "$gTable.g_name",
             "$gTable.g_sid",
+            "$gTable.g_id",
             "$gTable.g_stype",
             "$skuTable.*"
         ];
@@ -300,6 +301,7 @@ class GoodsModel extends Model{
      * - sku_id required,integer,单品的id
      * - sku_name required,string,单品的名称
      * - g_name required,string,商品的名称
+     * - g_id required,integer,商品id
      * @param array $buyParams
      * - buy_num optional,integer,购买的数量,默认是1
      * - customer_uid optional,integer,购买的用户id

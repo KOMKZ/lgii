@@ -7,6 +7,7 @@
  */
 namespace lgoods\controllers;
 
+use lbase\helpers\ArrayHelper;
 use lgoods\models\cart\CItemModel;
 use lgoods\models\goods\GoodsModel;
 use lgoods\models\order\Order;
@@ -39,12 +40,23 @@ class LorderController extends Controller{
             $ogList = CItemModel::findFull()->andWhere(['in', 'ci_id', $postData['ids']])->asArray()->all();
         }elseif('order' == $postData['type']){
             $ogList = $postData['og_list'];
+            $skuIds = ArrayHelper::getColumn($ogList, 'ci_sku_id', []);
+            $skus = GoodsModel::findSku()->andWhere(['in', 'sku_id', $skuIds])->asArray()->indexBy("sku_id")->all();
+            foreach($ogList as $k => &$item){
+                $sku = ArrayHelper::getValue($skus, $item['ci_sku_id']);
+                if(!$sku){
+                    unset($ogList[$k]);
+                    continue;
+                }
+                $item['sku_price'] = $sku['sku_price'];
+                $item['g_id'] = $sku['sku_g_id'];
+            }
         }
         $priceItems = OrderModel::checkOrderFromOgList($ogList, $postData);
-        $result['discount_des'] = $priceItems['discount_items_des'];
-        $result['total_price'] = $priceItems['total_price'];
-        console($result);
-        return $this->succ($result);
+        unset($priceItems['has_error']);
+        unset($priceItems['error_des']);
+        unset($priceItems['discount_items']);
+        return $this->succ($priceItems);
     }
     /**
      * @api get,/lorder,Order,获取订单详情
@@ -165,7 +177,16 @@ class LorderController extends Controller{
 /**
  * @def #check_result
  * - total_price integer,总价格
- * - discount_des array#string,折扣描述列表
+ * - discount_items_des array#string,折扣描述列表
+ * - use_coupons array#integer,使用优惠券列表id
+ * - use_coupons_des array#string,使用优惠券描述列表
+ * - valid_coupons array#valid_coupon_item,当前可用的优惠券列表
+ *
+ * @def #valid_coupon_item
+ * - ucou_id integer,用户优惠券id
+ * - coup_name string,优惠券名称
+ * - coup_start_at integer,优惠券生效时间
+ * - coup_end_at integer,优惠券失效时间
  *
  * @def #order_item_list
  * - total_count integer,总数量
@@ -200,7 +221,8 @@ class LorderController extends Controller{
  * - trs_id integer,交易id
  *
  * @def #og_list_param
- * - sku_id required,integer,单品的sku的id
- * - buy_num required,integer,购买的数量
+ * - ci_sku_id required,integer,单品的sku的id
+ * - ci_amount required,integer,购买的数量
+ * - ci_g_id required,integer,商品的g_id
  *
  */

@@ -8,7 +8,7 @@
 namespace lgoods\caculators;
 
 class Discount{
-    const CACU_DISCOUNT = 1;
+    const ID = 1;
 
 
     public function check($priceItems){

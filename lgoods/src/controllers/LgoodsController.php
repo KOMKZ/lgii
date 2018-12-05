@@ -247,14 +247,27 @@ class LgoodsController extends Controller{
  * - g_id integer,商品id
  * - g_name string,商品名称
  * - g_price integer,商品价格
+ * - g_cls_id integer,商品类别id
  * - g_discount integer,商品折扣
  * - g_created_at integer,创建时间
  * - g_updated_at integer,更新时间
- * - g_m_img_id string,商品图片id
  * - g_m_img_url string,图片url
+ * - g_m_img_url1 string,图片url1
+ * - g_m_img_url2 string,图片url2
+ * - g_m_img_url3 string,图片url3
+ * - g_m_img_url4 string,图片url4
  * - g_skus array#sku_item,商品sku条目列表
  * - g_attrs array#attr_item,商品sku属性列表
  * - categroy_path array#category_path_item,分类路径列表，父辈分类排在前面
+ * - g_discount_items array#g_discount_item,商品折扣对象列表
+ *
+ * @def g_discount_item
+ * - sr_id integer,折扣id
+ * - sr_name string,折扣名称
+ * - sr_usage_intro string,折扣介绍
+ * - discount integer,折扣数
+ * - sr_start_at integer,生效时间
+ * - sr_end_at integer,失效时间
  *
  * @def #category_path_item
  * - g_cls_id integer,分类id

@@ -8,7 +8,7 @@
 namespace lgoods\caculators;
 
 class FullSub{
-    CONST CACU_FULL_SUB = 2;
+    CONST ID = 2;
 
     public function check($priceItems){
         return true;
