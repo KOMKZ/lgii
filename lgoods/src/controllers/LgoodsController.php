@@ -261,7 +261,7 @@ class LgoodsController extends Controller{
  * - categroy_path array#category_path_item,分类路径列表，父辈分类排在前面
  * - g_discount_items array#g_discount_item,商品折扣对象列表
  *
- * @def g_discount_item
+ * @def #g_discount_item
  * - sr_id integer,折扣id
  * - sr_name string,折扣名称
  * - sr_usage_intro string,折扣介绍
