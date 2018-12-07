@@ -1,12 +1,15 @@
 <?php
-namespace goods;
+namespace category;
 use \ApiTester;
 use Codeception\Util\Debug;
 
 
-class ListCest
+class ListClassCest
 {
-    public function _before(ApiTester $I){ $I->loginAdmin();
+    public function _before(ApiTester $I)
+    {
+        $I->loginAdmin();
+
     }
 
     public function _after(ApiTester $I)
@@ -16,10 +19,7 @@ class ListCest
     // tests
     public function tryToTest(ApiTester $i)
     {
-        $i->setAuthHeader();$i->sendGET("/lgoods", [
-            'g_attr_level' => 'all',
-            'per-page' => -1,
-        ]);
+        $i->setAuthHeader();$i->sendGET("/lclassification");
         $i->seeResponseCodeIs(200);
         $i->seeResponseContainsJson([
             'code' => 0

@@ -4,7 +4,7 @@ use \ApiTester;
 use Codeception\Util\Debug;
 
 
-class ListCest
+class UpdateLbannerCest
 {
     public function _before(ApiTester $I)
     {
@@ -60,8 +60,12 @@ class ListCest
         $file = $res['data'];
         Debug::debug($file);
 
-        $i->setAuthHeader();$i->sendGET("/lbanner", [
-
+        $i->setAuthHeader();$i->sendPUT("/lbanner/" . $data['b_id'], [
+            'b_img_id' => $file['file_query_id'],
+            'b_img_app' => 1,
+            'b_img_module' => 1,
+            'b_reffer_link' => 'http://www.baidu.com',
+            'b_reffer_label' => '百度1',
         ]);
         $i->seeResponseCodeIs(200);
         $i->seeResponseContainsJson([

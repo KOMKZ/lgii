@@ -4,7 +4,7 @@ use \ApiTester;
 use Codeception\Util\Debug;
 
 
-class DeleteCest
+class ListCartCest
 {
     public function _before(ApiTester $I)
     {
@@ -171,6 +171,8 @@ class DeleteCest
     // tests
     public function tryToTest(ApiTester $i)
     {
+
+
         $this->installGoods($i);
         $i->setAuthHeader();$i->sendGET("/lgoods", [
     ]);
@@ -196,8 +198,7 @@ class DeleteCest
         Debug::debug($data);
 
 
-        $i->setAuthHeader();$i->sendDELETE("/lcart-item/" . $data['ci_id'], [
-    ]);
+        $i->setAuthHeader();$i->sendGET("/lcart-item", []);
         $i->seeResponseCodeIs(200);
         $i->seeResponseContainsJson([
             'code' => 0

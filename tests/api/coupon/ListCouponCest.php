@@ -4,7 +4,7 @@ use \ApiTester;
 use Codeception\Util\Debug;
 
 
-class ViewCest
+class ListCouponCest
 {
     public function _before(ApiTester $I)
     {
@@ -212,7 +212,7 @@ class ViewCest
         $data = $res['data'];
         Debug::debug($data);
 
-        $i->setAuthHeader();$i->sendGET("/lcoupon/" . $data['coup_id']);
+        $i->setAuthHeader();$i->sendGET("/lcoupon");
         $i->seeResponseCodeIs(200);
         $i->seeResponseContainsJson([
             'code' => 0

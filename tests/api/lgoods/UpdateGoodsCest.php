@@ -4,67 +4,13 @@ use \ApiTester;
 use Codeception\Util\Debug;
 
 
-class ViewCest
+class UpdateGoodsCest
 {
     public function _before(ApiTester $I){ $I->loginAdmin();
     }
 
     public function _after(ApiTester $I)
     {
-    }
-    private function installCategory(ApiTester $i){
-        $i->setAuthHeader();$i->sendPOST("/lfile", [
-            'file_category' => 'pub_img',
-        ], [
-            'file' => codecept_data_dir() . '/1.png' ,
-        ]);
-        $i->seeResponseCodeIs(200);
-        $i->seeResponseContainsJson([
-            'code' => 0
-        ]);
-        $res = json_decode($i->grabResponse(), true);
-        $file = $res['data'];
-        Debug::debug($file);
-
-        $i->setAuthHeader();$i->sendPOST("/lclassification", [
-            'g_cls_name' => '鞋包配饰',
-            'g_cls_img_id' => $file['file_query_id'],
-        ]);
-        $i->seeResponseCodeIs(200);
-        $i->seeResponseContainsJson([
-            'code' => 0
-        ]);
-        $res = json_decode($i->grabResponse(), true);
-        $cls = $res['data'];
-        Debug::debug($cls);
-
-
-        $i->setAuthHeader();$i->sendPOST("/lclassification", [
-            'g_cls_name' => '鞋靴',
-            'g_cls_img_id' => $file['file_query_id'],
-            'g_cls_pid' => $cls['g_cls_id']
-        ]);
-        $i->seeResponseCodeIs(200);
-        $i->seeResponseContainsJson([
-            'code' => 0
-        ]);
-        $res = json_decode($i->grabResponse(), true);
-        $clsChild = $res['data'];
-        Debug::debug($clsChild);
-
-        $i->setAuthHeader();$i->sendPOST("/lclassification", [
-            'g_cls_name' => '男鞋',
-            'g_cls_img_id' => $file['file_query_id'],
-            'g_cls_pid' => $clsChild['g_cls_id']
-        ]);
-        $i->seeResponseCodeIs(200);
-        $i->seeResponseContainsJson([
-            'code' => 0
-        ]);
-        $res = json_decode($i->grabResponse(), true);
-        $clsChild = $res['data'];
-        Debug::debug($clsChild);
-        return $clsChild;
     }
 
     // tests
@@ -129,13 +75,9 @@ class ViewCest
 
         $sizeId = $attrs[0]['a_id'];
         $colorId = $attrs[1]['a_id'];
-
-        $cls = $this->installCategory($i);
-
         $i->setAuthHeader();$i->sendPOST("/lgoods", [
             'g_name' => "鞋子",
             'g_sid' => 0,
-            'g_cls_id' => $cls['g_cls_id'],
             'g_m_img_id' => $file['file_query_id'],
             'g_stype' => '',
             'ac_id' => $data['ac_id'],
@@ -151,9 +93,9 @@ class ViewCest
             ],
             'price_items' => [
                 [$sizeId => 37,  $colorId=> 'yellow', 'price' => 1, 'is_master' => 1],
-                [$sizeId  => 37, $colorId => 'black', 'price' => 1],
-                [$sizeId => 38,  $colorId => 'yellow', 'price' => 1],
-                [$sizeId  => 38, $colorId => 'black', 'price' => 1],
+                [$sizeId  => 37, $colorId => 'black', 'price' => 2],
+                [$sizeId => 38,  $colorId => 'yellow', 'price' => 3],
+                [$sizeId  => 38, $colorId => 'black', 'price' => 4],
             ]
         ]);
         $i->seeResponseCodeIs(200);
@@ -165,10 +107,50 @@ class ViewCest
         $attrs = $data['g_attrs'];
         Debug::debug($data);
 
-        $i->setAuthHeader();$i->sendGET("/lgoods/" . $data['g_id']);
+        $i->setAuthHeader();$i->sendPUT('/lgoods/' . $data['g_id'], [
+            'price_items' => [
+                [$sizeId  => 39, $colorId => 'black', 'price' => 5],
+                [$sizeId  => 37, $colorId => 'black', 'price' => 6],
+            ],
+            'g_options' => [
+                // sku属性只能修改部分属性
+                [
+                    'opt_id' => $attrs[0]['values'][0]['opt_id'],
+                    'opt_name' => '37码'
+                ],
+                ['opt_name' => '39码', 'opt_value' => 39,'opt_attr_id' => $attrs[0]['a_id']],
+                [
+                    'opt_id' => $attrs[0]['values'][1]['opt_id'],
+                    'opt_name' => '38码'
+                ],
+                ['opt_name' => '法国/英国', 'opt_id' => $attrs[2]['values'][0]['opt_id']],
+
+            ],
+            'g_del_options' => [
+                $attrs[4]['values'][0]['opt_id'],
+            ]
+        ]);
         $res = json_decode($i->grabResponse(), true);
+        $i->seeResponseCodeIs(200);
+        $i->seeResponseContainsJson([
+            'code' => 0
+        ]);
         $data = $res['data'];
+        $attrs = $data['g_attrs'];
         Debug::debug($data);
+
+
+        $i->setAuthHeader();$i->sendGET("/lgoods/" . $data['g_id'], [
+            'field_level' => 'all',
+            'g_attr_level' => 'all'
+        ]);
+        $i->seeResponseCodeIs(200);
+        $i->seeResponseContainsJson([
+            'code' => 0
+        ]);
+        $res = $i->grabResponse();
+        Debug::debug(json_decode($res, true));
+
 
     }
 }

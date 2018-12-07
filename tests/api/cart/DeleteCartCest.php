@@ -1,10 +1,10 @@
 <?php
-namespace coupon;
+namespace cart;
 use \ApiTester;
 use Codeception\Util\Debug;
 
 
-class CreateCest
+class DeleteCartCest
 {
     public function _before(ApiTester $I)
     {
@@ -69,8 +69,9 @@ class CreateCest
         return $clsChild;
     }
     // tests
-    public function tryToTest(ApiTester $i)
+    private function installGoods(ApiTester $i)
     {
+
         $i->setAuthHeader();$i->sendPOST("/lfile", [
         'file_category' => 'pub_img',
     ], [
@@ -134,7 +135,7 @@ class CreateCest
         $cls = $this->installCategory($i);
 
         $i->setAuthHeader();$i->sendPOST("/lgoods", [
-        'g_name' => "大梁鞋",
+        'g_name' => "鞋子",
         'g_sid' => 0,
         'g_cls_id' => $cls['g_cls_id'],
         'g_m_img_id' => $file['file_query_id'],
@@ -151,10 +152,10 @@ class CreateCest
             ['opt_name' => '等下我要删除这个属性值的', 'opt_attr_id' => $attrs[4]['a_id']],
         ],
         'price_items' => [
-            [$sizeId => 37,  $colorId=> 'yellow', 'price' => 80000, 'is_master' => 1],
-            [$sizeId  => 37, $colorId => 'black', 'price' => 80000],
-            [$sizeId => 38,  $colorId => 'yellow', 'price' => 80000],
-            [$sizeId  => 38, $colorId => 'black', 'price' => 80000],
+            [$sizeId => 37,  $colorId=> 'yellow', 'price' => 1, 'is_master' => 1],
+            [$sizeId  => 37, $colorId => 'black', 'price' => 1],
+            [$sizeId => 38,  $colorId => 'yellow', 'price' => 1],
+            [$sizeId  => 38, $colorId => 'black', 'price' => 1],
         ]
     ]);
         $i->seeResponseCodeIs(200);
@@ -166,43 +167,25 @@ class CreateCest
         $attrs = $data['g_attrs'];
         Debug::debug($data);
 
-        $i->setAuthHeader();$i->sendGET("/lgoods/" . $data['g_id']);
-        $res = json_decode($i->grabResponse(), true);
-        $goods = $res['data'];
-        Debug::debug($goods);
-
-
-
-
-        $i->setAuthHeader();$i->sendPOST("/lcoupon", [
-            'coup_name' => '100元直减券',
-            'coup_caculate_type' => 2,
-            'coup_caculate_params' => '0,10000',
-            'coup_object_id' => 0,
-            'coup_object_type' => 4,
-            'coup_limit_params' => "",
-            'coup_start_at' => time(),
-            'coup_end_at' => time() + 100000,
-            'coup_usage_intro' => '100元直减券',
-        ]);
+    }
+    // tests
+    public function tryToTest(ApiTester $i)
+    {
+        $this->installGoods($i);
+        $i->setAuthHeader();$i->sendGET("/lgoods", [
+    ]);
         $i->seeResponseCodeIs(200);
         $i->seeResponseContainsJson([
             'code' => 0
         ]);
         $res = json_decode($i->grabResponse(), true);
-        $data = $res['data'];
-        Debug::debug($data);
+        $goodsList = $res['data']['items'];
+        Debug::debug($goodsList);
 
-        $i->setAuthHeader();$i->sendPOST("/lcoupon", [
-        'coup_name' => '满200减20券',
-        'coup_caculate_type' => 2,
-        'coup_caculate_params' => '20000,2000',
-        'coup_object_id' => $goods['g_id'],
-        'coup_object_type' => 1,
-        'coup_limit_params' => "",
-        'coup_start_at' => time(),
-        'coup_end_at' => time() + 100000,
-        'coup_usage_intro' => '满200减20券',
+        $i->setAuthHeader();$i->sendPost("/lcart-item", [
+        'ci_sku_id' => $goodsList[0]['sku_id'],
+        'ci_amount' => 2,
+        'ci_belong_uid' => 0,
     ]);
         $i->seeResponseCodeIs(200);
         $i->seeResponseContainsJson([
@@ -212,24 +195,17 @@ class CreateCest
         $data = $res['data'];
         Debug::debug($data);
 
-        $i->setAuthHeader();$i->sendPOST("/lcoupon", [
-        'coup_name' => '满200减15券',
-        'coup_caculate_type' => 2,
-        'coup_caculate_params' => '20000,1500',
-        'coup_object_id' => $cls['g_cls_id'],
-        'coup_object_type' => 3,
-        'coup_limit_params' => "",
-        'coup_start_at' => time(),
-        'coup_end_at' => time() + 100000,
-        'coup_usage_intro' => '满200减15券',
+
+        $i->setAuthHeader();$i->sendDELETE("/lcart-item/" . $data['ci_id'], [
     ]);
         $i->seeResponseCodeIs(200);
         $i->seeResponseContainsJson([
             'code' => 0
         ]);
         $res = json_decode($i->grabResponse(), true);
-        $cls = $res['data'];
-        Debug::debug($cls);
+        $data = $res['data'];
+        Debug::debug($data);
+
 
 
     }

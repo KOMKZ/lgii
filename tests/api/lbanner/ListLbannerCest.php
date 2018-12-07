@@ -4,11 +4,12 @@ use \ApiTester;
 use Codeception\Util\Debug;
 
 
-class CreateCest
+class ListLbannerCest
 {
     public function _before(ApiTester $I)
     {
         $I->loginAdmin();
+
     }
 
     public function _after(ApiTester $I)
@@ -43,11 +44,32 @@ class CreateCest
             'code' => 0
         ]);
         $res = json_decode($i->grabResponse(), true);
-        $cls = $res['data'];
-        Debug::debug($cls);
+        $data = $res['data'];
+        Debug::debug($data);
 
+        $i->setAuthHeader();$i->sendPOST("/lfile", [
+            'file_category' => 'pub_img',
+        ], [
+            'file' => codecept_data_dir() . '/1.png' ,
+        ]);
+        $i->seeResponseCodeIs(200);
+        $i->seeResponseContainsJson([
+            'code' => 0
+        ]);
+        $res = json_decode($i->grabResponse(), true);
+        $file = $res['data'];
+        Debug::debug($file);
 
+        $i->setAuthHeader();$i->sendGET("/lbanner", [
 
+        ]);
+        $i->seeResponseCodeIs(200);
+        $i->seeResponseContainsJson([
+            'code' => 0
+        ]);
+        $res = json_decode($i->grabResponse(), true);
+        $data = $res['data'];
+        Debug::debug($data);
 
 
     }

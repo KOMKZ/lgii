@@ -4,7 +4,7 @@ use \ApiTester;
 use Codeception\Util\Debug;
 
 
-class CreateCest
+class CreateCartCest
 {
     public function _before(ApiTester $I)
     {

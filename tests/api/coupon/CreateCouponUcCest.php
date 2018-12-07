@@ -4,7 +4,7 @@ use \ApiTester;
 use Codeception\Util\Debug;
 
 
-class CreateUcCest
+class CreateCouponUcCest
 {
     public function _before(ApiTester $I)
     {
