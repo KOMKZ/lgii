@@ -177,12 +177,16 @@ class CheckOrderCest
         $goodsList = $res['data']['items'];
         $ogList = [];
         foreach($goodsList as $goods){
-            $ogList[] = [
-                'ci_sku_id' => $goods['sku_id'],
-                'ci_g_id' => $goods['g_id'],
-                'ci_amount' => 1,
-            ];
+            if($goods['sku_id']){
+                $ogList[] = [
+                    'ci_sku_id' => $goods['sku_id'],
+                    'ci_g_id' => $goods['g_id'],
+                    'ci_amount' => 1,
+                ];
+            }
         }
+        Debug::debug($goodsList);
+
         Debug::debug($ogList);
         $i->setAuthHeader();$i->sendPOST("/lorder/check", [
             'og_list' => $ogList,

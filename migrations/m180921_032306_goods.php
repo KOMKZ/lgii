@@ -22,8 +22,7 @@ class m180921_032306_goods extends Migration
             `g_cls_id` int(10) unsigned not null default 0 comment '分类id',
             `g_created_at` int(10) unsigned not null comment '创建时间',
             `g_updated_at` int(10) unsigned not null comment '更新时间',
-            primary key (`g_id`),
-            index (`g_sid`, `g_stype`)
+            primary key (`g_id`)
         );
         ";
         $this->execute($createTabelSql);

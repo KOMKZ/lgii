@@ -24,7 +24,8 @@ class m180921_030038_goods_sku extends Migration
             `sku_created_at` int(10) unsigned not null comment '创建时间',
             `sku_updated_at` int(10) unsigned not null comment '更新时间',
             primary key (`sku_id`),
-            unique (`sku_g_id`, `sku_index`)
+            unique `g_one_sku` (`sku_g_id`, `sku_index`),
+            index `g_master_sku` (`sku_is_master`, `sku_g_id`)
         );
         ";
         $this->execute($createTabelSql);

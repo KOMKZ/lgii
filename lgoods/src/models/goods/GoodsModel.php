@@ -64,7 +64,7 @@ class GoodsModel extends Model{
 
 
         if(isset($data['sku_price'])){
-            if(empty($params['discount_items'])){
+            if(!isset($params['discount_items'])){
                 $params['discount_items'] = SaleModel::fetchGoodsRules([
                     'g_id' => $data['g_id'],
                     'sku_id' => $data['sku_id']
@@ -696,21 +696,33 @@ class GoodsModel extends Model{
         $t = Yii::$app->db->beginTransaction();
         try{
             $skus = [];
+            $sku = new GoodsSku();
             foreach($skuListData as $skuData){
-                $sku = new GoodsSku();
                 if(!$sku->load($skuData, '') || !$sku->validate()){
                     throw new \Exception(implode(',', $sku->getFirstErrors()));
                 }
                 $sku->sku_index_status = GoodsSku::INDEX_STATUS_VALID;
-                $sku->insert(false);
-                $skus[] = $sku;
+                $skuData = $sku->toArray();
+                $skuData['sku_created_at'] = time();
+                $skuData['sku_updated_at'] = time();
+                ksort($skuData);
+                $skus[] = $skuData;
             }
+            $fields = array_keys($skuData);
+            sort($fields);
+            static::batchInsertGoodsSkus($skus, $fields);
             $t->commit();
             return $skus;
         }catch(\Exception $e){
             $t->rollBack();
             throw $e;
         }
+    }
+
+    public static function batchInsertGoodsSkus($data, $fields){
+        return Yii::$app->db->createCommand()
+            ->batchInsert(GoodsSku::tableName(), $fields, $data)->execute()
+            ;
     }
 
     public static function triggerGoodsCreate($object, $goodsData){
