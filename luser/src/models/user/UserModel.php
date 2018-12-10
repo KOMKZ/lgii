@@ -132,6 +132,7 @@ class UserModel extends Model
 		try {
 			// 基础数据
 			$user = new User();
+            $user->scenario = "create";
 			if(!$user->load($data, '') || !$user->validate()){
 				$this->addErrors($user->getErrors());
 				return false;

@@ -289,15 +289,36 @@ class OrderModel extends Model{
         $gids = [];
         foreach($ogList as $item){
             $skuIds[] = $item['ci_sku_id'];
-            $gids = $item['ci_g_id'];
+            $gids[] = $item['ci_g_id'];
         }
-        $discountItems = SaleModel::fetchGoodsRules([
+        $discountRules = SaleModel::fetchGoodsRules([
             'g_id' => $skuIds,
             'sku_id' => $gids
         ]);
+        $ogPriceItems = static::caculateOgListPrice($ogList, ['discount_items' => $discountRules]);
+        $orderSaleRules = SaleModel::fetchOrderRules([
+            'total_price' => $ogPriceItems['total_price'],
+        ]);
+        $buyParams['discount_items'] = $orderSaleRules;
+        $buyParams['og_list'] = $ogPriceItems['og_list'];
+        $priceItems = static::caculatePrice([
+            'total_price' => $ogPriceItems['total_price'],
+            'total_discount' => $ogPriceItems['total_discount'],
+        ], $buyParams);
+
+        if($priceItems['has_error']){
+            throw new \Exception($priceItems['error_des']);
+        }
+        return $priceItems;
+    }
+    public static function caculateOgListPrice($ogList, $buyParams){
         $totalPrice = 0;
         $totalDiscount = 0;
-        $goodsParams['discount_items'] = $discountItems;
+        if(!empty($buyParams['discount_items'])){
+            $goodsParams['discount_items'] = $buyParams['discount_items'];
+        }else{
+            $goodsParams = [];
+        }
         $couponsOgListParams = [];
         foreach($ogList as &$item){
             $goodsParams['buy_num'] = $item['ci_amount'];
@@ -316,20 +337,11 @@ class OrderModel extends Model{
                 'og_sku_id' => $item['ci_sku_id'],
             ];
         }
-        $orderSaleRules = SaleModel::fetchOrderRules([
-            'total_price' => $totalPrice
-        ]);
-        $buyParams['discount_items'] = $orderSaleRules;
-        $buyParams['og_list'] = $couponsOgListParams;
-        $priceItems = static::caculatePrice([
+        return [
             'total_price' => $totalPrice,
             'total_discount' => $totalDiscount,
-        ], $buyParams);
-
-        if($priceItems['has_error']){
-            throw new \Exception($priceItems['error_des']);
-        }
-        return $priceItems;
+            'og_list' => $couponsOgListParams,
+        ];
     }
     public static function caculateDiscountPrice($order, $buyParams){
         $priceItems = [

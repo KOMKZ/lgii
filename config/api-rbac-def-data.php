@@ -42,7 +42,8 @@ return [
         ,['vistor', "lauth/login"]
         ,['vistor', "lgoods/list"]
         ,['vistor', "lgoods/view"]
+        ,['vistor', "luser/create"]
 
 
-	]
+    ]
 ];
