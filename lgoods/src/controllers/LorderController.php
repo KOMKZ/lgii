@@ -112,6 +112,9 @@ class LorderController extends Controller{
      * 
      * 注： 详细参考各自接口的开发流程
      *
+     * __细节说明__::
+     * 1. 每条订单都有一条交易记录与之对应，必须使用某种支付方式取支付交易才会触发订单触发支付成功。
+     * 2. 可以优先使用npay的支付方式跑完流程，该支付方式能够让无条件让交易支付成功
      * >>>
      *
      */
@@ -134,11 +137,13 @@ class LorderController extends Controller{
     }
 
     /**
-     * @api post,/lorder/{id}/trans,Order,创建一条订单
+     * @api post,/lorder/{id}/trans,Order,创建一条订单的交易
      * - id required,string,in_path,订单编号
      *
      * @return #global_res
      * - data object#trans_item,返回交易对象
+     *
+     *
      *
      */
     public function actionCreateTrans($index){
