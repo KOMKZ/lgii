@@ -19,7 +19,6 @@ use lgoods\models\sale\SaleModel;
 use lgoods\models\sale\SaleRule;
 use Yii;
 use yii\base\Model;
-use yii\base\Object;
 use lgoods\models\goods\GoodsEvent;
 use yii\base\Event;
 use lgoods\models\goods\Goods;

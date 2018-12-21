@@ -2,14 +2,14 @@
 namespace lbase\staticdata;
 
 use Yii;
-use yii\base\Object;
+use yii\base\BaseObject;
 use yii\base\InvalidParamException;
 
 
 /**
  *
  */
-class ConstMap extends Object
+class ConstMap extends BaseObject
 {
 	public static $map = [];
 	public static function getConst($name = null, $onlyValue = false){

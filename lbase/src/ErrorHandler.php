@@ -11,10 +11,9 @@ class ErrorHandler extends \yii\web\ErrorHandler{
         if (!YII_DEBUG && !$exception instanceof UserException && !$exception instanceof HttpException) {
             $exception = new HttpException(500, \Yii::t('yii', 'An internal server error occurred.'));
         }
-
         $array = [
             'data' => null,
-            'message' => ($exception instanceof \Exception || $exception instanceof ErrorException) ? $exception->getName() : 'Exception'
+            'message' => ($exception instanceof \Exception || $exception instanceof ErrorException) ? $exception->getMessage() : 'Exception'
                          . ':' . $exception->getMessage(),
             'code' => $exception->getCode(),
         ];
