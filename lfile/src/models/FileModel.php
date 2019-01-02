@@ -382,6 +382,7 @@ class FileModel extends Model
             $fileCondition['file_save_type'] = $matches[1];
             $fileCondition['file_prefix'] = ltrim(trim($matches[3], '/'), '/');
             $fileCondition['file_real_name'] = basename(trim($matches[4]));
+
             return $fileCondition;
         }else{
             return [];
@@ -451,6 +452,12 @@ class FileModel extends Model
                . $file->file_real_name;
     }
 
+    public static function buildFileQueryFromArr($fileInfo){
+        return $fileInfo['file_save_type'] . ':' .
+            $fileInfo['file_category'] . '@' . $fileInfo['file_prefix'] . ':'
+            . $fileInfo['file_real_name'];
+    }
+
     /**
      * 获取统一文件对象的访问地址
      * @see \lfile\models\drivers\Oss::buildFileUrl
@@ -462,6 +469,10 @@ class FileModel extends Model
         return self::getSaveMedium($file->file_save_type)->buildFileUrl($file);
     }
 
+    public static function buildFileUrlFromArr($fileInfo){
+        return self::getSaveMedium($fileInfo['file_save_type'])->buildFileUrlFromArr($fileInfo);
+    }
+
     /**
      * 通过数组数据获取文件的访问地址
      * 同 lfile\models\FileModel::buildFileUrl不同的时，这里参数不要传入统一文件对象，就能够获取文件的访问url，唯一不同的时，这个方法只能获取
@@ -469,17 +480,10 @@ class FileModel extends Model
      * @param  array $fileInfo 文件信息
      * @return string           文件访问url
      */
+    static private $tmpFile = null;
     public static function buildFileUrlStatic($fileInfo){
-        $file = Yii::createObject(array_merge([
-            'class' => File::className(),
-            'file_is_private' => 0,
-        ], $fileInfo));
-        if($file->file_save_type){
-            $file->file_medium_info = json_encode(self::getSaveMedium($file->file_save_type)->buildMediumInfo());
-            return static::buildFileUrl($file);
-        }else{
-            return '';
-        }
+        $fileInfo['file_medium_info'] = json_encode(self::getSaveMedium($fileInfo['file_save_type'])->buildMediumInfo());
+        return static::buildFileUrlFromArr($fileInfo);
     }
 
     /**

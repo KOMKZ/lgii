@@ -52,8 +52,8 @@ class Controller extends BaseController
     public function succItems($items, $count = null){
         $res = $this->getRes();
         $res['data'] = [
+            'count' => null === $count ? count($items) : $count,
             'items' => $items,
-            'count' => null === $count ? count($items) : $count
         ];
         $res['code'] = 0;
         $res['message'] = '';

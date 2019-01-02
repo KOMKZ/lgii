@@ -1,6 +1,7 @@
 <?php
 namespace lfile\models\drivers;
 
+use lfile\models\FileModel;
 use Yii;
 use yii\base\Model;
 use yii\base\InvalidConfigException;
@@ -75,9 +76,14 @@ class Disk extends Model implements SaveMediumInterface
      * @return string         文件访问url
      */
     public function buildFileUrl(File $file, $params = []){
+        return sprintf("%s/%s?query_id=%s", $this->host, $this->urlRoute, urlencode($file->file_query_id));
         $apiUrlManager = Yii::$app->apiurl;
         $apiUrlManager->hostInfo = $this->host;
         return $apiUrlManager->createAbsoluteUrl([$this->urlRoute, 'query_id' => $file->file_query_id]);
+    }
+
+    public function buildFileUrlFromArr($fileInfo){
+        return sprintf("%s/%s?query_id=%s", $this->host, $this->urlRoute, urlencode(FileModel::buildFileQueryFromArr($fileInfo)));
     }
 
     /**

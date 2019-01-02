@@ -2,6 +2,7 @@
 namespace lgoods\models\order;
 
 use lbase\staticdata\ConstMap;
+use lfile\models\ar\File;
 use lfile\models\FileModel;
 use lgoods\helpers\PriceHelper;
 use lgoods\models\coupon\Coupon;
@@ -50,15 +51,10 @@ class OrderModel extends Model{
         }
         $data['od_price_str'] = PriceHelper::format($data['od_price']);
         $data['od_discount_str'] = PriceHelper::format($data['od_discount']);
+
         if(!empty($data['order_goods_list'])){
-            $fModel = new FileModel();
             foreach($data['order_goods_list'] as &$ogItem){
-                if(isset($ogItem['g_m_img_id'])){
-                    $fModel = new FileModel();
-                    $ogItem['g_m_img_url'] = $fModel->buildFileUrlStatic(FileModel::parseQueryId($ogItem['g_m_img_id']));
-                }else{
-                    $ogItem['g_m_img_url'] = '';
-                }
+                $ogItem['g_m_img_url'] = FileModel::buildFileUrlStatic(FileModel::parseQueryId($ogItem['g_m_img_id']));
                 if(isset($ogItem['og_discount_items'])){
                     $ogItem['og_discount_items'] = json_decode($ogItem['og_discount_items'], true);
                 }else{

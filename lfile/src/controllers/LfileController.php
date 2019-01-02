@@ -175,6 +175,7 @@ class LfileController extends Controller
         $get = Yii::$app->request->get();
         $fileInfo = FileModel::parseQueryId($query_id);
         $file = FileQuery::find()->where($fileInfo)->one();
+
         if(!$file){
             throw new NotFoundHttpException(Yii::t('app', "{$query_id} 文件不存在"));
         }

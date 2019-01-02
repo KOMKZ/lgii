@@ -45,7 +45,7 @@ class Oss extends Model implements SaveMediumInterface{
 
     /**
      * oss客户端实例
-     * @var 、OSS\OssClient
+     * @var \OSS\OssClient
      */
     protected static $oss;
 
@@ -78,11 +78,13 @@ class Oss extends Model implements SaveMediumInterface{
      * 返回的url可能带签名也有不带签名，主要有file_is_private决定
      */
     public function buildFileUrl(File $file, $params = []){
+
         $bukDef = $this->getBucketDef($file->file_category);
         if($bukDef['cdn'] && $bukDef['cdn_host']){
             if($bukDef['cdn_type'] == 'n'){
                 $uri = "/" .$this->buildFileObjectName($file);
                 $cdnhost = $bukDef['cdn_host'];
+
                 return sprintf("%s%s", $cdnhost, $uri);
 
             }else{
@@ -112,6 +114,7 @@ class Oss extends Model implements SaveMediumInterface{
             }
         }
         if(!$file->file_is_private){
+
             $host = $this->getHostName($file->file_category);
             $objectName = $this->buildFileObjectName($file);
             return "http://" . $host . '/' . $objectName;
