@@ -105,14 +105,14 @@ class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
         if(!$this->user_extend->u_avatar_id1){
             return '';
         }
-        return FileModel::buildFileUrlStatic(FileModel::parseQueryId($this->user_extend->u_avatar_id1));
+        return FileModel::buildFileUrlFromArr(FileModel::parseQueryId($this->user_extend->u_avatar_id1));
     }
 
     public function getU_avatar_url2(){
         if(!$this->user_extend->u_avatar_id2){
             return '';
         }
-        return FileModel::buildFileUrlStatic($this->user_extend->u_avatar_id2);
+        return FileModel::buildFileUrlFromArr($this->user_extend->u_avatar_id2);
     }
 
     public function rules(){

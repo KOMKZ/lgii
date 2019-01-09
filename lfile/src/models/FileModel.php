@@ -470,6 +470,9 @@ class FileModel extends Model
     }
 
     public static function buildFileUrlFromArr($fileInfo){
+        if(!$fileInfo){
+            return "";
+        }
         return self::getSaveMedium($fileInfo['file_save_type'])->buildFileUrlFromArr($fileInfo);
     }
 
@@ -482,6 +485,9 @@ class FileModel extends Model
      */
     static private $tmpFile = null;
     public static function buildFileUrlStatic($fileInfo){
+        if(!$fileInfo){
+            return "";
+        }
         $fileInfo['file_medium_info'] = json_encode(self::getSaveMedium($fileInfo['file_save_type'])->buildMediumInfo());
         return static::buildFileUrlFromArr($fileInfo);
     }

@@ -85,7 +85,7 @@ class ClassificationModel extends Model
             'g_cls_img_id'
         ])->asArray()->all() as $cls){
             $cls['nodes'] = [];
-            $cls['g_cls_img_url'] = $fModel->buildFileUrlStatic(FileModel::parseQueryId($cls['g_cls_img_id']));
+            $cls['g_cls_img_url'] = $fModel->buildFileUrlFromArr(FileModel::parseQueryId($cls['g_cls_img_id']));
 //            $cls['text'] = $cls['g_cls_name'];
 //            $cls['href'] = Url::to(['classification/update', 'id' => $cls['g_cls_id']]);
             $allCls[$cls['g_cls_id']] = $cls;

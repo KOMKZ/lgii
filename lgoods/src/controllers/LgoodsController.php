@@ -33,7 +33,7 @@ class LgoodsController extends Controller{
 <is_subscribe><![CDATA[N]]></is_subscribe>
 <mch_id><![CDATA[1489031722]]></mch_id>
 <nonce_str><![CDATA[5qogjzc9roz4thcffib2soxqsx2nkbzm]]></nonce_str>
-<openid><![CDATA[o82Odw-jLdQsZ1InClRz_3glyR30]]></openid>
+<openid><![CDATA[o82Odw-jLdQsZ1InClRz_3gly R30]]></openid>
 <out_trade_no><![CDATA[TR112018535719105716]]></out_trade_no>
 <result_code><![CDATA[SUCCESS]]></result_code>
 <return_code><![CDATA[SUCCESS]]></return_code>
