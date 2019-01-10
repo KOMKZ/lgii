@@ -61,7 +61,7 @@ class ActionComponent extends Component{
         $this->messages[] = [
             $name,
             time(),
-            json_encode(array_merge($target->getLogParams(), $params)),
+            json_encode(array_merge($target->getLogParams($name), $params)),
             null,
             $target->getLogId(),
             $uid ? $uid : $this->getDefaultUid(),

@@ -9,5 +9,5 @@ namespace lsite\models\action;
 
 interface ActionTargetInterface{
     public function getLogId();
-    public function getLogParams();
+    public function getLogParams($name);
 }

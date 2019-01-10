@@ -17,7 +17,7 @@ class Goods extends ActiveRecord implements ActionTargetInterface{
         return $this->g_id;
     }
 
-    public function getLogParams()
+    public function getLogParams($name)
     {
         return [
             'g_id' => $this->g_id
