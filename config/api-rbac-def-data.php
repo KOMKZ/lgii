@@ -18,7 +18,9 @@ return [
         ['lbanner/*', 'banner图全部管理权限'],
         ['lauth/*', "认证管理全部权限"],
         ['luser/*', "用户管理全部权限"],
-	],
+        ['laction/*', '动作日志全部权限'],
+
+    ],
 	'assign' => [
         ['root', "lgoods/*'"]
         ,['root', "lattr/*'"]
@@ -32,6 +34,8 @@ return [
         ,['root', 'lcollect/*']
         ,['root', 'ltrans/*']
         ,['root', 'lbanner/*']
+        ,['root', 'laction/*']
+
 
 
         ,['normal', "lauth/login"]

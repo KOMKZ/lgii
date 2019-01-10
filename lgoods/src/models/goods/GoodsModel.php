@@ -539,6 +539,8 @@ class GoodsModel extends Model{
                 }
             }
         }
+        Yii::$app->alog->log(ACTION_CREATE_GOODS, $goods);
+
         return $goods;
     }
 

@@ -5,13 +5,24 @@ use lgoods\models\attr\ACMap;
 use lgoods\models\attr\Attr;
 use lgoods\models\attr\OCMap;
 use lgoods\models\attr\Option;
+use lsite\models\action\ActionTargetInterface;
 use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
 
 
-class Goods extends ActiveRecord{
+class Goods extends ActiveRecord implements ActionTargetInterface{
 
+    public function getLogId()
+    {
+        return $this->g_id;
+    }
 
+    public function getLogParams()
+    {
+        return [
+            'g_id' => $this->g_id
+        ];
+    }
 
     public static function tableName(){
         return "{{%goods}}";

@@ -12,11 +12,11 @@ Yii::setAlias('@lfile', dirname(__DIR__) . '/lfile/src');
 Yii::setAlias('@lsite', dirname(__DIR__) . '/lsite/src');
 Yii::setAlias('@luser', dirname(__DIR__) . '/luser/src');
 Yii::setAlias('@OSS', dirname(__DIR__) . '/lib/alisdk/OSS');
-
 Yii::$container->set('yii\data\Pagination', [
     // 不限制页面的数量, per-page = -1时代表取全部
     'pageSizeLimit' => [1]
 ]);
+require Yii::getAlias("@lsite/models/action/action.php");
 
 
 Event::on("\lgoods\models\goods\GoodsModel", GoodsModel::EVENT_GOODS_CREATE, ["\lgoods\models\goods\GoodsModel", 'handleGoodCreate']);

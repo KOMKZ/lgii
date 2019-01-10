@@ -25,6 +25,8 @@ $config = ArrayHelper::merge([
         'lcoupon' => '\lgoods\controllers\LcouponController',
         'luser-coupon' => '\lgoods\controllers\LuserCouponController',
         'lbanner' => '\lsite\controllers\LbannerController',
+        'laction' => '\lsite\controllers\LactionController',
+
     ],
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
@@ -37,6 +39,9 @@ $config = ArrayHelper::merge([
             'parsers' => [
                 'application/json' => 'yii\web\JsonParser',
             ]
+        ],
+        'alog' => [
+            'class' => 'lsite\models\action\ActionComponent',
         ],
         'cache' => [
             'class' => 'yii\caching\FileCache',

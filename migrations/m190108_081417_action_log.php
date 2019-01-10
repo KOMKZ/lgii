@@ -16,7 +16,7 @@ class m190108_081417_action_log extends Migration
         create table `{$tableName}`(
             `al_id` int(10) unsigned not null auto_increment comment '主键',
             `al_opr_uid` int(10) unsigned not null default 0 comment '操作用户id',
-            `al_action` VARCHAR(64) not null DEFAULT '' comment '动作名称',
+            `al_action` int(10) not null DEFAULT 0 comment '动作名称',
             `al_obj_id` int(10) unsigned not null DEFAULT 0 comment '动作关联对象id',
             `al_data` text not null comment '关联记录参数',
             `al_created_at` int(10) unsigned not null comment '创建时间',
