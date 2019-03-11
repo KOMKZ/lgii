@@ -119,7 +119,7 @@ $config = ArrayHelper::merge([
                 'OPTIONS <route:.*>' => "site/index",
                 'trans_notification/<type:.*?>' => 'trans/notify',
                 'lfile/output/?' => 'lfile/output',
-                'auth/login/?' => 'auth/login',
+                'auth/login/?' => 'lauth/login',
                 'lorder/check/?' => 'lorder/check',
 
 
@@ -213,13 +213,14 @@ $config = ArrayHelper::merge([
             ],
             'bearerAuth' => [
                 'class' => \lbase\filters\HttpBearerAuth::class,
-                'optional' => ['auth/login']
+                'optional' => ['auth/login', 'site/index']
             ],
             'access' => [
                 'class' => \yii\filters\AccessControl::class,
                 'rules' => [
                     [
                         'allow' => true,
+                        // 权限控制器
                         'matchCallback' => function($rule, $action){
                             $authMg = Yii::$app->authManager;
                             $permName = $action->controller->id . '/' . $action->id;

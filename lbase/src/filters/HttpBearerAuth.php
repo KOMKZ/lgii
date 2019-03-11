@@ -50,7 +50,7 @@ class HttpBearerAuth extends AuthMethod
 			}
 			return $identity;
 		}
-		return null;
+		$this->handleFailure($response);
 	}
 
     protected function getActionId($action)

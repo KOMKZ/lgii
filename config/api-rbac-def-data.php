@@ -6,6 +6,7 @@ return [
 		['vistor', '游客']
 	],
 	'permissions' => [
+	    ['site/index', '首页'],
         ['lgoods/*', '商品的全部权限'],
         ['lattr/*', "属性管理全部权限"],
         ['lclassification/*', "分类管理全部权限"],
@@ -39,11 +40,13 @@ return [
 
 
         ,['normal', "lauth/login"]
+        ,['normal', "site/index"]
         ,['normal', "lgoods/list"]
         ,['normal', "lgoods/view"]
         ,['normal', "lfile/create"]
 
         ,['vistor', "lauth/login"]
+        ,['vistor', "site/index"]
         ,['vistor', "lgoods/list"]
         ,['vistor', "lgoods/view"]
         ,['vistor', "luser/create"]

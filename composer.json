@@ -26,7 +26,8 @@
         "elasticsearch/elasticsearch": "^5.3",
         "guzzlehttp/guzzle": "^6.3@dev",
         "zircote/swagger-php": "2.x-dev",
-        "firebase/php-jwt": "dev-master"
+        "firebase/php-jwt": "dev-master",
+        "symfony/var-dumper": "^4.3@dev"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.0.0",

@@ -17,6 +17,7 @@ Yii::$container->set('yii\data\Pagination', [
     'pageSizeLimit' => [1]
 ]);
 require Yii::getAlias("@lsite/models/action/action.php");
+require Yii::getAlias("@lbase/helpers/func.php");
 
 
 Event::on("\lgoods\models\goods\GoodsModel", GoodsModel::EVENT_GOODS_CREATE, ["\lgoods\models\goods\GoodsModel", 'handleGoodCreate']);
