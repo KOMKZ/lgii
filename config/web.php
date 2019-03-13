@@ -6,7 +6,12 @@ $configLocal = require __DIR__ . '/web-local.php';
 $config = ArrayHelper::merge([
     'id' => 'basic',
     'basePath' => dirname(__DIR__),
-    'bootstrap' => ['log'],
+    'bootstrap' => ['log', 'debug'],
+    'modules' => [
+        'debug' => [
+            'class' => 'yii\debug\Module',
+        ]
+    ],
     'timeZone'=>'Asia/Shanghai',
     'controllerMap' => [
         'lgoods' => '\lgoods\controllers\LgoodsController',
@@ -109,7 +114,7 @@ $config = ArrayHelper::merge([
             'class' => 'yii\web\UrlManager',
             'enablePrettyUrl' => true,
             'showScriptName' => false,
-            'hostInfo' => '',
+            'hostInfo' => 'http://yii2shop-api',
             'baseUrl' => '/lfile/output',
         ],
         'urlManager' => [
@@ -158,9 +163,9 @@ $config = ArrayHelper::merge([
         ],
         'filedisk' => [
             'class' => "\\lfile\\models\\drivers\\Disk",
-            'base' => "",
-            'host' => "",
-            "urlRoute" => "",
+            'base' => "/tmp",
+            'host' => "http://yii2shop-api.com",
+            "urlRoute" => "lfile/output",
             'dirMode' => 0777,
             'fileMode' => 0777,
         ],
@@ -191,7 +196,7 @@ $config = ArrayHelper::merge([
         'api_behaviors' => [
             'rateLimiter' => [
                 'class' => \lbase\filters\RateLimiter::className(),
-                'rateLimit' => 70,
+                'rateLimit' => 360000,
                 'rateLimitPer' => 60,
                 'ignoreIps' => ["127.0.0.1"]
             ],
@@ -213,7 +218,7 @@ $config = ArrayHelper::merge([
             ],
             'bearerAuth' => [
                 'class' => \lbase\filters\HttpBearerAuth::class,
-                'optional' => ['auth/login', 'site/index']
+                'optional' => ['auth/login', 'site/index', ]
             ],
             'access' => [
                 'class' => \yii\filters\AccessControl::class,

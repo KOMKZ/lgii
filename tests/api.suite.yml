@@ -2,6 +2,6 @@ actor: ApiTester
 modules:
     enabled:
         - REST:
-            url: http://localhost:8099
+            url: http://yii2shop-api.com
             depends: PhpBrowser
             Part: Json

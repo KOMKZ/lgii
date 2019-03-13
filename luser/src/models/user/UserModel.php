@@ -234,7 +234,7 @@ class UserModel extends Model
 					$serverName = ArrayHelper::getValue($data, 'token_info.server_name', Yii::$app->id); // Retrieve the server name from config file
 					$data = [
 						'iat'  => $issuedAt,         // Issued at: time when the token was generated
-						'jti'  => ArrayHelper::getValue($data, 'token_info.id', base64_encode(mcrypt_create_iv(32))),//base64_encode(mcrypt_create_iv(32)),          // Json Token Id: an unique identifier for the token
+						'jti'  => ArrayHelper::getValue($data, 'token_info.id', base64_encode(Yii::$app->security->generateRandomString(32))),//base64_encode(Yii::$app->security->generateRandomString(32),          // Json Token Id: an unique identifier for the token
 						'iss'  => $serverName,       // Issuer
 						'nbf'  => $notBefore,        // Not before
 						'exp'  => $expire,           // Expire
@@ -278,7 +278,7 @@ class UserModel extends Model
 		return Yii::$app->security->generatePasswordHash($password);;
 	}
 	public static function buildAccessToken(){
-		return base64_encode(mcrypt_create_iv(32));
+		return base64_encode(Yii::$app->security->generateRandomString(32));
 	}
 	protected static function buildAuthKey(){
 		return Yii::$app->security->generateRandomString();

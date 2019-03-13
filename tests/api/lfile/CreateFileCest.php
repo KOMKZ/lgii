@@ -25,7 +25,7 @@ class CreateFileCest
 		$I->sendPOST("/lfile", [
 			'file_category' => 'pub_img',
 		], [
-			'file' => codecept_data_dir() . '/1.png' ,
+			'file' => codecept_data_dir() . '1.png' ,
 		]);
 		$I->seeResponseCodeIs(200);
 		$I->seeResponseContainsJson([

@@ -18,7 +18,7 @@ class DeleteCouponCest
         $i->setAuthHeader();$i->sendPOST("/lfile", [
             'file_category' => 'pub_img',
         ], [
-            'file' => codecept_data_dir() . '/1.png' ,
+            'file' => codecept_data_dir() . '1.png' ,
         ]);
         $i->seeResponseCodeIs(200);
         $i->seeResponseContainsJson([
@@ -74,7 +74,7 @@ class DeleteCouponCest
         $i->setAuthHeader();$i->sendPOST("/lfile", [
         'file_category' => 'pub_img',
     ], [
-        'file' => codecept_data_dir() . '/1.png' ,
+        'file' => codecept_data_dir() . '1.png' ,
     ]);
         $i->seeResponseCodeIs(200);
         $i->seeResponseContainsJson([

@@ -13,12 +13,14 @@ return [
         ['lorder/*', "订单管理全部权限"],
         ['lcollect/*', '属性集合全部管理权限'],
         ['lrefund/*', '售后管理全部权限'],
+        ['lcart-item/*', '购物车全部权限'],
         ['lsale-rule/*', "销售规则管理全部权限"],
         ['lfile/*', "文件管理全部权限"],
         ['ltrans/*', "交易管理全部权限"],
         ['lbanner/*', 'banner图全部管理权限'],
         ['lauth/*', "认证管理全部权限"],
         ['luser/*', "用户管理全部权限"],
+        ['luser-coupon/*', "用户优惠券所有权限"],
         ['laction/*', '动作日志全部权限'],
 
     ],
@@ -36,20 +38,16 @@ return [
         ,['root', 'ltrans/*']
         ,['root', 'lbanner/*']
         ,['root', 'laction/*']
-
+        ,['root', 'lcart-item/*']
+        ,['root', 'lcoupon/*']
+        ,['root', 'luser-coupon/*']
 
 
         ,['normal', "lauth/login"]
         ,['normal', "site/index"]
-        ,['normal', "lgoods/list"]
-        ,['normal', "lgoods/view"]
-        ,['normal', "lfile/create"]
 
         ,['vistor', "lauth/login"]
         ,['vistor', "site/index"]
-        ,['vistor', "lgoods/list"]
-        ,['vistor', "lgoods/view"]
-        ,['vistor', "luser/create"]
 
 
     ]

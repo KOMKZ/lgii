@@ -66,6 +66,7 @@ class HttpBearerAuth extends AuthMethod
         }
         return $id;
     }
+
 	/**
 	 * @inheritdoc
 	 */
