@@ -19,16 +19,6 @@ use yii\web\IdentityInterface;
 
 class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
 {
-    const STATUS_ACTIVE = 'active';
-
-    const STATUS_NO_AUTH = 'not_auth';
-
-    const STATUS_LOCKED = 'locked';
-
-    const NOT_AUTH = 'not_auth';
-
-    const HAD_AUTH = 'had_auth';
-
     public $password;
 
     public $password_confirm;
@@ -133,7 +123,7 @@ class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
             ['u_status', 'required'],
             ['u_status', 'in', 'range' => ConstMap::getConst('u_status', true)],
 
-            ['u_auth_status', 'default', 'value' => User::STATUS_NO_AUTH],
+            ['u_auth_status', 'default', 'value' => UserEnum::STATUS_NO_AUTH],
             ['u_auth_status', 'in', 'range' => ConstMap::getConst('u_auth_status', true)],
 
             ['password', 'required', 'on' => ['create', 'login']],
@@ -243,7 +233,7 @@ class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
 
     public static function findByUsername($username)
     {
-        return static::findOne(['u_username' => $username, 'u_status' => self::STATUS_ACTIVE]);
+        return static::findOne(['u_username' => $username, 'u_status' => UserEnum::STATUS_ACTIVE]);
     }
 
     public static function findByPasswordResetToken($token)
@@ -253,7 +243,7 @@ class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
 //        }
         return static::findOne([
             'u_password_reset_token' => $token,
-            'u_status' => self::STATUS_ACTIVE,
+            'u_status' => UserEnum::STATUS_ACTIVE,
         ]);
     }
     public function getId()

@@ -58,10 +58,6 @@ class GoodsModel extends Model{
         $data['g_m_img_url3'] = $fModel->buildFileUrlFromArr(FileModel::parseQueryId(ArrayHelper::getValue($data, 'g_m_img_id3', '')));
         $data['g_m_img_url4'] = $fModel->buildFileUrlFromArr(FileModel::parseQueryId(ArrayHelper::getValue($data, 'g_m_img_id4', '')));
 
-
-
-
-
         if(isset($data['sku_price'])){
             if(!isset($params['discount_items'])){
                 $params['discount_items'] = SaleModel::fetchGoodsRules([

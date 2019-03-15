@@ -22,6 +22,24 @@ use common\models\file\query\FileQuery;
  */
 class UserModel extends Model
 {
+
+    public static function formatList($data, $params = []){
+        foreach($data as &$item){
+            $item = self::formatOne($item, $params);
+        }
+        return $data;
+    }
+
+    public static function formatOne($data, $params = []){
+        if(isset($data['u_created_at'])){
+            $data['u_create_at_str'] = date('Y-m-d H:i', $data['u_created_at']);
+        }
+        if(isset($data['u_updated_at'])){
+            $data['u_update_at_str'] = date('Y-m-d H:i', $data['u_updated_at']);
+        }
+        return $data;
+    }
+
     public static function find(){
         return User::find();
     }
@@ -49,7 +67,7 @@ class UserModel extends Model
 
     public static function findActive(){
         return static::find()
-            ->where(['u_status' => User::STATUS_ACTIVE]);
+            ->where(['u_status' => UserEnum::STATUS_ACTIVE]);
     }
 
 	/**
@@ -137,10 +155,10 @@ class UserModel extends Model
 				$this->addErrors($user->getErrors());
 				return false;
 			}
-			$user->u_auth_key = User::NOT_AUTH == $user->u_auth_status ?
+			$user->u_auth_key = UserEnum::NOT_AUTH == $user->u_auth_status ?
 								static::buildAuthKey() : '';
-			$user->u_status = User::NOT_AUTH == $user->u_auth_status ?
-								User::STATUS_NO_AUTH : $user->u_status;
+			$user->u_status = UserEnum::NOT_AUTH == $user->u_auth_status ?
+								UserEnum::STATUS_NO_AUTH : $user->u_status;
 			$user->u_password_hash = static::buildPasswordHash($user->password);
 			$user->u_password_reset_token = '';
             $user->insert(false);

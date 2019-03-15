@@ -3,6 +3,7 @@ use yii\helpers\ArrayHelper;
 require __DIR__ . '/bootstrap.php';
 
 $configLocal = require __DIR__ . '/web-local.php';
+$localParams = require __DIR__ . '/web-params-local.php';
 $config = ArrayHelper::merge([
     'id' => 'basic',
     'basePath' => dirname(__DIR__),
@@ -180,7 +181,7 @@ $config = ArrayHelper::merge([
             'class' => '\\lfile\models\\FileModel'
         ]
     ],
-    'params' => [
+    'params' => array_merge([
         'github_update_secret' => '',
         'jwt' => [
             'secret_key' => 'abc',
@@ -204,7 +205,7 @@ $config = ArrayHelper::merge([
                 'class' => \yii\filters\Cors::className(),
                 'cors' => [
                     // restrict access to
-                    'Origin' => ["http://47.106.36.175:8099", "http://47.106.36.175"],
+                    'Origin' => ["http://localhost:8080"],
                     'Access-Control-Request-Method' => ['POST', 'PUT', 'GET', 'DELETE', 'OPTIONS'],
                     // Allow only POST and PUT methods
                     'Access-Control-Request-Headers' => ['*'],
@@ -246,7 +247,7 @@ $config = ArrayHelper::merge([
                 ]
             ]
         ]
-    ],
+    ], $localParams),
 ], $configLocal);
 
 

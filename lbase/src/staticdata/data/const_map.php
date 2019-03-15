@@ -33,13 +33,13 @@ return [
 
     ],
     'u_status' => [
-        \luser\models\user\User::STATUS_ACTIVE => Yii::t('app', '可用'),
-        \luser\models\user\User::STATUS_NO_AUTH => Yii::t('app', "没有验证"),
-        \luser\models\user\User::STATUS_LOCKED => Yii::t('app', '锁定状态')
+        \luser\models\user\UserEnum::STATUS_ACTIVE => Yii::t('app', '可用'),
+        \luser\models\user\UserEnum::STATUS_NO_AUTH => Yii::t('app', "没有验证"),
+        \luser\models\user\UserEnum::STATUS_LOCKED => Yii::t('app', '锁定状态')
     ],
     'u_auth_status' => [
-        \luser\models\user\User::NOT_AUTH => Yii::t('app', '未验证'),
-        \luser\models\user\User::HAD_AUTH => Yii::t('app', "已验证")
+        \luser\models\user\UserEnum::NOT_AUTH => Yii::t('app', '未验证'),
+        \luser\models\user\UserEnum::HAD_AUTH => Yii::t('app', "已验证")
     ],
     /*
 

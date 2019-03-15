@@ -14,6 +14,7 @@ use luser\models\user\User;
  *
  */
 class LuserController extends Controller{
+
     public function actionUpdate($index){
         $postData = Yii::$app->request->getBodyParams();
         $uTab = User::tableName();
@@ -47,7 +48,13 @@ class LuserController extends Controller{
             'u_created_at' => SORT_DESC,
             'u_updated_at' => SORT_DESC
         ];
-        $query = UserModel::findSafeField();
+        $query = UserModel::findSafeField()->asArray();
+
+        if($val = ArrayHelper::getValue($getData, 'u_email', '')){
+            $query->andWhere(['like', 'u_email', $val]);
+        }
+
+
         $provider = new ActiveDataProvider([
             'query' => $query,
             'sort' => [
@@ -58,7 +65,7 @@ class LuserController extends Controller{
                 ]
             ]
         ]);
-        return $this->succItems($provider->getModels(), $provider->totalCount);
+        return $this->succItems(UserModel::formatList($provider->getModels()), $provider->totalCount);
     }
 
     /**
