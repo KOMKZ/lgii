@@ -1,7 +1,7 @@
 <?php
 use yii\base\Event;
-use lgoods\models\goods\GoodsModel;
-use lgoods\models\trans\PayTrace;
+use lgoods\models\goods\GoodsEnum;
+use lgoods\models\trans\TransEnum;
 use lgoods\models\trans\Trans;
 use lgoods\models\trans\TransModel;
 Yii::setAlias('@lbase', dirname(__DIR__) . '/lbase/src');
@@ -20,11 +20,11 @@ require Yii::getAlias("@lsite/models/action/action.php");
 require Yii::getAlias("@lbase/helpers/func.php");
 
 
-Event::on("\lgoods\models\goods\GoodsModel", GoodsModel::EVENT_GOODS_CREATE, ["\lgoods\models\goods\GoodsModel", 'handleGoodCreate']);
-Event::on("\lgoods\models\\trans\PayTrace", PayTrace::EVENT_AFTER_PAYED, ["\lgoods\models\\trans\TransModel", "handleReceivePayedEvent"]);
-Event::on("\lgoods\models\\trans\PayTrace", PayTrace::EVENT_AFTER_RFED, ["\lgoods\models\\trans\TransModel", "handleReceiveRfedEvent"]);
-Event::on("\lgoods\models\\trans\Trans", Trans::EVENT_AFTER_PAYED, ["\lgoods\models\order\OrderModel", "handleReceivePayedEvent"]);
-Event::on("\lgoods\models\\trans\Trans", Trans::EVENT_AFTER_RFED, ["\lgoods\models\\refund\RfModel", "handleReceiveRfedEvent"]);
+Event::on("\lgoods\models\goods\GoodsModel", GoodsEnum::EVENT_GOODS_CREATE, ["\lgoods\models\goods\GoodsModel", 'handleGoodCreate']);
+Event::on("\lgoods\models\\trans\PayTrace", TransEnum::EVENT_AFTER_PAYED, ["\lgoods\models\\trans\TransModel", "handleReceivePayedEvent"]);
+Event::on("\lgoods\models\\trans\PayTrace", TransEnum::EVENT_AFTER_RFED, ["\lgoods\models\\trans\TransModel", "handleReceiveRfedEvent"]);
+Event::on("\lgoods\models\\trans\Trans", TransEnum::EVENT_TRS_AFTER_PAYED, ["\lgoods\models\order\OrderModel", "handleReceivePayedEvent"]);
+Event::on("\lgoods\models\\trans\Trans", TransEnum::EVENT_TRS_AFTER_RFED, ["\lgoods\models\\refund\RfModel", "handleReceiveRfedEvent"]);
 
 
 require(dirname(__DIR__) . '/lib/wxsdk/wxpay/lib/WxPay.Config.php');

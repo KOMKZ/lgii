@@ -9,6 +9,7 @@ use lgoods\models\coupon\Coupon;
 use lgoods\models\coupon\CouponModel;
 use lgoods\models\sale\SaleModel;
 use lgoods\models\trans\Trans;
+use lgoods\models\trans\TransEnum;
 use Yii;
 use lgoods\models\goods\GoodsModel;
 use yii\base\Model;
@@ -83,10 +84,10 @@ class OrderModel extends Model{
                         ->andWhere(['=', 'od_id', $trans->trs_target_id])
                         ->one();
         ;
-        if(Order::PS_PAID == $order['od_pay_status']){
+        if(OrderEnum::PS_PAID == $order['od_pay_status']){
             return true;
         }
-        $order->od_pay_status = Order::PS_PAID;
+        $order->od_pay_status = OrderEnum::PS_PAID;
         $order->od_paid_at = $trans->trs_pay_at;
         $order->od_pay_type = $trans->trs_pay_type;
         $order->od_pay_num = $trans->trs_pay_num;
@@ -94,7 +95,7 @@ class OrderModel extends Model{
         if(false == $order->update(false)){
             throw new \Exception("订单修改失败");
         }
-        $order->trigger(Order::EVENT_AFTER_PAID);
+        $order->trigger(OrderEnum::EVENT_AFTER_PAID);
     }
 
 
@@ -155,7 +156,7 @@ class OrderModel extends Model{
             "t.trs_type",
             "od.od_discount_des"
         ];
-        $query->leftJoin(['t' => $tTable], "t.trs_type = :p1 and t.trs_target_id = o.od_id", [":p1" => Trans::TRADE_ORDER]);
+        $query->leftJoin(['t' => $tTable], "t.trs_type = :p1 and t.trs_target_id = o.od_id", [":p1" => TransEnum::TRADE_ORDER]);
         $query->leftJoin(['od' => $odTable], "od.od_id = o.od_id");
         if(array_key_exists('od_discount_items', $fields)){
             $select[] = "od.od_discount_items";
@@ -249,7 +250,7 @@ class OrderModel extends Model{
         $order->od_belong_uid = 0;
         $order->od_price = $priceItems['total_price'];
         $order->od_discount = $priceItems['total_discount'];
-        $order->od_pay_status = Order::PS_NOT_PAY;
+        $order->od_pay_status = OrderEnum::PS_NOT_PAY;
         $order->od_paid_at = 0;
         $order->od_title = static::buildOdTitleFromGoods($ogListData);
         $order->od_num = static::buildOrderNumber();

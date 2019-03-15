@@ -46,7 +46,7 @@ class RfModel extends Model{
         $rf->rf_order_num = $order['od_num'];
         $rf->rf_order_third_num = $order['trs_pay_num'];
         $rf->rf_order_trs_num = $order['trs_num'];
-        $rf->rf_status = RfApplication::STATUS_SUBMIT;
+        $rf->rf_status = RfEnum::STATUS_SUBMIT;
         $rf->rf_ori_pay_type = $order['od_pay_type'];
         $rf->rf_num = static::buildRfNumber();
         $rf->rf_title = '';
@@ -133,14 +133,14 @@ class RfModel extends Model{
             $this->addError("", $reason);
             return false;
         }
-        $rf->rf_status = RfApplication::STATUS_HAD_REFUND;
+        $rf->rf_status = RfEnum::STATUS_HAD_REFUND;
         $rf->update(false);
 
         return $rf;
     }
 
     public static function ensureRefundCanAgree($rf){
-        if($rf['rf_status'] == RfApplication::STATUS_SUBMIT){
+        if($rf['rf_status'] == RfEnum::STATUS_SUBMIT){
             return [true, ""];
         }
         return [false, "非提交申请状态"];

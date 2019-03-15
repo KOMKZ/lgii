@@ -7,6 +7,7 @@
  */
 namespace lsite\controllers;
 
+use lsite\models\banner\BannerEnum;
 use Yii;
 use lbase\Controller;
 use lsite\models\banner\Banner;
@@ -70,7 +71,7 @@ class LbannerController extends Controller{
             return $this->notfound();
         }
         $bModel = new BannerModel();
-        $bModel->updateBanner($banner, ['b_status' => Banner::STATUS_DELETE]);
+        $bModel->updateBanner($banner, ['b_status' => BannerEnum::STATUS_DELETE]);
         return $this->succ(1);
     }
 

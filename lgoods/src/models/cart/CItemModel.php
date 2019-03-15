@@ -29,7 +29,7 @@ class CItemModel extends Model{
             $this->addErrors($cartItem->getErrors());
             return false;
         }
-        $cartItem->ci_status = CartItem::STATUS_VALID;
+        $cartItem->ci_status = CartEnum::STATUS_VALID;
         $cartItem->ci_g_id = $sku['sku_g_id'];
         $cartItem->insert(false);
         return $cartItem;
@@ -43,7 +43,7 @@ class CItemModel extends Model{
         return $citem;
     }
     public function removeItem($citem){
-        $citem->ci_status = CartItem::STATUS_DELETE;
+        $citem->ci_status = CartEnum::STATUS_DELETE;
         $citem->update(false);
         return $citem;
     }
@@ -55,7 +55,7 @@ class CItemModel extends Model{
         return $citem;
     }
     public static function findFull($params = []){
-        $query = CartItem::find()->andWhere(['=', 'ci_status', CartItem::STATUS_VALID]);
+        $query = CartItem::find()->andWhere(['=', 'ci_status', CartEnum::STATUS_VALID]);
         $query->from(['c' => CartItem::tableName()]);
         $query->leftJoin(['ge' => GoodsExtend::tableName()], "c.ci_g_id = ge.g_id");
         $query->leftJoin(['g' => Goods::tableName()], "c.ci_g_id = g.g_id");

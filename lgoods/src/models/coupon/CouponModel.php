@@ -47,7 +47,7 @@ class CouponModel extends Model{
      */
     public static function getUserValidCoupons($params){
         $query = static::findUserCouponFull()->andWhere(['=', 'ucou_u_id', $params['buy_uid']])->asArray();
-        $query->andWhere(['=', 'ucou_status', UserCoupon::STATUS_NOT_USE]);
+        $query->andWhere(['=', 'ucou_status', CouponEnum::USER_COUPON_STATUS_NOT_USE]);
         $query->andWhere(['<=', 'coup_start_at', time()]);
         $query->andWhere(['>=', 'coup_end_at', time()]);
         $result = [];
@@ -76,7 +76,7 @@ class CouponModel extends Model{
             $this->addErrors($uc->getErrors());
             return false;
         }
-        $uc->ucou_status = UserCoupon::STATUS_NOT_USE;
+        $uc->ucou_status = CouponEnum::USER_COUPON_STATUS_NOT_USE;
         $uc->ucou_created_at = time();
         $uc->insert(false);
         return $uc;
@@ -87,7 +87,7 @@ class CouponModel extends Model{
             $this->addErrors($coupon->getErrors());
             return false;
         }
-        $coupon->coup_status = Coupon::STATUS_VALID;
+        $coupon->coup_status = CouponEnum::STATUS_VALID;
         $coupon->insert(false);
         return $coupon;
     }

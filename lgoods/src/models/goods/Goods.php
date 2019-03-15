@@ -3,6 +3,7 @@ namespace lgoods\models\goods;
 
 use lgoods\models\attr\ACMap;
 use lgoods\models\attr\Attr;
+use lgoods\models\attr\AttrEnum;
 use lgoods\models\attr\OCMap;
 use lgoods\models\attr\Option;
 use lsite\models\action\ActionTargetInterface;
@@ -49,7 +50,7 @@ class Goods extends ActiveRecord implements ActionTargetInterface{
             'ocm_object_id' => 'g_id',
         ])
             ->with("c_attrs")
-        ->andWhere(['=', 'ocm_object_type', Option::OBJECT_TYPE_GOODS])
+        ->andWhere(['=', 'ocm_object_type', AttrEnum::OPT_OBJECT_TYPE_GOODS])
             ;
         return $query;
     }

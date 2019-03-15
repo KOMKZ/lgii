@@ -14,22 +14,12 @@ use yii\behaviors\TimestampBehavior;
 
 class SaleRule extends ActiveRecord{
 
-    const SR_TYPE_GOODS = 1;
-    CONST SR_TYPE_SKU = 2;
-    CONST SR_TYPE_CATEGORY = 3;
-    CONST SR_TYPE_ORDER = 4;
 
-    CONST SR_CACU_TYPE_DISCOUNT = 1;
-    const SR_CACU_TYPE_FULL_SUB = 2;
-
-    const SR_STATUS_VALID = 1;
-
-    CONST SR_STATUS_INVALID = 2;
 
     public function rules(){
         return [
-            ['sr_status', 'default', 'value' => self::SR_STATUS_VALID],
-            ['sr_status', 'in', 'range' => [self::SR_STATUS_VALID, self::SR_STATUS_INVALID]],
+            ['sr_status', 'default', 'value' => SaleEnum::SR_STATUS_VALID],
+            ['sr_status', 'in', 'range' => [SaleEnum::SR_STATUS_VALID, SaleEnum::SR_STATUS_INVALID]],
 
             ['sr_object_id', 'required'],
 
@@ -80,10 +70,10 @@ class SaleRule extends ActiveRecord{
 
     public function instanceCaculator($type){
         switch ($type){
-            case SaleRule::SR_CACU_TYPE_DISCOUNT:
+            case SaleEnum::SR_CACU_TYPE_DISCOUNT:
                 $caculator = new Discount();
                 break;
-            case SaleRule::SR_CACU_TYPE_FULL_SUB:
+            case SaleEnum::SR_CACU_TYPE_FULL_SUB:
                 $caculator = new FullSub();
                 break;
             default:

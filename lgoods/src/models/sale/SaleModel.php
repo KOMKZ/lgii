@@ -13,16 +13,16 @@ use yii\base\Model;
 class SaleModel extends Model{
     public static function checkAllow($target, $rule){
         switch ($rule['sr_object_type']){
-            case SaleRule::SR_TYPE_GOODS:
+            case SaleEnum::SR_TYPE_GOODS:
                 return $target['g_id'] == $rule['sr_object_id'];
                 break;
-            case SaleRule::SR_TYPE_SKU:
+            case SaleEnum::SR_TYPE_SKU:
                 return $target['sku_id'] == $rule['sr_object_id'];
                 break;
-            case SaleRule::SR_TYPE_CATEGORY:
+            case SaleEnum::SR_TYPE_CATEGORY:
                 return $target['g_cls_id'] == $rule['sr_object_id'];
                 break;
-            case SaleRule::SR_TYPE_ORDER:
+            case SaleEnum::SR_TYPE_ORDER:
                 return !empty($target['od_id']);
                 break;
         }
@@ -31,12 +31,12 @@ class SaleModel extends Model{
     public static function getGlobalRuleFilterParams($params = []){
         return array_merge([
             'exclude_defs' => [
-                SaleRule::SR_TYPE_SKU => [
-                    SaleRule::SR_TYPE_GOODS,
-                    SaleRule::SR_TYPE_CATEGORY
+                SaleEnum::SR_TYPE_SKU => [
+                    SaleEnum::SR_TYPE_GOODS,
+                    SaleEnum::SR_TYPE_CATEGORY
                 ],
-                SaleRule::SR_TYPE_GOODS => [
-                    SaleRule::SR_TYPE_CATEGORY
+                SaleEnum::SR_TYPE_GOODS => [
+                    SaleEnum::SR_TYPE_CATEGORY
                 ]
             ],
             'is_order_filter' => true,
@@ -48,7 +48,7 @@ class SaleModel extends Model{
         foreach($range as $rangeCond){
             $query->orWhere($rangeCond);
         }
-        $query->andWhere(['=', 'sr_status', SaleRule::SR_STATUS_VALID]);
+        $query->andWhere(['=', 'sr_status', SaleEnum::SR_STATUS_VALID]);
         $query->andWhere(['<=', 'sr_start_at', time()]);
         $query->andWhere(['>=', 'sr_end_at', time()]);
         $rules = $query->all();
@@ -58,7 +58,7 @@ class SaleModel extends Model{
         $ruleRange = [
             [
                 'sr_object_id' => 0,
-                'sr_object_type' => SaleRule::SR_TYPE_ORDER
+                'sr_object_type' => SaleEnum::SR_TYPE_ORDER
             ]
         ];
         $saleRules = SaleModel::fetchTargetRules($ruleRange);
@@ -70,13 +70,13 @@ class SaleModel extends Model{
         if(isset($data['sku_id'])){
             $ruleRange[] = [
                 'sr_object_id' => $data['sku_id'],
-                'sr_object_type' => SaleRule::SR_TYPE_SKU
+                'sr_object_type' => SaleEnum::SR_TYPE_SKU
             ];
         }
         if(isset($data['g_id'])){
             $ruleRange[] =                 [
                 'sr_object_id' => $data['g_id'],
-                'sr_object_type' => SaleRule::SR_TYPE_GOODS
+                'sr_object_type' => SaleEnum::SR_TYPE_GOODS
             ];
         }
         if($ruleRange){
@@ -109,7 +109,7 @@ class SaleModel extends Model{
                     $excludeTypes = array_merge($excludeTypes, $filterParams['exclude_defs'][$type]);
                 }
             }
-            if($filterParams['is_order_filter'] && isset($filterParams['total_price']) && SaleRule::SR_TYPE_ORDER == $type){
+            if($filterParams['is_order_filter'] && isset($filterParams['total_price']) && SaleEnum::SR_TYPE_ORDER == $type){
                 list($price, ) = explode(',', $rule['sr_caculate_params']);
                 if($price <= $filterParams['total_price'] && $price > $maxPrice){
                     $maxPrice = $price;

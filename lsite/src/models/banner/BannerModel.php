@@ -13,7 +13,7 @@ use yii\base\Model;
 
 class BannerModel extends Model{
     public static function find(){
-        return Banner::find()->andWhere(['=', 'b_status', Banner::STATUS_VALID]);
+        return Banner::find()->andWhere(['=', 'b_status', BannerEnum::STATUS_VALID]);
     }
     public static function formatOne($one, $params = []){
         $one['b_img_url'] = Yii::$app->file->buildFileUrlStatic(FileModel::parseQueryId($one['b_img_id']));

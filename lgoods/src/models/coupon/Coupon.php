@@ -14,14 +14,10 @@ use yii\db\ActiveRecord;
 
 class Coupon extends  ActiveRecord{
 
-    const STATUS_DELETE = 2;
-    const STATUS_VALID = 1;
 
 
-    const SR_TYPE_GOODS = 1;
-    CONST SR_TYPE_SKU = 2;
-    CONST SR_TYPE_CATEGORY = 3;
-    CONST SR_TYPE_ORDER = 4;
+
+
     public function check($params){
         // todo
         return true;

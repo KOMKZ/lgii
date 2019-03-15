@@ -6,21 +6,6 @@ use yii\behaviors\TimestampBehavior;
 
 class Trans extends ActiveRecord{
 
-    CONST TRADE_ORDER = 1;
-
-    CONST TRADE_TRANS = 2;
-
-    CONST TRADE_REFUND = 3;
-
-    
-
-    CONST TPS_NOT_PAY = 0;
-
-
-    CONST TPS_PAID = 1;
-    const EVENT_AFTER_PAYED = 'trans_paid';
-
-    CONST EVENT_AFTER_RFED = 'trans_rfed';
 
     public static function tableName(){
         return "{{%trans}}";

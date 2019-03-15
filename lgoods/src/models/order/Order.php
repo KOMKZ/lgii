@@ -1,19 +1,17 @@
 <?php
+
 namespace lgoods\models\order;
 
 use lgoods\models\goods\GoodsExtend;
 use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
 
-class Order extends ActiveRecord{
+class Order extends ActiveRecord
+{
 
-    CONST PS_NOT_PAY = 0;
 
-    CONST PS_PAID = 1;
-
-    const EVENT_AFTER_PAID = 'order_paid';
-
-    public static function tableName(){
+    public static function tableName()
+    {
         return "{{%orders}}";
     }
 
@@ -28,7 +26,8 @@ class Order extends ActiveRecord{
         ];
     }
 
-    public function getOrder_goods_list(){
+    public function getOrder_goods_list()
+    {
 
         return $this->hasMany(OrderGoods::className(), [
             'og_od_id' => 'od_id'
@@ -41,8 +40,7 @@ class Order extends ActiveRecord{
                 "og_g_id",
                 "og_name",
                 "oe.g_m_img_id",
-            ])
-            ;
+            ]);
     }
 
 }

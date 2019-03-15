@@ -12,7 +12,6 @@ use yii\behaviors\TimestampBehavior;
 
 class Option extends ActiveRecord{
 
-    CONST OBJECT_TYPE_GOODS = 1;
 
 
     public static function tableName(){

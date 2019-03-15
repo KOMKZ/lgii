@@ -6,9 +6,6 @@ use yii\behaviors\TimestampBehavior;
 
 class RfApplication extends ActiveRecord{
 
-    CONST STATUS_SUBMIT = 'submit';
-    CONST STATUS_HAD_REFUND = 'hadrf';
-
     public static function tableName(){
         return "{{%refund}}";
     }

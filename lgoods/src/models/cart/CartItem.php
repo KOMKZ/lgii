@@ -11,8 +11,6 @@ use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
 
 class CartItem extends ActiveRecord{
-    const STATUS_VALID = 1;
-    const STATUS_DELETE = 2;
 
     public static function tableName(){
         return "{{%cart_item}}";

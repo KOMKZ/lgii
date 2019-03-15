@@ -7,21 +7,9 @@ use yii\helpers\ArrayHelper;
 
 class PayTrace extends ActiveRecord{
 
-    const STATUS_INIT = 'init';
-    const STATUS_CANCEL = 'cancel';
-    const STATUS_PAYED = 'payed';
-    const STATUS_ERROR = 'error';
 
-    CONST PAY_STATUS_PAYED = 'payed';
-    const PAY_STATUS_NOPAY = 'nopay';
 
-    CONST TYPE_DATA = 'data';
-    CONST TYPE_URL = 'url';
 
-    CONST EVENT_AFTER_PAYED = "pay_order_payed";
-    const EVENT_AFTER_RFED = 'pay_refund';
-    
-    const EVENT_AFTER_UPDATE = 'afterUpdate';
 
 
     public static function tableName(){
@@ -56,20 +44,20 @@ class PayTrace extends ActiveRecord{
 //            ]]
 
             ['pt_pre_order_type', 'in', 'range' => [
-                static::TYPE_DATA,
-                static::TYPE_URL
+                TransEnum::PT_TYPE_DATA,
+                TransEnum::PT_TYPE_URL
             ]]
 
             ,['pt_pay_status', 'in', 'range' => [
-                static::PAY_STATUS_PAYED,
-                static::PAY_STATUS_NOPAY
+                TransEnum::PT_PAY_STATUS_PAYED,
+                TransEnum::PT_PAY_STATUS_NOPAY
             ]]
 
             ,['pt_status', 'in', 'range' => [
-                static::STATUS_INIT,
-                static::STATUS_CANCEL,
-                static::STATUS_PAYED,
-                static::STATUS_ERROR
+                TransEnum::PT_STATUS_INIT,
+                TransEnum::PT_STATUS_CANCEL,
+                TransEnum::PT_STATUS_PAYED,
+                TransEnum::PT_STATUS_ERROR
             ]]
 
             ,['pt_payment_id', 'filter', 'filter' => function($value){

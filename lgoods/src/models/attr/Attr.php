@@ -12,9 +12,6 @@ use yii\behaviors\TimestampBehavior;
 
 class Attr extends ActiveRecord{
 
-    const A_TYPE_FULL_TEXT = 1;
-    CONST A_TYPE_SKU = 2;
-    const A_TYPE_NORMAL = 3;
 
 
 
@@ -39,9 +36,9 @@ class Attr extends ActiveRecord{
             ["a_name", 'required'],
             ['a_type', 'required'],
             ['a_type', 'in', 'range' => [
-                self::A_TYPE_FULL_TEXT,
-                self::A_TYPE_NORMAL,
-                self::A_TYPE_SKU
+                AttrEnum::A_TYPE_FULL_TEXT,
+                AttrEnum::A_TYPE_NORMAL,
+                AttrEnum::A_TYPE_SKU
             ]]
         ];
     }

@@ -21,16 +21,16 @@ class TransModel extends Model
 {
     public static $map = [
         Alipay::NAME => [
-            PayTrace::TYPE_DATA => Alipay::MODE_APP,
-            PayTrace::TYPE_URL => Alipay::MODE_URL
+            TransEnum::PT_TYPE_DATA => Alipay::MODE_APP,
+            TransEnum::PT_TYPE_URL => Alipay::MODE_URL
         ],
         Wxpay::NAME => [
-            PayTrace::TYPE_DATA => Wxpay::MODE_APP,
-            PayTrace::TYPE_URL => Wxpay::MODE_NATIVE
+            TransEnum::PT_TYPE_DATA => Wxpay::MODE_APP,
+            TransEnum::PT_TYPE_URL => Wxpay::MODE_NATIVE
         ],
         NPay::NAME => [
-            PayTrace::TYPE_DATA => NPay::MODE_ALL,
-            PayTrace::TYPE_URL => NPay::MODE_ALL
+            TransEnum::PT_TYPE_DATA => NPay::MODE_ALL,
+            TransEnum::PT_TYPE_URL => NPay::MODE_ALL
         ]
     ];
 
@@ -43,7 +43,7 @@ class TransModel extends Model
         $trans = static::findTrans()
             ->andWhere(['=', 'trs_num', $payOrder->pt_belong_trans_number])
             ->one();
-        if(Trans::TPS_PAID == $trans->trs_pay_status){
+        if(TransEnum::TPS_PAID == $trans->trs_pay_status){
             // 该交易已经支付 记录一下日志即可 todo
             // Yii::info(["通知得到的数据但是交易已经在平台处于支付状态", $payOrder->toArray()], "trans_payed_repeated")
             return ;
@@ -51,7 +51,7 @@ class TransModel extends Model
         // 修改交易数据
         $trans->trs_pay_type = $payOrder->pt_pay_type;
 
-        $trans->trs_pay_status = Trans::TPS_PAID;
+        $trans->trs_pay_status = TransEnum::TPS_PAID;
         $trans->trs_pay_at = time();
         $payment = static::getPayment($payOrder->pt_pay_type, $payOrder->pt_payment_id);
 
@@ -81,7 +81,7 @@ class TransModel extends Model
         // 修改交易数据
         $trans->trs_pay_type = $payOrder->pt_pay_type;
 
-        $trans->trs_pay_status = Trans::TPS_PAID;
+        $trans->trs_pay_status = TransEnum::TPS_PAID;
         $trans->trs_pay_at = time();
         $payment = static::getPayment($payOrder->pt_pay_type, $payOrder->pt_payment_id);
         $trans->trs_pay_num = $payment->getThirdTransId($payOrder, true);
@@ -111,28 +111,28 @@ class TransModel extends Model
             static::updatePayOrderPayed($payOrder, ['notification' => []]);
             static::triggerPayed($payOrder);
         }
-        if($trans['trs_type'] == Trans::TRADE_REFUND){
+        if($trans['trs_type'] == TransEnum::TRADE_REFUND){
             static::triggerRfed($payOrder);
         }
 
     }
 
     public static function triggerTransPayed($trans, $event = null){
-        $trans->trigger(Trans::EVENT_AFTER_PAYED, $event);
+        $trans->trigger(TransEnum::EVENT_TRS_AFTER_PAYED, $event);
     }
 
     public static function triggerTransRfed($trans, $event = null){
-        $trans->trigger(Trans::EVENT_AFTER_RFED, $event);
+        $trans->trigger(TransEnum::EVENT_TRS_AFTER_RFED, $event);
     }
 
 
     public function createTransFromOrder($order, $params = []){
         $trans = new Trans();
-        $trans->trs_type = Trans::TRADE_ORDER;
+        $trans->trs_type = TransEnum::TRADE_ORDER;
         $trans->trs_target_id = $order->od_id;
         $trans->trs_target_num = $order->od_num;
         $trans->trs_fee = $order->od_price;
-        $trans->trs_pay_status = Trans::TPS_NOT_PAY;
+        $trans->trs_pay_status = TransEnum::TPS_NOT_PAY;
         $trans->trs_pay_at = time();
         $trans->trs_pay_type = '';
         $trans->trs_pay_num = '';
@@ -146,11 +146,11 @@ class TransModel extends Model
 
     public function createTransFromRefund($rf, $params = []){
         $trans = new Trans();
-        $trans->trs_type = Trans::TRADE_REFUND;
+        $trans->trs_type = TransEnum::TRADE_REFUND;
         $trans->trs_target_id = $rf['rf_id'];
         $trans->trs_target_num = $rf['rf_num'];
         $trans->trs_fee = $rf['rf_fee'];
-        $trans->trs_pay_status = Trans::TPS_PAID;
+        $trans->trs_pay_status = TransEnum::TPS_PAID;
         $trans->trs_pay_at = time();
         $trans->trs_pay_type = $rf['rf_ori_pay_type'];
         $trans->trs_pay_num = '';
@@ -210,19 +210,19 @@ class TransModel extends Model
     }
 
     public static function triggerPayed($payOrder){
-        $payOrder->trigger(PayTrace::EVENT_AFTER_PAYED);
+        $payOrder->trigger(TransEnum::EVENT_AFTER_PAYED);
     }
 
     public static function triggerRfed($payOrder){
-        $payOrder->trigger(PayTrace::EVENT_AFTER_RFED);
+        $payOrder->trigger(TransEnum::EVENT_AFTER_RFED);
     }
 
     public static function updatePayOrderPayed($payOrder, $data){
         if(!empty($data['notification'])){
             $payOrder->third_data = ['pay_succ_notification' => $data['notification']];
         }
-        $payOrder->pt_pay_status = PayTrace::PAY_STATUS_PAYED;
-        $payOrder->pt_status = PayTrace::STATUS_PAYED;
+        $payOrder->pt_pay_status = TransEnum::PT_PAY_STATUS_PAYED;
+        $payOrder->pt_status = TransEnum::PT_STATUS_PAYED;
         $payOrder->update(false);
         return $payOrder;
     }
@@ -239,8 +239,8 @@ class TransModel extends Model
             $payOrder->pt_pre_order = '';
             $payOrder->pt_belong_trans_number = $trans['trs_num'];
             $payOrder->pt_pre_order_type = '';
-            $payOrder->pt_pay_status = PayTrace::PAY_STATUS_PAYED;
-            $payOrder->pt_status = PayTrace::STATUS_PAYED;
+            $payOrder->pt_pay_status = TransEnum::PT_PAY_STATUS_PAYED;
+            $payOrder->pt_status = TransEnum::PT_STATUS_PAYED;
             $payOrder->pt_third_data = '';
             $payOrder->pt_belong_trans_id = $trans['trs_id'];
             $payOrder->pt_payment_id = $oldTrans['pt_payment_id'];
@@ -306,15 +306,15 @@ class TransModel extends Model
     public function createPayOrderFromTrans($trans, $data){
         $t = Yii::$app->db->beginTransaction();
         try {
-            $data['pt_status'] = PayTrace::STATUS_INIT;
-            $data['pt_pay_status'] = PayTrace::PAY_STATUS_NOPAY;
+            $data['pt_status'] = TransEnum::PT_STATUS_INIT;
+            $data['pt_pay_status'] = TransEnum::PT_PAY_STATUS_NOPAY;
             $payOrder = new PayTrace();
             $payOrder->pt_pay_type = $data['pt_pay_type'];
             $payOrder->pt_pre_order = '';
             $payOrder->pt_belong_trans_number = $trans['trs_num'];
             $payOrder->pt_pre_order_type = $data['pt_pre_order_type'];
-            $payOrder->pt_pay_status = PayTrace::PAY_STATUS_NOPAY;
-            $payOrder->pt_status = PayTrace::STATUS_INIT;
+            $payOrder->pt_pay_status = TransEnum::PT_PAY_STATUS_NOPAY;
+            $payOrder->pt_status = TransEnum::PT_STATUS_INIT;
             $payOrder->pt_third_data = '';
             $payOrder->pt_belong_trans_id = $trans['trs_id'];
             $payOrder->pt_payment_id = ArrayHelper::getValue($data, 'pt_payment_id', '');

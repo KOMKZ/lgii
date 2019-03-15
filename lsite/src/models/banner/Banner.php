@@ -12,14 +12,6 @@ use yii\db\ActiveRecord;
 
 class Banner extends ActiveRecord{
 
-    const APP_WEB = 1;
-    CONST APP_ANDROID = 2;
-    CONST APP_IOS = 3;
-
-    CONST MODULE_WEB_HOME = 1;
-
-    CONST STATUS_VALID = 1;
-    CONST STATUS_DELETE = 2;
 
     public static function tableName(){
         return "{{%banner}}";
@@ -36,7 +28,7 @@ class Banner extends ActiveRecord{
                 ],
                 'safe'
             ],
-            ['b_status', 'default', 'value' => Banner::STATUS_VALID]
+            ['b_status', 'default', 'value' => BannerEnum::STATUS_VALID]
         ];
     }
     public function behaviors()

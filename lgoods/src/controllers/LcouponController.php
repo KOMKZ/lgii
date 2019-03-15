@@ -8,6 +8,7 @@
 namespace lgoods\controllers;
 
 use lgoods\models\coupon\Coupon;
+use lgoods\models\coupon\CouponEnum;
 use Yii;
 use lbase\Controller;
 use lgoods\models\coupon\CouponModel;
@@ -65,7 +66,7 @@ class LcouponController extends Controller{
             return $this->notfound();
         }
         $bModel = new CouponModel();
-        $bModel->updateCoupon($coupon, ['coup_status' => Coupon::STATUS_DELETE]);
+        $bModel->updateCoupon($coupon, ['coup_status' => CouponEnum::STATUS_DELETE]);
         return $this->succ(1);
     }
 

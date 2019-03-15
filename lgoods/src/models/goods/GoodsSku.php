@@ -7,8 +7,7 @@ use yii\behaviors\TimestampBehavior;
 
 class GoodsSku extends ActiveRecord{
 
-    CONST INDEX_STATUS_VALID = 1;
-    CONST INDEX_STATUS_INVALID = 2;
+
 
     public static function tableName(){
         return "{{%goods_sku}}";

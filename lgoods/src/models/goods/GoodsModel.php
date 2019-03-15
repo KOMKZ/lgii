@@ -12,6 +12,7 @@ use lfile\models\FileModel;
 use lfile\models\query\FileQuery;
 use lgoods\helpers\PriceHelper;
 use lgoods\models\attr\Attr;
+use lgoods\models\attr\AttrEnum;
 use lgoods\models\attr\AttrModel;
 use lgoods\models\attr\Option;
 use lgoods\models\category\ClassificationModel;
@@ -27,7 +28,6 @@ use yii\helpers\ArrayHelper;
 
 class GoodsModel extends Model{
 
-    CONST EVENT_GOODS_CREATE = 'goods_create';
 
     public static function formatOne($data, $params = []){
         $fields = static::getLevelFields(ArrayHelper::getValue($params, 'field_level', 'all'));
@@ -134,9 +134,9 @@ class GoodsModel extends Model{
     public static function getGoodsListAttrs($gids, $params){
         $level = ArrayHelper::getValue($params, 'g_attr_level', '');
         $levelMap = [
-            'long' => Attr::A_TYPE_FULL_TEXT,
-            'sku' => Attr::A_TYPE_SKU,
-            'short' => Attr::A_TYPE_NORMAL,
+            'long' => AttrEnum::A_TYPE_FULL_TEXT,
+            'sku' => AttrEnum::A_TYPE_SKU,
+            'short' => AttrEnum::A_TYPE_NORMAL,
         ];
         $aTable = Attr::tableName();
         $optTable = Option::tableName();
@@ -151,7 +151,7 @@ class GoodsModel extends Model{
             ])
             ->leftJoin($aTable, "{$aTable}.a_id = {$optTable}.opt_attr_id")
             ->andWhere(['in', 'opt_object_id', $gids])
-            ->andWhere(['=', 'opt_object_type', Option::OBJECT_TYPE_GOODS ])
+            ->andWhere(['=', 'opt_object_type', AttrEnum::OPT_OBJECT_TYPE_GOODS ])
             ->asArray()
             ;
         if(($level != 'all') && isset($levelMap[$level])){
@@ -370,7 +370,7 @@ class GoodsModel extends Model{
     public function deleteGoodsOptions($condition){
         return Option::deleteAll([
             'opt_object_id' => $condition['g_id'],
-            'opt_object_type' => Option::OBJECT_TYPE_GOODS,
+            'opt_object_type' => AttrEnum::OPT_OBJECT_TYPE_GOODS,
             'opt_id' => $condition['opt_ids']
         ]);
     }
@@ -408,7 +408,7 @@ class GoodsModel extends Model{
                 'opt_value' => $option->opt_value,
                 'opt_attr_id' => $option->opt_attr_id,
                 'opt_object_id' => $goods->g_id,
-                'opt_object_type' => Option::OBJECT_TYPE_GOODS,
+                'opt_object_type' => AttrEnum::OPT_OBJECT_TYPE_GOODS,
                 'opt_created_at' => time(),
                 'opt_updated_at' => time()
             ];
@@ -514,7 +514,7 @@ class GoodsModel extends Model{
             $ocmap = $attrModel->createObjectCollectAssign([
                 'ac_id' => $goodsData['ac_id']
                 ,'ocm_object_id' => $goods->g_id
-                ,'ocm_object_type' => Option::OBJECT_TYPE_GOODS
+                ,'ocm_object_type' => AttrEnum::OPT_OBJECT_TYPE_GOODS
             ]);
             if(!$ocmap){
                 $this->addErrors($attrModel->getErrors());
@@ -606,7 +606,7 @@ class GoodsModel extends Model{
             throw new \Exception("构建sku索引失败");
         }
         GoodsSku::updateAll([
-            'sku_index_status' => GoodsSku::INDEX_STATUS_INVALID
+            'sku_index_status' => GoodsEnum::GOODS_INDEX_STATUS_INVALID
         ], [
             'sku_g_id' => $data['g_id']
         ]);
@@ -616,7 +616,7 @@ class GoodsModel extends Model{
         ])->all();
         $indexMap = ArrayHelper::map($skuIndexs, 'value', 'name');
         foreach($skus as $sku){
-            $sku->sku_index_status = GoodsSku::INDEX_STATUS_VALID;
+            $sku->sku_index_status = GoodsEnum::GOODS_INDEX_STATUS_VALID;
             $sku->sku_name = $indexMap[$sku->sku_index];
             $sku->update(false);
         }
@@ -698,7 +698,7 @@ class GoodsModel extends Model{
                 if(!$sku->load($skuData, '') || !$sku->validate()){
                     throw new \Exception(implode(',', $sku->getFirstErrors()));
                 }
-                $sku->sku_index_status = GoodsSku::INDEX_STATUS_VALID;
+                $sku->sku_index_status = GoodsEnum::GOODS_INDEX_STATUS_VALID;
                 $skuData = $sku->toArray();
                 $skuData['sku_created_at'] = time();
                 $skuData['sku_updated_at'] = time();
@@ -725,7 +725,7 @@ class GoodsModel extends Model{
     public static function triggerGoodsCreate($object, $goodsData){
         $event = new GoodsEvent();
         $event->goodsData = $goodsData;
-        Event::trigger("\lgoods\models\goods\GoodsModel", static::EVENT_GOODS_CREATE, $event);
+        Event::trigger("\lgoods\models\goods\GoodsModel", GoodsEnum::EVENT_GOODS_CREATE, $event);
     }
 
     public static function buildSkusIndexByParams($params){
