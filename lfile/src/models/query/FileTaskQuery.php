@@ -1,6 +1,7 @@
 <?php
 namespace lfile\models\query;
 
+use lfile\models\FileEnum;
 use yii\base\Object;
 use lfile\models\ar\FileTask;
 use lfile\models\FileModel;
@@ -25,7 +26,7 @@ class FileTaskQuery extends Object{
      */
     public static function findOneCUByData($data, $type = 'hash_post'){
         return FileTaskQuery::find()->
-                              where(['file_task_code' => FileModel::buildTaskUniqueString($type, $data), 'file_task_type' => FileTask::TASK_CHUNK_UPLOAD])->
+                              where(['file_task_code' => FileModel::buildTaskUniqueString($type, $data), 'file_task_type' => FileEnum::TASK_CHUNK_UPLOAD])->
                               one();
     }
 }

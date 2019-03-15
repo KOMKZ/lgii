@@ -3,10 +3,10 @@
 return [
 
     'file_task_type' => [
-        \lfile\models\ar\FileTask::TASK_CHUNK_UPLOAD => \Yii::t('app', "文件分片上传任务"),
+        \lfile\models\FileEnum::TASK_CHUNK_UPLOAD => \Yii::t('app', "文件分片上传任务"),
     ],
     'file_task_status' => [
-        \lfile\models\ar\FileTask::STATUS_INIT => \Yii::t('app', '初始化')
+        \lfile\models\FileEnum::TASK_STATUS_INIT => \Yii::t('app', '初始化')
     ],
 
     'file_save_type' => [

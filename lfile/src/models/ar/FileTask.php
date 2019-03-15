@@ -1,6 +1,7 @@
 <?php
 namespace lfile\models\ar;
 
+use lfile\models\FileEnum;
 use Yii;
 use common\models\staticdata\ConstMap;
 use yii\db\ActiveRecord;
@@ -9,11 +10,6 @@ use yii\db\ActiveRecord;
  */
 class FileTask extends ActiveRecord
 {
-    CONST TASK_CHUNK_UPLOAD = 'chunk';
-
-    CONST STATUS_INIT = 'init';
-    CONST STATUS_INVALID = 'invalid';
-
     public static function tableName(){
         return "{{%file_task}}";
     }
@@ -40,7 +36,7 @@ class FileTask extends ActiveRecord
             ['file_task_completed_at', 'default', 'value' => 0],
 
             ['file_task_status', 'in', 'range' => ConstMap::getConst('file_task_status')],
-            ['file_task_status', 'default', 'value' => self::STATUS_INIT],
+            ['file_task_status', 'default', 'value' => FileEnum::TASK_STATUS_INIT],
 
             ['file_task_data', 'default', 'value' => '']
 

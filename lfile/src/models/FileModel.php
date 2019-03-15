@@ -265,7 +265,7 @@ class FileModel extends Model
         $fileTaskData = [
             'file_task_code' => static::buildTaskUniqueString('hash_post', $fileInfo),
             'file_task_invalid_at' => time() + $validDuration,
-            'file_task_type' => FileTask::TASK_CHUNK_UPLOAD,
+            'file_task_type' => FileEnum::TASK_CHUNK_UPLOAD,
             'file_task_data' => json_encode($fileInfo),
         ];
         return $this->createFileTask($fileTaskData);
@@ -306,7 +306,7 @@ class FileModel extends Model
             file_task_status = :status
         ", [
             ':current_time' => time(),
-            ':status' => FileTask::STATUS_INVALID
+            ':status' => FileEnum::TASK_STATUS_INVALID
         ]);
     }
 
